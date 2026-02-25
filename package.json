@@ -4,6 +4,11 @@
   "description": "Historical U.S. polyhex congressional timeline",
   "private": true,
   "scripts": {
+    "bootstrap:118": "python scripts/bootstrap_from_118.py",
+    "fallback:modern-boundaries": "python scripts/create_modern_outline_fallback.py --from-congress 1 --to-congress 119",
+    "build:historical": "python scripts/build_all_historical.py",
+    "validate:raw": "python scripts/validate_raw_inputs.py",
+    "validate:out": "python scripts/validate_outputs.py",
     "build:web": "python scripts/build_web_assets.py",
     "serve:web": "python -m http.server 8000 --directory web"
   },

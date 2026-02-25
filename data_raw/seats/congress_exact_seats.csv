@@ -1,0 +1,101 @@
+congress_number,state_fips,state_abbr,state_name,house_seats,admitted,source_seat_version
+118,02,AK,Alaska,1,true,bootstrap-118
+119,02,AK,Alaska,1,true,bootstrap-118
+118,01,AL,Alabama,7,true,bootstrap-118
+119,01,AL,Alabama,7,true,bootstrap-118
+118,05,AR,Arkansas,4,true,bootstrap-118
+119,05,AR,Arkansas,4,true,bootstrap-118
+118,04,AZ,Arizona,9,true,bootstrap-118
+119,04,AZ,Arizona,9,true,bootstrap-118
+118,06,CA,California,52,true,bootstrap-118
+119,06,CA,California,52,true,bootstrap-118
+118,08,CO,Colorado,8,true,bootstrap-118
+119,08,CO,Colorado,8,true,bootstrap-118
+118,09,CT,Connecticut,5,true,bootstrap-118
+119,09,CT,Connecticut,5,true,bootstrap-118
+118,10,DE,Delaware,1,true,bootstrap-118
+119,10,DE,Delaware,1,true,bootstrap-118
+118,12,FL,Florida,28,true,bootstrap-118
+119,12,FL,Florida,28,true,bootstrap-118
+118,13,GA,Georgia,14,true,bootstrap-118
+119,13,GA,Georgia,14,true,bootstrap-118
+118,15,HI,Hawaii,2,true,bootstrap-118
+119,15,HI,Hawaii,2,true,bootstrap-118
+118,19,IA,Iowa,4,true,bootstrap-118
+119,19,IA,Iowa,4,true,bootstrap-118
+118,16,ID,Idaho,2,true,bootstrap-118
+119,16,ID,Idaho,2,true,bootstrap-118
+118,17,IL,Illinois,17,true,bootstrap-118
+119,17,IL,Illinois,17,true,bootstrap-118
+118,18,IN,Indiana,9,true,bootstrap-118
+119,18,IN,Indiana,9,true,bootstrap-118
+118,20,KS,Kansas,4,true,bootstrap-118
+119,20,KS,Kansas,4,true,bootstrap-118
+118,21,KY,Kentucky,6,true,bootstrap-118
+119,21,KY,Kentucky,6,true,bootstrap-118
+118,22,LA,Louisiana,6,true,bootstrap-118
+119,22,LA,Louisiana,6,true,bootstrap-118
+118,25,MA,Massachusetts,9,true,bootstrap-118
+119,25,MA,Massachusetts,9,true,bootstrap-118
+118,24,MD,Maryland,8,true,bootstrap-118
+119,24,MD,Maryland,8,true,bootstrap-118
+118,23,ME,Maine,2,true,bootstrap-118
+119,23,ME,Maine,2,true,bootstrap-118
+118,26,MI,Michigan,13,true,bootstrap-118
+119,26,MI,Michigan,13,true,bootstrap-118
+118,27,MN,Minnesota,8,true,bootstrap-118
+119,27,MN,Minnesota,8,true,bootstrap-118
+118,29,MO,Missouri,8,true,bootstrap-118
+119,29,MO,Missouri,8,true,bootstrap-118
+118,28,MS,Mississippi,4,true,bootstrap-118
+119,28,MS,Mississippi,4,true,bootstrap-118
+118,30,MT,Montana,2,true,bootstrap-118
+119,30,MT,Montana,2,true,bootstrap-118
+118,37,NC,North Carolina,14,true,bootstrap-118
+119,37,NC,North Carolina,14,true,bootstrap-118
+118,38,ND,North Dakota,1,true,bootstrap-118
+119,38,ND,North Dakota,1,true,bootstrap-118
+118,31,NE,Nebraska,3,true,bootstrap-118
+119,31,NE,Nebraska,3,true,bootstrap-118
+118,33,NH,New Hampshire,2,true,bootstrap-118
+119,33,NH,New Hampshire,2,true,bootstrap-118
+118,34,NJ,New Jersey,12,true,bootstrap-118
+119,34,NJ,New Jersey,12,true,bootstrap-118
+118,35,NM,New Mexico,3,true,bootstrap-118
+119,35,NM,New Mexico,3,true,bootstrap-118
+118,32,NV,Nevada,4,true,bootstrap-118
+119,32,NV,Nevada,4,true,bootstrap-118
+118,36,NY,New York,26,true,bootstrap-118
+119,36,NY,New York,26,true,bootstrap-118
+118,39,OH,Ohio,15,true,bootstrap-118
+119,39,OH,Ohio,15,true,bootstrap-118
+118,40,OK,Oklahoma,5,true,bootstrap-118
+119,40,OK,Oklahoma,5,true,bootstrap-118
+118,41,OR,Oregon,6,true,bootstrap-118
+119,41,OR,Oregon,6,true,bootstrap-118
+118,42,PA,Pennsylvania,17,true,bootstrap-118
+119,42,PA,Pennsylvania,17,true,bootstrap-118
+118,44,RI,Rhode Island,2,true,bootstrap-118
+119,44,RI,Rhode Island,2,true,bootstrap-118
+118,45,SC,South Carolina,7,true,bootstrap-118
+119,45,SC,South Carolina,7,true,bootstrap-118
+118,46,SD,South Dakota,1,true,bootstrap-118
+119,46,SD,South Dakota,1,true,bootstrap-118
+118,47,TN,Tennessee,9,true,bootstrap-118
+119,47,TN,Tennessee,9,true,bootstrap-118
+118,48,TX,Texas,38,true,bootstrap-118
+119,48,TX,Texas,38,true,bootstrap-118
+118,49,UT,Utah,4,true,bootstrap-118
+119,49,UT,Utah,4,true,bootstrap-118
+118,51,VA,Virginia,11,true,bootstrap-118
+119,51,VA,Virginia,11,true,bootstrap-118
+118,50,VT,Vermont,1,true,bootstrap-118
+119,50,VT,Vermont,1,true,bootstrap-118
+118,53,WA,Washington,10,true,bootstrap-118
+119,53,WA,Washington,10,true,bootstrap-118
+118,55,WI,Wisconsin,8,true,bootstrap-118
+119,55,WI,Wisconsin,8,true,bootstrap-118
+118,54,WV,West Virginia,2,true,bootstrap-118
+119,54,WV,West Virginia,2,true,bootstrap-118
+118,56,WY,Wyoming,1,true,bootstrap-118
+119,56,WY,Wyoming,1,true,bootstrap-118

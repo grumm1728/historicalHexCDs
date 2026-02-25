@@ -59,14 +59,15 @@ async function loadIndex() {
   const data = await resp.json();
   timeline = data.timeline || [];
   if (!timeline.length) {
-    throw new Error("Timeline index is empty. Add data_raw/congress/<number>/HexCDv31.* and rebuild.");
+    throw new Error("Timeline index is empty. Populate data_raw/seats and data_raw/nhgis inputs, then rebuild.");
   }
 }
 
 async function drawFrame(entry) {
-  const resp = await fetch(`./${entry.feature_path}`);
+  const featurePath = entry.state_feature_path || entry.feature_path;
+  const resp = await fetch(`./${featurePath}`);
   if (!resp.ok) {
-    throw new Error(`Failed to load ${entry.feature_path}`);
+    throw new Error(`Failed to load ${featurePath}`);
   }
   const geo = await resp.json();
 
@@ -89,7 +90,8 @@ async function drawFrame(entry) {
       tooltip.innerHTML = [
         `<strong>${d.properties.state_name || "Unknown"}</strong>`,
         `State: ${d.properties.state_abbr || "N/A"}`,
-        `District: ${d.properties.district_label || "N/A"}`,
+        `Seats: ${d.properties.house_seats ?? "N/A"}`,
+        `Cells: ${d.properties.cell_count ?? "N/A"}`,
         `Congress: ${entry.congress_number}`,
       ].join("<br>");
     })

@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "congress_number": 84,
+    "start_date": "1955-01-03",
+    "end_date": "1957-01-02",
+    "generator_version": "v1"
+  },
+  "features": []
+}

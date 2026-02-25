@@ -15,7 +15,7 @@ PROCESSED_ROOT = ROOT / "data_processed"
 
 
 def run_build_timeline() -> None:
-    cmd = [sys.executable, str(ROOT / "scripts" / "build_timeline.py")]
+    cmd = [sys.executable, str(ROOT / "scripts" / "build_all_historical.py"), "--allow-modern-outline-fallback"]
     subprocess.run(cmd, check=True, cwd=str(ROOT))
 
 

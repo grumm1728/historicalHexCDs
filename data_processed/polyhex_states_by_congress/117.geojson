@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "congress_number": 117,
+    "start_date": "2021-01-03",
+    "end_date": "2023-01-02",
+    "generator_version": "v1"
+  },
+  "features": []
+}

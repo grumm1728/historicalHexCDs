@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "congress_number": 91,
+    "start_date": "1969-01-03",
+    "end_date": "1971-01-02",
+    "generator_version": "v1"
+  },
+  "features": []
+}

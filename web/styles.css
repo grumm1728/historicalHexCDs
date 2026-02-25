@@ -32,6 +32,12 @@ body {
   margin: 0.25rem 0 0;
 }
 
+.fineprint {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: #4a5b60;
+}
+
 .controls {
   display: flex;
   flex-wrap: wrap;

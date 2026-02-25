@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "congress_number": 81,
+    "start_date": "1949-01-03",
+    "end_date": "1951-01-02",
+    "generator_version": "v1"
+  },
+  "features": []
+}

@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "congress_number": 108,
+    "start_date": "2003-01-03",
+    "end_date": "2005-01-02",
+    "generator_version": "v1"
+  },
+  "features": []
+}

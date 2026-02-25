@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "congress_number": 65,
+    "start_date": "1917-03-04",
+    "end_date": "1919-03-03",
+    "generator_version": "v1"
+  },
+  "features": []
+}

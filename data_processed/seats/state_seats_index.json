@@ -1,0 +1,10 @@
+{
+  "row_count": 5950,
+  "state_count": 50,
+  "congress_min": 1,
+  "congress_max": 119,
+  "source_versions": [
+    "bootstrap-118",
+    "derived-pre-admission"
+  ]
+}

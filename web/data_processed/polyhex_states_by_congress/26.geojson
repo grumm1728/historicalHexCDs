@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "congress_number": 26,
+    "start_date": "1839-03-04",
+    "end_date": "1841-03-03",
+    "generator_version": "v1"
+  },
+  "features": []
+}
