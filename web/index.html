@@ -1,0 +1,35 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Historical U.S. Polyhex Timeline</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="layout">
+    <header class="header">
+      <h1>Historical U.S. Polyhex Timeline</h1>
+      <p class="subtitle">Single composite map: clipped polyhex cells inside state silhouettes</p>
+    </header>
+
+    <section class="controls">
+      <button id="prevBtn" type="button">Previous</button>
+      <button id="playBtn" type="button">Play</button>
+      <button id="nextBtn" type="button">Next</button>
+      <label for="congressRange">Congress</label>
+      <input id="congressRange" type="range" min="0" max="0" value="0" step="1" />
+      <span id="congressLabel">-</span>
+    </section>
+    <p id="statusMessage" class="status" hidden></p>
+
+    <section class="map-panel">
+      <svg id="mapSvg" viewBox="0 0 960 600" role="img" aria-label="U.S. polyhex map"></svg>
+      <aside id="tooltip" class="tooltip" hidden></aside>
+    </section>
+  </main>
+
+  <script src="./vendor/d3.min.js"></script>
+  <script src="./app.js" type="module"></script>
+</body>
+</html>

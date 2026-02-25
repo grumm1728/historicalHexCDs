@@ -1,0 +1,7 @@
+﻿render_mode: clipped_polyhex_only
+overrides: []
+# Example override entry shape (future):
+# - congress_number: 35
+#   state_abbr: "TX"
+#   notes: "Adjusted for readability after seat-count jump"
+#   source_geojson: "overrides/35_TX.geojson"
