@@ -1,5 +1,5 @@
 {
-  "generator_version": "v1",
+  "generator_version": "v2-template118",
   "timeline": [
     {
       "congress_number": 1,
@@ -9,9 +9,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 2,
@@ -21,9 +22,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 3,
@@ -33,9 +35,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 4,
@@ -45,9 +48,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 5,
@@ -57,9 +61,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 6,
@@ -69,9 +74,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 7,
@@ -81,9 +87,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 8,
@@ -93,9 +100,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 9,
@@ -105,9 +113,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 10,
@@ -117,9 +126,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 11,
@@ -129,9 +139,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 12,
@@ -141,9 +152,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 13,
@@ -153,9 +165,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 14,
@@ -165,9 +178,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 15,
@@ -177,9 +191,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 16,
@@ -189,9 +204,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 17,
@@ -201,9 +217,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 18,
@@ -213,9 +230,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 19,
@@ -225,9 +243,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 20,
@@ -237,9 +256,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 21,
@@ -249,9 +269,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 22,
@@ -261,9 +282,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 23,
@@ -273,9 +295,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 24,
@@ -285,9 +308,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 25,
@@ -297,9 +321,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 26,
@@ -309,9 +334,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 27,
@@ -321,9 +347,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 28,
@@ -333,9 +360,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 29,
@@ -345,9 +373,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 30,
@@ -357,9 +386,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 31,
@@ -369,9 +399,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 32,
@@ -381,9 +412,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 33,
@@ -393,9 +425,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 34,
@@ -405,9 +438,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 35,
@@ -417,9 +451,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 36,
@@ -429,9 +464,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 37,
@@ -441,9 +477,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 38,
@@ -453,9 +490,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 39,
@@ -465,9 +503,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 40,
@@ -477,9 +516,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 41,
@@ -489,9 +529,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 42,
@@ -501,9 +542,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 43,
@@ -513,9 +555,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 44,
@@ -525,9 +568,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 45,
@@ -537,9 +581,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 46,
@@ -549,9 +594,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 47,
@@ -561,9 +607,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 48,
@@ -573,9 +620,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 49,
@@ -585,9 +633,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 50,
@@ -597,9 +646,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 51,
@@ -609,9 +659,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 52,
@@ -621,9 +672,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 53,
@@ -633,9 +685,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 54,
@@ -645,9 +698,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 55,
@@ -657,9 +711,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 56,
@@ -669,9 +724,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 57,
@@ -681,9 +737,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 58,
@@ -693,9 +750,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 59,
@@ -705,9 +763,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 60,
@@ -717,9 +776,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 61,
@@ -729,9 +789,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 62,
@@ -741,9 +802,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 63,
@@ -753,9 +815,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 64,
@@ -765,9 +828,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 65,
@@ -777,9 +841,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 66,
@@ -789,9 +854,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 67,
@@ -801,9 +867,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 68,
@@ -813,9 +880,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 69,
@@ -825,9 +893,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 70,
@@ -837,9 +906,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 71,
@@ -849,9 +919,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 72,
@@ -861,9 +932,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 73,
@@ -873,9 +945,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 74,
@@ -885,9 +958,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 75,
@@ -897,9 +971,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 76,
@@ -909,9 +984,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 77,
@@ -921,9 +997,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 78,
@@ -933,9 +1010,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 79,
@@ -945,9 +1023,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 80,
@@ -957,9 +1036,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 81,
@@ -969,9 +1049,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 82,
@@ -981,9 +1062,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 83,
@@ -993,9 +1075,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 84,
@@ -1005,9 +1088,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 85,
@@ -1017,9 +1101,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 86,
@@ -1029,9 +1114,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 87,
@@ -1041,9 +1127,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 88,
@@ -1053,9 +1140,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 89,
@@ -1065,9 +1153,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 90,
@@ -1077,9 +1166,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 91,
@@ -1089,9 +1179,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 92,
@@ -1101,9 +1192,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 93,
@@ -1113,9 +1205,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 94,
@@ -1125,9 +1218,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 95,
@@ -1137,9 +1231,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 96,
@@ -1149,9 +1244,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 97,
@@ -1161,9 +1257,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 98,
@@ -1173,9 +1270,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 99,
@@ -1185,9 +1283,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 100,
@@ -1197,9 +1296,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 101,
@@ -1209,9 +1309,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 102,
@@ -1221,9 +1322,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 103,
@@ -1233,9 +1335,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 104,
@@ -1245,9 +1348,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 105,
@@ -1257,9 +1361,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 106,
@@ -1269,9 +1374,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 107,
@@ -1281,9 +1387,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 108,
@@ -1293,9 +1400,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 109,
@@ -1305,9 +1413,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 110,
@@ -1317,9 +1426,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 111,
@@ -1329,9 +1439,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 112,
@@ -1341,9 +1452,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 113,
@@ -1353,9 +1465,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 114,
@@ -1365,9 +1478,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 115,
@@ -1377,9 +1491,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 116,
@@ -1389,9 +1504,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 117,
@@ -1401,9 +1517,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 118,
@@ -1413,9 +1530,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     },
     {
       "congress_number": 119,
@@ -1425,9 +1543,10 @@
       "state_feature_count": 50,
       "coverage_flags": {
         "missing_boundary_states": [],
+        "missing_template_states": [],
         "used_overrides": false
       },
-      "generator_version": "v1"
+      "generator_version": "v2-template118"
     }
   ]
 }
