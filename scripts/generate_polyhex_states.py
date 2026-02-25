@@ -54,6 +54,9 @@ def pointy_hex(cx: float, cy: float, size: float) -> list[list[float]]:
     for i in range(6):
         ang = math.radians(60 * i - 30)
         pts.append([cx + size * math.cos(ang), cy + size * math.sin(ang)])
+    # D3 geo rendering interprets winding on the sphere; clockwise ring avoids
+    # complement-of-sphere artifacts (full-canvas rectangles) for these small cells.
+    pts.reverse()
     pts.append(pts[0])
     return pts
 
