@@ -99,6 +99,13 @@ def fit_cluster_to_bbox(n: int, bbox: tuple[float, float, float, float]) -> tupl
     h = max(1e-6, ymax - ymin)
     margin = 0.08
 
+    if n <= 1:
+        cx = xmin + (w * 0.5)
+        cy = ymin + (h * 0.5)
+        size = min(w, h) * 0.28
+        ring = pointy_hex(cx, cy, size=max(size, 1e-6))
+        return [ring], 1
+
     cluster = connected_cluster(max(1, n))
     base_size = 1.0
     centers = [axial_to_xy(q, r, base_size) for q, r in cluster]

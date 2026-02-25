@@ -52,7 +52,8 @@ If you only have the existing `HexCDv31`/legacy 118 output, generate starter raw
 python scripts/bootstrap_from_118.py
 ```
 
-This creates minimal raw input files for Congress 118/119 only. It is useful for testing the pipeline wiring, not for full historical accuracy.
+This creates modern-outline/modern-seat fallback raw inputs across Congresses 1..119 for MVP rendering.
+It is useful for MVP/testing, not for full historical accuracy.
 
 ## Full historical data requirement
 

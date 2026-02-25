@@ -9,6 +9,9 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def main() -> None:
+    from_congress = 1
+    to_congress = 119
+
     source = ROOT / "data_processed" / "polyhex_by_congress" / "118.geojson"
     if not source.exists():
         raise SystemExit("Bootstrap source missing: data_processed/polyhex_by_congress/118.geojson")
@@ -39,8 +42,8 @@ def main() -> None:
         state_name = features[0]["properties"].get("state_name", abbr)
         seats = len(features)
         state_fips = state_fips_map[abbr]
-        seats_lines.append(f"118,{state_fips},{abbr},{state_name},{seats},true,bootstrap-118")
-        seats_lines.append(f"119,{state_fips},{abbr},{state_name},{seats},true,bootstrap-118")
+        for congress_number in range(from_congress, to_congress + 1):
+            seats_lines.append(f"{congress_number},{state_fips},{abbr},{state_name},{seats},true,bootstrap-118-modern-seats")
 
         multipoly = []
         for feat in features:
@@ -54,8 +57,8 @@ def main() -> None:
             {
                 "type": "Feature",
                 "properties": {
-                    "from_congress": 118,
-                    "to_congress": 119,
+                    "from_congress": from_congress,
+                    "to_congress": to_congress,
                     "state_fips": state_fips,
                     "state_abbr": abbr,
                     "state_name": state_name,

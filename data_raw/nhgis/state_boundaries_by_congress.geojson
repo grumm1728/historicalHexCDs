@@ -9,7 +9,7 @@
         "state_fips": "02",
         "state_abbr": "AK",
         "state_name": "Alaska",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -769,7 +769,7 @@
         "state_fips": "01",
         "state_abbr": "AL",
         "state_name": "Alabama",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -1577,7 +1577,7 @@
         "state_fips": "05",
         "state_abbr": "AR",
         "state_name": "Arkansas",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -2105,7 +2105,7 @@
         "state_fips": "04",
         "state_abbr": "AZ",
         "state_name": "Arizona",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -2885,7 +2885,7 @@
         "state_fips": "06",
         "state_abbr": "CA",
         "state_name": "California",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -7689,7 +7689,7 @@
         "state_fips": "08",
         "state_abbr": "CO",
         "state_name": "Colorado",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -8333,7 +8333,7 @@
         "state_fips": "09",
         "state_abbr": "CT",
         "state_name": "Connecticut",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -8769,7 +8769,7 @@
         "state_fips": "10",
         "state_abbr": "DE",
         "state_name": "Delaware",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -8885,7 +8885,7 @@
         "state_fips": "12",
         "state_abbr": "FL",
         "state_name": "Florida",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -11405,7 +11405,7 @@
         "state_fips": "13",
         "state_abbr": "GA",
         "state_name": "Georgia",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -12881,7 +12881,7 @@
         "state_fips": "15",
         "state_abbr": "HI",
         "state_name": "Hawaii",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -13511,7 +13511,7 @@
         "state_fips": "19",
         "state_abbr": "IA",
         "state_name": "Iowa",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -14091,7 +14091,7 @@
         "state_fips": "16",
         "state_abbr": "ID",
         "state_name": "Idaho",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -14483,7 +14483,7 @@
         "state_fips": "17",
         "state_abbr": "IL",
         "state_name": "Illinois",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -16295,7 +16295,7 @@
         "state_fips": "18",
         "state_abbr": "IN",
         "state_name": "Indiana",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -17303,7 +17303,7 @@
         "state_fips": "20",
         "state_abbr": "KS",
         "state_name": "Kansas",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -17631,7 +17631,7 @@
         "state_fips": "21",
         "state_abbr": "KY",
         "state_name": "Kentucky",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -18619,7 +18619,7 @@
         "state_fips": "22",
         "state_abbr": "LA",
         "state_name": "Louisiana",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -19423,7 +19423,7 @@
         "state_fips": "25",
         "state_abbr": "MA",
         "state_name": "Massachusetts",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -20567,7 +20567,7 @@
         "state_fips": "24",
         "state_abbr": "MD",
         "state_name": "Maryland",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -21539,7 +21539,7 @@
         "state_fips": "23",
         "state_abbr": "ME",
         "state_name": "Maine",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -22223,7 +22223,7 @@
         "state_fips": "26",
         "state_abbr": "MI",
         "state_name": "Michigan",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -24171,7 +24171,7 @@
         "state_fips": "27",
         "state_abbr": "MN",
         "state_name": "Minnesota",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -25387,7 +25387,7 @@
         "state_fips": "29",
         "state_abbr": "MO",
         "state_name": "Missouri",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -26395,7 +26395,7 @@
         "state_fips": "28",
         "state_abbr": "MS",
         "state_name": "Mississippi",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -26971,7 +26971,7 @@
         "state_fips": "30",
         "state_abbr": "MT",
         "state_name": "Montana",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -27251,7 +27251,7 @@
         "state_fips": "37",
         "state_abbr": "NC",
         "state_name": "North Carolina",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -28811,7 +28811,7 @@
         "state_fips": "38",
         "state_abbr": "ND",
         "state_name": "North Dakota",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -28935,7 +28935,7 @@
         "state_fips": "31",
         "state_abbr": "NE",
         "state_name": "Nebraska",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -29315,7 +29315,7 @@
         "state_fips": "33",
         "state_abbr": "NH",
         "state_name": "New Hampshire",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -29671,7 +29671,7 @@
         "state_fips": "34",
         "state_abbr": "NJ",
         "state_name": "New Jersey",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -30699,7 +30699,7 @@
         "state_fips": "35",
         "state_abbr": "NM",
         "state_name": "New Mexico",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -30895,7 +30895,7 @@
         "state_fips": "32",
         "state_abbr": "NV",
         "state_name": "Nevada",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -31195,7 +31195,7 @@
         "state_fips": "36",
         "state_abbr": "NY",
         "state_name": "New York",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -33467,7 +33467,7 @@
         "state_fips": "39",
         "state_abbr": "OH",
         "state_name": "Ohio",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -34955,7 +34955,7 @@
         "state_fips": "40",
         "state_abbr": "OK",
         "state_name": "Oklahoma",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -35423,7 +35423,7 @@
         "state_fips": "41",
         "state_abbr": "OR",
         "state_name": "Oregon",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -36067,7 +36067,7 @@
         "state_fips": "42",
         "state_abbr": "PA",
         "state_name": "Pennsylvania",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -37511,7 +37511,7 @@
         "state_fips": "44",
         "state_abbr": "RI",
         "state_name": "Rhode Island",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -37815,7 +37815,7 @@
         "state_fips": "45",
         "state_abbr": "SC",
         "state_name": "South Carolina",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -38583,7 +38583,7 @@
         "state_fips": "46",
         "state_abbr": "SD",
         "state_name": "South Dakota",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -38795,7 +38795,7 @@
         "state_fips": "47",
         "state_abbr": "TN",
         "state_name": "Tennessee",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -39835,7 +39835,7 @@
         "state_fips": "48",
         "state_abbr": "TX",
         "state_name": "Texas",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -43495,7 +43495,7 @@
         "state_fips": "49",
         "state_abbr": "UT",
         "state_name": "Utah",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -43771,7 +43771,7 @@
         "state_fips": "51",
         "state_abbr": "VA",
         "state_name": "Virginia",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -45005,7 +45005,7 @@
         "state_fips": "50",
         "state_abbr": "VT",
         "state_name": "Vermont",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -45245,7 +45245,7 @@
         "state_fips": "53",
         "state_abbr": "WA",
         "state_name": "Washington",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -46121,7 +46121,7 @@
         "state_fips": "55",
         "state_abbr": "WI",
         "state_name": "Wisconsin",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -47293,7 +47293,7 @@
         "state_fips": "54",
         "state_abbr": "WV",
         "state_name": "West Virginia",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -47877,7 +47877,7 @@
         "state_fips": "56",
         "state_abbr": "WY",
         "state_name": "Wyoming",
-        "source_boundary_id": "modern-fallback-from-118"
+        "source_boundary_id": "bootstrap-118"
       },
       "geometry": {
         "type": "MultiPolygon",
