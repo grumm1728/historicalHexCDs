@@ -5,6 +5,7 @@ const nextBtn = document.getElementById("nextBtn");
 const range = document.getElementById("congressRange");
 const label = document.getElementById("congressLabel");
 const tooltip = document.getElementById("tooltip");
+const outlineOnlyToggle = document.getElementById("outlineOnlyToggle");
 
 const width = 960;
 const height = 600;
@@ -86,11 +87,15 @@ async function loadIndex() {
 
 async function drawFrame(entry) {
   const featurePath = entry.state_feature_path || entry.feature_path;
-  const resp = await fetch(`./${featurePath}`);
-  if (!resp.ok) {
+  const [cellResp, outlineResp] = await Promise.all([
+    fetch(`./${featurePath}`),
+    entry.state_outline_path ? fetch(`./${entry.state_outline_path}`) : Promise.resolve(null),
+  ]);
+  if (!cellResp.ok) {
     throw new Error(`Failed to load ${featurePath}`);
   }
-  const geo = await resp.json();
+  const geo = await cellResp.json();
+  const outlineGeo = outlineResp && outlineResp.ok ? await outlineResp.json() : null;
   const b = geometryBounds(geo);
   const projected = Math.abs(b.maxX) > 1000 || Math.abs(b.minX) > 1000 || Math.abs(b.maxY) > 1000 || Math.abs(b.minY) > 1000;
   const projection = projected
@@ -101,27 +106,40 @@ async function drawFrame(entry) {
   svg.selectAll("g").remove();
   const g = svg.append("g");
 
-  g.selectAll("path.cell")
-    .data(geo.features)
-    .join("path")
-    .attr("class", "cell")
-    .attr("d", path)
-    .attr("fill", (d) => stateColor(d.properties.state_abbr || "unknown"))
-    .on("mousemove", (event, d) => {
-      tooltip.hidden = false;
-      tooltip.style.left = `${event.offsetX + 16}px`;
-      tooltip.style.top = `${event.offsetY + 16}px`;
-      tooltip.innerHTML = [
-        `<strong>${d.properties.state_name || "Unknown"}</strong>`,
-        `State: ${d.properties.state_abbr || "N/A"}`,
-        `Seats: ${d.properties.house_seats ?? "N/A"}`,
-        `Cells: ${d.properties.cell_count ?? "N/A"}`,
-        `Congress: ${entry.congress_number}`,
-      ].join("<br>");
-    })
-    .on("mouseleave", () => {
-      tooltip.hidden = true;
-    });
+  if (outlineGeo && Array.isArray(outlineGeo.features)) {
+    g.selectAll("path.state-outline")
+      .data(outlineGeo.features)
+      .join("path")
+      .attr("class", "state-outline")
+      .attr("d", path)
+      .attr("fill", (d) => stateColor(d.properties.state_abbr || "unknown"));
+  }
+
+  if (!outlineOnlyToggle?.checked) {
+    g.selectAll("path.cell")
+      .data(geo.features)
+      .join("path")
+      .attr("class", "cell")
+      .attr("d", path)
+      .attr("fill", (d) => stateColor(d.properties.state_abbr || "unknown"))
+      .on("mousemove", (event, d) => {
+        tooltip.hidden = false;
+        tooltip.style.left = `${event.offsetX + 16}px`;
+        tooltip.style.top = `${event.offsetY + 16}px`;
+        tooltip.innerHTML = [
+          `<strong>${d.properties.state_name || "Unknown"}</strong>`,
+          `State: ${d.properties.state_abbr || "N/A"}`,
+          `Seats: ${d.properties.house_seats ?? "N/A"}`,
+          `Cells: ${d.properties.cell_count ?? "N/A"}`,
+          `Congress: ${entry.congress_number}`,
+        ].join("<br>");
+      })
+      .on("mouseleave", () => {
+        tooltip.hidden = true;
+      });
+  } else {
+    tooltip.hidden = true;
+  }
 }
 
 async function setFrame(i) {
@@ -157,6 +175,13 @@ function setupControls() {
     const next = (frameIndex + 1) % timeline.length;
     await setFrame(next);
   });
+
+  if (outlineOnlyToggle) {
+    outlineOnlyToggle.addEventListener("change", async () => {
+      stopPlayback();
+      await setFrame(frameIndex);
+    });
+  }
 }
 
 async function main() {

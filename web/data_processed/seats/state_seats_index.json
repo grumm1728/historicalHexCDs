@@ -4,6 +4,6 @@
   "congress_min": 1,
   "congress_max": 119,
   "source_versions": [
-    "bootstrap-118-modern-seats"
+    "wikipedia-past-apportionments-2026-05-05"
   ]
 }

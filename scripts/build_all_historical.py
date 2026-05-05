@@ -35,10 +35,12 @@ def build_congress_index(max_congress: int) -> None:
                 "start_date": item.get("start_date") or None,
                 "end_date": item.get("end_date") or None,
                 "state_feature_path": item["state_feature_path"],
+                "state_outline_path": item.get("state_outline_path"),
                 "shapefile_path": str(shapefile_path.as_posix()),
                 "generator_version": item.get("generator_version", "unknown"),
                 "coverage_flags": item.get("coverage_flags", {}),
                 "state_feature_count": item.get("state_feature_count", 0),
+                "state_outline_count": item.get("state_outline_count", 0),
             }
         )
 

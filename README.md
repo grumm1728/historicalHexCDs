@@ -70,6 +70,18 @@ python -m http.server 8000 --directory web
 
 Open `http://localhost:8000`.
 
+Simple launcher options:
+
+```powershell
+.\run_local_web.bat
+```
+
+or
+
+```powershell
+.\run_local_web.ps1
+```
+
 The app reads `web/data_processed/congress_index.json` and state-level feature paths from `state_feature_path`.
 
 ## GitHub Pages

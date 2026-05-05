@@ -11,13 +11,14 @@
     <header class="header">
       <h1>Historical U.S. Polyhex Timeline</h1>
       <p class="subtitle">Single composite map: clipped polyhex cells inside state silhouettes</p>
-      <p class="fineprint">MVP note: if historical state boundaries are unavailable, modern state outlines are reused across Congresses.</p>
+      <p class="fineprint">MVP note: if historical state boundaries are unavailable, modern state outlines are reused across Congresses. Seat counts come from apportionment-era allocations; Civil War-era unrepresented delegations are not yet modeled separately.</p>
     </header>
 
     <section class="controls">
       <button id="prevBtn" type="button">Previous</button>
       <button id="playBtn" type="button">Play</button>
       <button id="nextBtn" type="button">Next</button>
+      <label><input id="outlineOnlyToggle" type="checkbox" checked /> Outlines Only</label>
       <label for="congressRange">Congress</label>
       <input id="congressRange" type="range" min="0" max="0" value="0" step="1" />
       <span id="congressLabel">-</span>
@@ -31,6 +32,6 @@
   </main>
 
   <script src="./vendor/d3.min.js"></script>
-  <script src="./app.js" type="module"></script>
+  <script src="./app.js"></script>
 </body>
 </html>

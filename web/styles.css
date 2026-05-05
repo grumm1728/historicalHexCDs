@@ -86,11 +86,22 @@ body {
 }
 
 .cell {
-  stroke: none;
+  stroke: rgb(25 35 40 / 45%);
+  stroke-width: 0.7;
+  fill-opacity: 0.42;
+  vector-effect: non-scaling-stroke;
+}
+
+.state-outline {
+  stroke: rgb(25 35 40 / 55%);
+  stroke-width: 1.4;
+  fill-opacity: 0.22;
+  vector-effect: non-scaling-stroke;
 }
 
 .cell:hover {
-  opacity: 0.85;
+  fill-opacity: 0.72;
+  stroke: rgb(25 35 40 / 75%);
 }
 
 .tooltip {

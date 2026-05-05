@@ -14,7 +14,7 @@ from pathlib import Path
 import shapefile
 
 ROOT = Path(__file__).resolve().parent.parent
-GENERATOR_VERSION = "v2-template118"
+GENERATOR_VERSION = "v4-fixed-hex-scaled-outline"
 
 
 @dataclass
@@ -258,6 +258,56 @@ def add_extra_cells(
     return polygons
 
 
+def state_anchor(cells: list[TemplateCell]) -> tuple[float, float]:
+    pts = [c.centroid for c in cells]
+    return mean_xy(pts)
+
+
+def scale_coords(
+    coords: list,
+    center: tuple[float, float],
+    scale: float,
+) -> list:
+    if not isinstance(coords, list):
+        return coords
+    if len(coords) == 2 and all(isinstance(v, (int, float)) for v in coords):
+        x, y = coords
+        cx, cy = center
+        return [cx + ((x - cx) * scale), cy + ((y - cy) * scale)]
+    return [scale_coords(c, center, scale) for c in coords]
+
+
+def scale_geometry(
+    geometry: dict,
+    center: tuple[float, float],
+    scale: float,
+) -> dict:
+    gtype = geometry.get("type")
+    coords = geometry.get("coordinates")
+    if gtype in {"Polygon", "MultiPolygon"} and coords is not None:
+        return {"type": gtype, "coordinates": scale_coords(coords, center, scale)}
+    return geometry
+
+
+def iter_points(coords):
+    if isinstance(coords, list):
+        if len(coords) == 2 and all(isinstance(v, (int, float)) for v in coords):
+            yield coords[0], coords[1]
+        else:
+            for c in coords:
+                yield from iter_points(c)
+
+
+def geometry_center(geometry: dict) -> tuple[float, float] | None:
+    coords = geometry.get("coordinates")
+    pts = list(iter_points(coords))
+    if not pts:
+        return None
+    sx = sum(p[0] for p in pts)
+    sy = sum(p[1] for p in pts)
+    return (sx / len(pts), sy / len(pts))
+
+
 def load_boundaries(path: Path) -> dict[int, dict[str, dict]]:
     by_congress: dict[int, dict[str, dict]] = defaultdict(dict)
     for geojson_path in sorted((path / "by_congress").glob("*.geojson"), key=lambda p: int(p.stem)):
@@ -284,8 +334,9 @@ def build_state_features(
     seat_rows: list[dict],
     boundary_by_state: dict[str, dict],
     template_by_state: dict[str, list[TemplateCell]],
-) -> tuple[list[dict], list[str], list[str]]:
+) -> tuple[list[dict], list[dict], list[str], list[str]]:
     features: list[dict] = []
+    outline_features: list[dict] = []
     missing_boundary_states: list[str] = []
     missing_template_states: list[str] = []
 
@@ -305,6 +356,9 @@ def build_state_features(
 
         subset = choose_template_subset(template_cells, seats)
         polygons = add_extra_cells(template_cells, subset, seats)
+        ref_seats = max(1, len(template_cells))
+        area_scale = math.sqrt(max(seats, 1) / ref_seats)
+        anchor = state_anchor(template_cells)
         cell_count = len(polygons)
 
         boundary_feature = boundary_by_state.get(state_fips)
@@ -330,12 +384,38 @@ def build_state_features(
                     "source_boundary_id": source_boundary_id,
                     "source_seat_version": str(row.get("source_seat_version", "unknown")),
                     "generator_version": GENERATOR_VERSION,
+                    "state_ref_seats": ref_seats,
+                    "area_scale": area_scale,
+                    "state_anchor_x": anchor[0],
+                    "state_anchor_y": anchor[1],
                 },
                 "geometry": {"type": "MultiPolygon", "coordinates": polygons},
             }
         )
 
-    return features, missing_boundary_states, missing_template_states
+        if boundary_feature is not None:
+            boundary_anchor = geometry_center(boundary_feature["geometry"]) or anchor
+            scaled_outline_geometry = scale_geometry(boundary_feature["geometry"], boundary_anchor, area_scale)
+            outline_features.append(
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "congress_number": congress_number,
+                        "state_fips": state_fips,
+                        "state_abbr": state_abbr,
+                        "state_name": str(row["state_name"]),
+                        "house_seats": seats,
+                        "state_ref_seats": ref_seats,
+                        "area_scale": area_scale,
+                        "state_anchor_x": boundary_anchor[0],
+                        "state_anchor_y": boundary_anchor[1],
+                        "generator_version": GENERATOR_VERSION,
+                    },
+                    "geometry": scaled_outline_geometry,
+                }
+            )
+
+    return features, outline_features, missing_boundary_states, missing_template_states
 
 
 def main() -> None:
@@ -347,13 +427,16 @@ def main() -> None:
         default=str(ROOT / "hexmap_reference_files" / "HexCDv31wm" / "HexCDv31wm.shp"),
     )
     parser.add_argument("--out-root", default=str(ROOT / "data_processed" / "polyhex_states_by_congress"))
+    parser.add_argument("--outline-out-root", default=str(ROOT / "data_processed" / "state_outlines_by_congress"))
     args = parser.parse_args()
 
     seats_path = Path(args.seats)
     boundaries_root = Path(args.boundaries)
     template_shp = Path(args.template_shp)
     out_root = Path(args.out_root)
+    outline_out_root = Path(args.outline_out_root)
     out_root.mkdir(parents=True, exist_ok=True)
+    outline_out_root.mkdir(parents=True, exist_ok=True)
 
     if not template_shp.exists():
         raise SystemExit(f"Template shapefile missing: {template_shp}")
@@ -368,7 +451,7 @@ def main() -> None:
         seat_rows = by_congress_seats[congress_number]
         boundary_by_state = by_congress_boundaries.get(congress_number, {})
 
-        features, missing_boundary_states, missing_template_states = build_state_features(
+        features, outline_features, missing_boundary_states, missing_template_states = build_state_features(
             congress_number,
             seat_rows,
             boundary_by_state,
@@ -390,6 +473,19 @@ def main() -> None:
         out_path = out_root / f"{congress_number}.geojson"
         out_path.write_text(json.dumps(collection, indent=2), encoding="utf-8")
 
+        outline_collection = {
+            "type": "FeatureCollection",
+            "properties": {
+                "congress_number": congress_number,
+                "start_date": congress_start_date(congress_number).isoformat(),
+                "end_date": congress_end_date(congress_number).isoformat(),
+                "generator_version": GENERATOR_VERSION,
+            },
+            "features": outline_features,
+        }
+        outline_path = outline_out_root / f"{congress_number}.geojson"
+        outline_path.write_text(json.dumps(outline_collection, indent=2), encoding="utf-8")
+
         summary["timeline"].append(
             {
                 "congress_number": congress_number,
@@ -397,6 +493,8 @@ def main() -> None:
                 "end_date": congress_end_date(congress_number).isoformat(),
                 "state_feature_path": str((Path("data_processed") / "polyhex_states_by_congress" / f"{congress_number}.geojson").as_posix()),
                 "state_feature_count": len(features),
+                "state_outline_path": str((Path("data_processed") / "state_outlines_by_congress" / f"{congress_number}.geojson").as_posix()),
+                "state_outline_count": len(outline_features),
                 "coverage_flags": {
                     "missing_boundary_states": missing_boundary_states,
                     "missing_template_states": missing_template_states,

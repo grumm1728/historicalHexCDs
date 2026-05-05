@@ -4,7 +4,7 @@
     "congress_number": 119,
     "start_date": "2025-01-03",
     "end_date": "2027-01-02",
-    "generator_version": "v2-template118",
+    "generator_version": "v4-fixed-hex-scaled-outline",
     "template_source": "C:/Users/scott/Cloned from GitHub/historicalHexCDs/hexmap_reference_files/HexCDv31wm/HexCDv31wm.shp"
   },
   "features": [
@@ -21,8 +21,12 @@
         "admitted": true,
         "cell_count": 7,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 6,
+        "area_scale": 1.0801234497346435,
+        "state_anchor_x": -14270515.000799805,
+        "state_anchor_y": 4767196.888190425
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -699,8 +703,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -17840077.985005714,
+        "state_anchor_y": 4015059.141428423
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -1465,8 +1473,12 @@
         "admitted": true,
         "cell_count": 9,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 9,
+        "area_scale": 1.0,
+        "state_anchor_x": -16793172.406908378,
+        "state_anchor_y": 4914351.970530968
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -2259,8 +2271,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -15077061.379314309,
+        "state_anchor_y": 4900822.9387484705
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -2793,8 +2809,12 @@
         "admitted": true,
         "cell_count": 52,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 52,
+        "area_scale": 1.0,
+        "state_anchor_x": -17688837.186527196,
+        "state_anchor_y": 5809674.631022992
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -7403,8 +7423,12 @@
         "admitted": true,
         "cell_count": 8,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 8,
+        "area_scale": 1.0,
+        "state_anchor_x": -16391551.622216059,
+        "state_anchor_y": 5623564.242031928
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -8029,8 +8053,12 @@
         "admitted": true,
         "cell_count": 5,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 5,
+        "area_scale": 1.0,
+        "state_anchor_x": -11849768.710951744,
+        "state_anchor_y": 7300407.316827548
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -8475,8 +8503,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -12662307.894883107,
+        "state_anchor_y": 6387742.61309296
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -8597,8 +8629,12 @@
         "admitted": true,
         "cell_count": 28,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 28,
+        "area_scale": 1.0,
+        "state_anchor_x": -13491484.228540218,
+        "state_anchor_y": 3977539.814206836
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -11223,8 +11259,12 @@
         "admitted": true,
         "cell_count": 14,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 14,
+        "area_scale": 1.0,
+        "state_anchor_x": -13708207.99426627,
+        "state_anchor_y": 4773066.334600265
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -12721,8 +12761,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -16404155.966861084,
+        "state_anchor_y": 3820985.3894612743
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -13003,8 +13047,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -17174716.75186331,
+        "state_anchor_y": 6845128.33173298
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -13401,8 +13449,12 @@
         "admitted": true,
         "cell_count": 17,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 17,
+        "area_scale": 1.0,
+        "state_anchor_x": -14899830.716198487,
+        "state_anchor_y": 6055570.976838285
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -15251,8 +15303,12 @@
         "admitted": true,
         "cell_count": 9,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 9,
+        "area_scale": 1.0,
+        "state_anchor_x": -14469239.06671361,
+        "state_anchor_y": 6029114.27947107
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -16297,8 +16353,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -15478816.214714646,
+        "state_anchor_y": 6523566.724437987
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -16883,8 +16943,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -15767930.73353107,
+        "state_anchor_y": 5627257.0746052675
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -17205,8 +17269,12 @@
         "admitted": true,
         "cell_count": 6,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 6,
+        "area_scale": 1.0,
+        "state_anchor_x": -14275846.116477428,
+        "state_anchor_y": 5562557.790320721
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -18199,8 +18267,12 @@
         "admitted": true,
         "cell_count": 6,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 6,
+        "area_scale": 1.0,
+        "state_anchor_x": -14991972.680483786,
+        "state_anchor_y": 4450510.762459137
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -19009,8 +19081,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -11558022.05764138,
+        "state_anchor_y": 8210661.557703857
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -19699,8 +19775,12 @@
         "admitted": true,
         "cell_count": 8,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 8,
+        "area_scale": 1.0,
+        "state_anchor_x": -12946058.33820921,
+        "state_anchor_y": 6172647.884038952
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -20693,8 +20773,12 @@
         "admitted": true,
         "cell_count": 9,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 9,
+        "area_scale": 1.0,
+        "state_anchor_x": -11582152.453378476,
+        "state_anchor_y": 7670935.735442434
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -21667,8 +21751,12 @@
         "admitted": true,
         "cell_count": 13,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 13,
+        "area_scale": 1.0,
+        "state_anchor_x": -14411906.580324711,
+        "state_anchor_y": 6878112.989124657
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -23625,8 +23713,12 @@
         "admitted": true,
         "cell_count": 8,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 8,
+        "area_scale": 1.0,
+        "state_anchor_x": -15482058.602498416,
+        "state_anchor_y": 7040300.469961955
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -24843,8 +24935,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -14692490.947369486,
+        "state_anchor_y": 4684514.714778874
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -25425,8 +25521,12 @@
         "admitted": true,
         "cell_count": 8,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 8,
+        "area_scale": 1.0,
+        "state_anchor_x": -15110604.058650805,
+        "state_anchor_y": 5335616.006765668
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -26407,8 +26507,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -16774712.9835203,
+        "state_anchor_y": 7303059.235398621
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -26693,8 +26797,12 @@
         "admitted": true,
         "cell_count": 3,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 3,
+        "area_scale": 1.0,
+        "state_anchor_x": -15813142.467507077,
+        "state_anchor_y": 6109293.504019156
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -27079,8 +27187,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -17361375.34706977,
+        "state_anchor_y": 6134934.824465532
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -27385,8 +27497,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -11809009.736737467,
+        "state_anchor_y": 8003864.535638919
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -27747,8 +27863,12 @@
         "admitted": true,
         "cell_count": 12,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 12,
+        "area_scale": 1.0,
+        "state_anchor_x": -12320136.608857935,
+        "state_anchor_y": 6607516.676222947
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -28801,8 +28921,12 @@
         "admitted": true,
         "cell_count": 3,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 3,
+        "area_scale": 1.0,
+        "state_anchor_x": -16387153.831652304,
+        "state_anchor_y": 4860619.572439312
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -29003,8 +29127,12 @@
         "admitted": true,
         "cell_count": 26,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 26,
+        "area_scale": 1.0,
+        "state_anchor_x": -12485452.818046825,
+        "state_anchor_y": 7352224.2839520415
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -31269,8 +31397,12 @@
         "admitted": true,
         "cell_count": 14,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 14,
+        "area_scale": 1.0,
+        "state_anchor_x": -13182766.143443186,
+        "state_anchor_y": 5402475.290665118
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -32771,8 +32903,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -15998581.667057725,
+        "state_anchor_y": 7260472.805542367
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -32901,8 +33037,12 @@
         "admitted": true,
         "cell_count": 15,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 15,
+        "area_scale": 1.0,
+        "state_anchor_x": -13931977.310602423,
+        "state_anchor_y": 6157368.399122071
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -34415,8 +34555,12 @@
         "admitted": true,
         "cell_count": 5,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 5,
+        "area_scale": 1.0,
+        "state_anchor_x": -15626546.058951193,
+        "state_anchor_y": 5078494.514420013
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -34893,8 +35037,12 @@
         "admitted": true,
         "cell_count": 6,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 6,
+        "area_scale": 1.0,
+        "state_anchor_x": -17863369.45536237,
+        "state_anchor_y": 6992521.0568788685
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -35547,8 +35695,12 @@
         "admitted": true,
         "cell_count": 17,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 17,
+        "area_scale": 1.0,
+        "state_anchor_x": -13129059.578221146,
+        "state_anchor_y": 6657672.3722934555
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -36981,8 +37133,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -11496774.320569238,
+        "state_anchor_y": 7395559.0718958415
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -37299,8 +37455,12 @@
         "admitted": true,
         "cell_count": 7,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 7,
+        "area_scale": 1.0,
+        "state_anchor_x": -13366430.817120392,
+        "state_anchor_y": 5037584.996107074
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -38081,8 +38241,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -16034339.619013133,
+        "state_anchor_y": 6756254.966191012
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -38299,8 +38463,12 @@
         "admitted": true,
         "cell_count": 9,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 9,
+        "area_scale": 1.0,
+        "state_anchor_x": -14301706.031788183,
+        "state_anchor_y": 5246512.046395825
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -39289,8 +39457,12 @@
         "admitted": true,
         "cell_count": 38,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 38,
+        "area_scale": 1.0,
+        "state_anchor_x": -15837103.38692844,
+        "state_anchor_y": 4462163.64501117
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -42839,8 +43011,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -16951768.815730043,
+        "state_anchor_y": 5841465.941491814
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -43121,8 +43297,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -12079168.559867874,
+        "state_anchor_y": 7917333.719797396
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -43367,8 +43547,12 @@
         "admitted": true,
         "cell_count": 11,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 11,
+        "area_scale": 1.0,
+        "state_anchor_x": -13236807.071647292,
+        "state_anchor_y": 5793790.806325139
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -44489,8 +44673,12 @@
         "admitted": true,
         "cell_count": 10,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 10,
+        "area_scale": 1.0,
+        "state_anchor_x": -17659504.305906087,
+        "state_anchor_y": 7368122.680235587
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -45363,8 +45551,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -13573034.055338454,
+        "state_anchor_y": 5914471.061874495
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -45953,8 +46145,12 @@
         "admitted": true,
         "cell_count": 8,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 8,
+        "area_scale": 1.0,
+        "state_anchor_x": -14950150.537136272,
+        "state_anchor_y": 6813502.475554149
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -47147,8 +47343,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -16571430.5190446,
+        "state_anchor_y": 6455273.223855123
       },
       "geometry": {
         "type": "MultiPolygon",

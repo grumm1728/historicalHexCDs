@@ -4,7 +4,7 @@
     "congress_number": 116,
     "start_date": "2019-01-03",
     "end_date": "2021-01-02",
-    "generator_version": "v2-template118",
+    "generator_version": "v4-fixed-hex-scaled-outline",
     "template_source": "C:/Users/scott/Cloned from GitHub/historicalHexCDs/hexmap_reference_files/HexCDv31wm/HexCDv31wm.shp"
   },
   "features": [
@@ -21,8 +21,12 @@
         "admitted": true,
         "cell_count": 7,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 6,
+        "area_scale": 1.0801234497346435,
+        "state_anchor_x": -14270515.000799805,
+        "state_anchor_y": 4767196.888190425
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -699,8 +703,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -17840077.985005714,
+        "state_anchor_y": 4015059.141428423
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -1465,8 +1473,12 @@
         "admitted": true,
         "cell_count": 9,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 9,
+        "area_scale": 1.0,
+        "state_anchor_x": -16793172.406908378,
+        "state_anchor_y": 4914351.970530968
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -2259,8 +2271,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -15077061.379314309,
+        "state_anchor_y": 4900822.9387484705
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -2789,12 +2805,16 @@
         "state_fips": "06",
         "state_abbr": "CA",
         "state_name": "California",
-        "house_seats": 52,
+        "house_seats": 53,
         "admitted": true,
-        "cell_count": 52,
+        "cell_count": 53,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 52,
+        "area_scale": 1.0095695960312836,
+        "state_anchor_x": -17688837.186527196,
+        "state_anchor_y": 5809674.631022992
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -7386,6 +7406,74 @@
                 6789857.8817451
               ]
             ]
+          ],
+          [
+            [
+              [
+                -16970846.638735447,
+                4913354.184244576
+              ],
+              [
+                -16939460.06684575,
+                4888557.317567266
+              ],
+              [
+                -16945241.49737755,
+                4848977.315634346
+              ],
+              [
+                -16982409.49979935,
+                4834194.180378766
+              ],
+              [
+                -16983411.941095598,
+                4813540.22555289
+              ],
+              [
+                -17186297.47257565,
+                4837052.622576975
+              ],
+              [
+                -17192106.56770165,
+                4837724.217017865
+              ],
+              [
+                -17191872.0659872,
+                4838228.889309871
+              ],
+              [
+                -17188073.2227337,
+                4864235.374643971
+              ],
+              [
+                -17150905.22031205,
+                4879018.509899551
+              ],
+              [
+                -17145123.7897801,
+                4918598.51183247
+              ],
+              [
+                -17107955.787358448,
+                4933381.64708805
+              ],
+              [
+                -17076569.2154686,
+                4908584.780410725
+              ],
+              [
+                -17039401.21304695,
+                4923367.915666321
+              ],
+              [
+                -17008014.6411571,
+                4898571.048988996
+              ],
+              [
+                -16970846.638735447,
+                4913354.184244576
+              ]
+            ]
           ]
         ]
       }
@@ -7399,12 +7487,16 @@
         "state_fips": "08",
         "state_abbr": "CO",
         "state_name": "Colorado",
-        "house_seats": 8,
+        "house_seats": 7,
         "admitted": true,
-        "cell_count": 8,
+        "cell_count": 7,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 8,
+        "area_scale": 0.9354143466934853,
+        "state_anchor_x": -16391551.622216059,
+        "state_anchor_y": 5623564.242031928
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -7944,74 +8036,6 @@
                 5644541.252982585
               ]
             ]
-          ],
-          [
-            [
-              [
-                -16536876.98448495,
-                5675288.30764572
-              ],
-              [
-                -16573417.8053052,
-                5659016.5558718555
-              ],
-              [
-                -16605779.9661156,
-                5682525.959090355
-              ],
-              [
-                -16638150.19403355,
-                5668124.454539805
-              ],
-              [
-                -16618093.856370151,
-                5831795.3066747105
-              ],
-              [
-                -16452847.1903202,
-                5812059.039879825
-              ],
-              [
-                -16425856.255079249,
-                5808835.372427461
-              ],
-              [
-                -16383995.376426,
-                5804334.2677686
-              ],
-              [
-                -16386535.04119425,
-                5780156.469733545
-              ],
-              [
-                -16423075.8620145,
-                5763884.717959681
-              ],
-              [
-                -16455438.0228249,
-                5787394.121178196
-              ],
-              [
-                -16491978.843644999,
-                5771122.369404314
-              ],
-              [
-                -16496157.503654849,
-                5731341.214411951
-              ],
-              [
-                -16532698.3244751,
-                5715069.462638086
-              ],
-              [
-                -16536876.98448495,
-                5675288.307645735
-              ],
-              [
-                -16536876.98448495,
-                5675288.30764572
-              ]
-            ]
           ]
         ]
       }
@@ -8029,8 +8053,12 @@
         "admitted": true,
         "cell_count": 5,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 5,
+        "area_scale": 1.0,
+        "state_anchor_x": -11849768.710951744,
+        "state_anchor_y": 7300407.316827548
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -8475,8 +8503,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -12662307.894883107,
+        "state_anchor_y": 6387742.61309296
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -8593,12 +8625,16 @@
         "state_fips": "12",
         "state_abbr": "FL",
         "state_name": "Florida",
-        "house_seats": 28,
+        "house_seats": 27,
         "admitted": true,
-        "cell_count": 28,
+        "cell_count": 27,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 28,
+        "area_scale": 0.9819805060619657,
+        "state_anchor_x": -13491484.228540218,
+        "state_anchor_y": 3977539.814206836
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -10654,90 +10690,6 @@
           [
             [
               [
-                -14360693.645583495,
-                4246411.964515995
-              ],
-              [
-                -14414577.867775336,
-                4243950.177290699
-              ],
-              [
-                -14435270.78588967,
-                4240834.24841043
-              ],
-              [
-                -14474579.660508329,
-                4218989.451697455
-              ],
-              [
-                -14476216.403265946,
-                4244823.21980991
-              ],
-              [
-                -14483040.420869835,
-                4253541.666652905
-              ],
-              [
-                -14486487.46884177,
-                4272841.86806052
-              ],
-              [
-                -14480737.483044451,
-                4278513.68170131
-              ],
-              [
-                -14486046.63087096,
-                4294505.342309865
-              ],
-              [
-                -14510507.247300044,
-                4308037.145589405
-              ],
-              [
-                -14526136.793485455,
-                4324500.271758675
-              ],
-              [
-                -14529144.71367702,
-                4339241.318036685
-              ],
-              [
-                -14522112.868356809,
-                4360883.513698125
-              ],
-              [
-                -14314545.925228352,
-                4383013.33447197
-              ],
-              [
-                -14310859.476186119,
-                4381562.801005935
-              ],
-              [
-                -14304937.958197381,
-                4342003.51490628
-              ],
-              [
-                -14336236.545920866,
-                4317095.68684923
-              ],
-              [
-                -14330315.027932124,
-                4277536.40074959
-              ],
-              [
-                -14361613.615655625,
-                4252628.57269254
-              ],
-              [
-                -14360693.645583495,
-                4246411.964515995
-              ]
-            ]
-          ],
-          [
-            [
-              [
                 -14156057.53534839,
                 4283397.682735875
               ],
@@ -11223,8 +11175,12 @@
         "admitted": true,
         "cell_count": 14,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 14,
+        "area_scale": 1.0,
+        "state_anchor_x": -13708207.99426627,
+        "state_anchor_y": 4773066.334600265
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -12721,8 +12677,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -16404155.966861084,
+        "state_anchor_y": 3820985.3894612743
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -13003,8 +12963,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -17174716.75186331,
+        "state_anchor_y": 6845128.33173298
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -13397,12 +13361,16 @@
         "state_fips": "17",
         "state_abbr": "IL",
         "state_name": "Illinois",
-        "house_seats": 17,
+        "house_seats": 18,
         "admitted": true,
-        "cell_count": 17,
+        "cell_count": 18,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 17,
+        "area_scale": 1.0289915108550531,
+        "state_anchor_x": -14899830.716198487,
+        "state_anchor_y": 6055570.976838285
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -15234,6 +15202,206 @@
                 6371584.526815965
               ]
             ]
+          ],
+          [
+            [
+              [
+                -14866753.002794761,
+                5532816.534387915
+              ],
+              [
+                -14866667.60170983,
+                5532885.5003875205
+              ],
+              [
+                -14866707.844822004,
+                5532905.899339801
+              ],
+              [
+                -14869029.977989381,
+                5572751.692782091
+              ],
+              [
+                -14835383.661303345,
+                5594702.339390206
+              ],
+              [
+                -14799890.773104677,
+                5576615.793608625
+              ],
+              [
+                -14766413.880566161,
+                5598635.02706616
+              ],
+              [
+                -14730690.531295335,
+                5580639.366231405
+              ],
+              [
+                -14728528.572493741,
+                5540691.2445380995
+              ],
+              [
+                -14728414.790513415,
+                5540633.56924758
+              ],
+              [
+                -14723176.830815116,
+                5537978.484088651
+              ],
+              [
+                -14724971.039441504,
+                5536564.271577961
+              ],
+              [
+                -14727683.765125696,
+                5526560.51535264
+              ],
+              [
+                -14721599.49357954,
+                5521855.857386866
+              ],
+              [
+                -14715174.759991381,
+                5515726.319150895
+              ],
+              [
+                -14713216.899031034,
+                5503464.063588915
+              ],
+              [
+                -14723091.321961636,
+                5496396.271372425
+              ],
+              [
+                -14732909.216202015,
+                5495370.83364288
+              ],
+              [
+                -14741965.279708544,
+                5492419.21333719
+              ],
+              [
+                -14751258.12293292,
+                5486695.96991844
+              ],
+              [
+                -14760614.69731548,
+                5485629.69566073
+              ],
+              [
+                -14768605.189096095,
+                5478864.529833135
+              ],
+              [
+                -14773152.666918974,
+                5469015.777444571
+              ],
+              [
+                -14770382.051771715,
+                5458081.01049762
+              ],
+              [
+                -14758628.381305516,
+                5447325.58130805
+              ],
+              [
+                -14758184.377809886,
+                5432854.7964468
+              ],
+              [
+                -14768208.05023713,
+                5423936.344190791
+              ],
+              [
+                -14778439.11529803,
+                5423408.660391271
+              ],
+              [
+                -14792977.600204755,
+                5432084.184463966
+              ],
+              [
+                -14806874.081799751,
+                5437447.561559641
+              ],
+              [
+                -14816858.011542061,
+                5445270.100178371
+              ],
+              [
+                -14829725.247928651,
+                5449148.7686361
+              ],
+              [
+                -14846981.77057386,
+                5442232.081141576
+              ],
+              [
+                -14855120.39373996,
+                5433614.6658370355
+              ],
+              [
+                -14860164.429943817,
+                5414625.10465386
+              ],
+              [
+                -14860559.04606606,
+                5413139.471582595
+              ],
+              [
+                -14874220.683199514,
+                5421268.415528611
+              ],
+              [
+                -14882893.566855706,
+                5411764.352919555
+              ],
+              [
+                -14891500.339716194,
+                5419466.299931011
+              ],
+              [
+                -14896531.6741284,
+                5436636.085095825
+              ],
+              [
+                -14907549.301103806,
+                5448726.30425766
+              ],
+              [
+                -14911134.944293337,
+                5461122.14427054
+              ],
+              [
+                -14901121.23953871,
+                5470049.865901486
+              ],
+              [
+                -14905167.22888863,
+                5482484.470280625
+              ],
+              [
+                -14914008.047905995,
+                5492995.52605809
+              ],
+              [
+                -14907477.454440676,
+                5504541.904493701
+              ],
+              [
+                -14909984.28987162,
+                5516020.217004254
+              ],
+              [
+                -14900193.987142246,
+                5511057.580982686
+              ],
+              [
+                -14866753.002794761,
+                5532816.534387915
+              ]
+            ]
           ]
         ]
       }
@@ -15251,8 +15419,12 @@
         "admitted": true,
         "cell_count": 9,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 9,
+        "area_scale": 1.0,
+        "state_anchor_x": -14469239.06671361,
+        "state_anchor_y": 6029114.27947107
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -16297,8 +16469,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -15478816.214714646,
+        "state_anchor_y": 6523566.724437987
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -16883,8 +17059,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -15767930.73353107,
+        "state_anchor_y": 5627257.0746052675
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -17205,8 +17385,12 @@
         "admitted": true,
         "cell_count": 6,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 6,
+        "area_scale": 1.0,
+        "state_anchor_x": -14275846.116477428,
+        "state_anchor_y": 5562557.790320721
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -18199,8 +18383,12 @@
         "admitted": true,
         "cell_count": 6,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 6,
+        "area_scale": 1.0,
+        "state_anchor_x": -14991972.680483786,
+        "state_anchor_y": 4450510.762459137
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -19009,8 +19197,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -11558022.05764138,
+        "state_anchor_y": 8210661.557703857
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -19699,8 +19891,12 @@
         "admitted": true,
         "cell_count": 8,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 8,
+        "area_scale": 1.0,
+        "state_anchor_x": -12946058.33820921,
+        "state_anchor_y": 6172647.884038952
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -20693,8 +20889,12 @@
         "admitted": true,
         "cell_count": 9,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 9,
+        "area_scale": 1.0,
+        "state_anchor_x": -11582152.453378476,
+        "state_anchor_y": 7670935.735442434
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -21663,12 +21863,16 @@
         "state_fips": "26",
         "state_abbr": "MI",
         "state_name": "Michigan",
-        "house_seats": 13,
+        "house_seats": 14,
         "admitted": true,
-        "cell_count": 13,
+        "cell_count": 14,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 13,
+        "area_scale": 1.0377490433255416,
+        "state_anchor_x": -14411906.580324711,
+        "state_anchor_y": 6878112.989124657
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -23608,6 +23812,98 @@
                 7092999.141340425
               ]
             ]
+          ],
+          [
+            [
+              [
+                -14793196.964164177,
+                7277259.054854217
+              ],
+              [
+                -14852398.482182648,
+                7264340.451960762
+              ],
+              [
+                -14853748.956931027,
+                7273047.298086552
+              ],
+              [
+                -14862315.596608808,
+                7272130.476661257
+              ],
+              [
+                -14862315.596608823,
+                7272130.476661257
+              ],
+              [
+                -14931206.797866892,
+                7264774.588472382
+              ],
+              [
+                -15073944.629137058,
+                7249533.694018963
+              ],
+              [
+                -15055255.873581083,
+                7268225.823762102
+              ],
+              [
+                -15044396.175140887,
+                7290947.883384823
+              ],
+              [
+                -15033892.728557274,
+                7321910.226988932
+              ],
+              [
+                -15025926.918762578,
+                7343392.762521192
+              ],
+              [
+                -15025168.802123528,
+                7349414.878222993
+              ],
+              [
+                -15010569.699893212,
+                7359971.582970328
+              ],
+              [
+                -14974076.217955012,
+                7343593.937595282
+              ],
+              [
+                -14941646.020036958,
+                7367009.397338787
+              ],
+              [
+                -14941646.020036943,
+                7367009.397338802
+              ],
+              [
+                -14905152.538098743,
+                7350631.751963757
+              ],
+              [
+                -14872722.340180688,
+                7374047.211707262
+              ],
+              [
+                -14836228.858242486,
+                7357669.566332216
+              ],
+              [
+                -14832165.574222343,
+                7317876.461213652
+              ],
+              [
+                -14795672.092284158,
+                7301498.815838607
+              ],
+              [
+                -14793196.964164177,
+                7277259.054854217
+              ]
+            ]
           ]
         ]
       }
@@ -23625,8 +23921,12 @@
         "admitted": true,
         "cell_count": 8,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 8,
+        "area_scale": 1.0,
+        "state_anchor_x": -15482058.602498416,
+        "state_anchor_y": 7040300.469961955
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -24843,8 +25143,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -14692490.947369486,
+        "state_anchor_y": 4684514.714778874
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -25425,8 +25729,12 @@
         "admitted": true,
         "cell_count": 8,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 8,
+        "area_scale": 1.0,
+        "state_anchor_x": -15110604.058650805,
+        "state_anchor_y": 5335616.006765668
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -26403,232 +26711,20 @@
         "state_fips": "30",
         "state_abbr": "MT",
         "state_name": "Montana",
-        "house_seats": 2,
+        "house_seats": 1,
         "admitted": true,
-        "cell_count": 2,
+        "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 0.7071067811865476,
+        "state_anchor_x": -16774712.9835203,
+        "state_anchor_y": 7303059.235398621
       },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
-          [
-            [
-              [
-                -16723343.122782,
-                7244294.226570285
-              ],
-              [
-                -16794022.2713232,
-                7254652.410693465
-              ],
-              [
-                -16795494.6307935,
-                7233378.68967276
-              ],
-              [
-                -16796617.5426093,
-                7233962.813667075
-              ],
-              [
-                -16801294.0731003,
-                7242825.69473613
-              ],
-              [
-                -16804445.3001054,
-                7243990.541689965
-              ],
-              [
-                -16807012.5082374,
-                7238338.481644184
-              ],
-              [
-                -16810888.82293935,
-                7237821.61639062
-              ],
-              [
-                -16817094.39746505,
-                7239570.84920346
-              ],
-              [
-                -16823407.750097852,
-                7239942.31368147
-              ],
-              [
-                -16827874.55888205,
-                7241313.885027749
-              ],
-              [
-                -16832983.9613529,
-                7238436.33951132
-              ],
-              [
-                -16837051.95191985,
-                7240408.78853379
-              ],
-              [
-                -16841944.31175675,
-                7240208.99444145
-              ],
-              [
-                -16844830.4543268,
-                7238231.969392921
-              ],
-              [
-                -16848254.3816727,
-                7240509.29879205
-              ],
-              [
-                -16849052.73600705,
-                7252180.018596195
-              ],
-              [
-                -16850913.76712265,
-                7254556.860909794
-              ],
-              [
-                -16855676.001102302,
-                7255555.644631694
-              ],
-              [
-                -16856635.34618325,
-                7258030.8342378605
-              ],
-              [
-                -16856663.89718595,
-                7265943.56779005
-              ],
-              [
-                -16857790.5804918,
-                7269705.4914726
-              ],
-              [
-                -16861095.6034935,
-                7274860.18432533
-              ],
-              [
-                -16862491.11597945,
-                7287626.28791157
-              ],
-              [
-                -16863938.358399753,
-                7289808.6919168355
-              ],
-              [
-                -16866867.302706,
-                7288832.87727282
-              ],
-              [
-                -16873933.42691115,
-                7283430.35819886
-              ],
-              [
-                -16876630.3566354,
-                7283843.151080955
-              ],
-              [
-                -16879092.02023035,
-                7288608.928635795
-              ],
-              [
-                -16878357.41637585,
-                7292957.13960561
-              ],
-              [
-                -16878422.7140307,
-                7297311.032160736
-              ],
-              [
-                -16874048.7430524,
-                7300052.28667608
-              ],
-              [
-                -16874810.1261084,
-                7304608.40117691
-              ],
-              [
-                -16874311.4124846,
-                7307969.242306215
-              ],
-              [
-                -16868413.083110552,
-                7319708.513796509
-              ],
-              [
-                -16867136.47364235,
-                7326429.801837405
-              ],
-              [
-                -16871458.1516607,
-                7327245.846601245
-              ],
-              [
-                -16879198.6129446,
-                7335116.039411926
-              ],
-              [
-                -16878979.80469335,
-                7338775.91141637
-              ],
-              [
-                -16884163.8397773,
-                7350694.0773782255
-              ],
-              [
-                -16893270.07006095,
-                7360580.55997221
-              ],
-              [
-                -16893063.333072748,
-                7363350.049306305
-              ],
-              [
-                -16892152.213755,
-                7369180.872276645
-              ],
-              [
-                -16892801.7004176,
-                7374830.23623165
-              ],
-              [
-                -16895483.80401915,
-                7382680.31535837
-              ],
-              [
-                -16890424.081671152,
-                7419263.64506853
-              ],
-              [
-                -16785776.58051975,
-                7403883.293905515
-              ],
-              [
-                -16763088.374435099,
-                7400547.4676563805
-              ],
-              [
-                -16771116.4513884,
-                7358206.85530833
-              ],
-              [
-                -16741083.9337152,
-                7331786.231276805
-              ],
-              [
-                -16748948.606473802,
-                7292566.996016475
-              ],
-              [
-                -16719007.7212731,
-                7266196.74428592
-              ],
-              [
-                -16723343.122782,
-                7244294.226570285
-              ]
-            ]
-          ],
           [
             [
               [
@@ -26693,8 +26789,12 @@
         "admitted": true,
         "cell_count": 3,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 3,
+        "area_scale": 1.0,
+        "state_anchor_x": -15813142.467507077,
+        "state_anchor_y": 6109293.504019156
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -27079,8 +27179,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -17361375.34706977,
+        "state_anchor_y": 6134934.824465532
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -27385,8 +27489,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -11809009.736737467,
+        "state_anchor_y": 8003864.535638919
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -27747,8 +27855,12 @@
         "admitted": true,
         "cell_count": 12,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 12,
+        "area_scale": 1.0,
+        "state_anchor_x": -12320136.608857935,
+        "state_anchor_y": 6607516.676222947
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -28801,8 +28913,12 @@
         "admitted": true,
         "cell_count": 3,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 3,
+        "area_scale": 1.0,
+        "state_anchor_x": -16387153.831652304,
+        "state_anchor_y": 4860619.572439312
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -28999,12 +29115,16 @@
         "state_fips": "36",
         "state_abbr": "NY",
         "state_name": "New York",
-        "house_seats": 26,
+        "house_seats": 27,
         "admitted": true,
-        "cell_count": 26,
+        "cell_count": 27,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 26,
+        "area_scale": 1.0190493307301363,
+        "state_anchor_x": -12485452.818046825,
+        "state_anchor_y": 7352224.2839520415
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -31252,6 +31372,170 @@
                 7869822.60593055
               ]
             ]
+          ],
+          [
+            [
+              [
+                -11991729.40255743,
+                6913653.083820871
+              ],
+              [
+                -11965010.023517732,
+                6945188.681066641
+              ],
+              [
+                -11955783.097928643,
+                6931192.144164211
+              ],
+              [
+                -11969308.389638461,
+                6908107.247170891
+              ],
+              [
+                -11971106.052935792,
+                6889651.837927786
+              ],
+              [
+                -11967063.299638998,
+                6882763.595230906
+              ],
+              [
+                -11959965.769932436,
+                6895531.074576841
+              ],
+              [
+                -11940962.274386432,
+                6918469.716670141
+              ],
+              [
+                -11905691.782912472,
+                6934797.330718186
+              ],
+              [
+                -11876554.977199068,
+                6940169.477269606
+              ],
+              [
+                -11863136.988187172,
+                6957682.5287824655
+              ],
+              [
+                -11835493.279722182,
+                6963073.068429361
+              ],
+              [
+                -11802456.445600098,
+                6981860.253980625
+              ],
+              [
+                -11772046.828713436,
+                7010571.103731121
+              ],
+              [
+                -11757163.189084621,
+                7031712.867681076
+              ],
+              [
+                -11734796.912071368,
+                7055707.304643901
+              ],
+              [
+                -11720997.212101998,
+                7063920.746945776
+              ],
+              [
+                -11737223.019708602,
+                7040980.320587311
+              ],
+              [
+                -11746631.538289173,
+                7019680.0254597
+              ],
+              [
+                -11770271.593603518,
+                6993251.0197626455
+              ],
+              [
+                -11778650.084580034,
+                6981781.183859356
+              ],
+              [
+                -11775439.505972553,
+                6969969.15139068
+              ],
+              [
+                -11759985.387237003,
+                6975061.015454791
+              ],
+              [
+                -11742601.808294207,
+                7013391.734740201
+              ],
+              [
+                -11723405.247187488,
+                7019592.907308752
+              ],
+              [
+                -11709879.255792135,
+                7036445.502732585
+              ],
+              [
+                -11697864.846214667,
+                7031140.69273956
+              ],
+              [
+                -11678335.950658564,
+                7044714.9024857255
+              ],
+              [
+                -11669091.87882417,
+                7046273.841772861
+              ],
+              [
+                -11699796.533021912,
+                7013933.30681919
+              ],
+              [
+                -11788016.271433577,
+                6927785.89572936
+              ],
+              [
+                -11887150.448390717,
+                6862136.59197216
+              ],
+              [
+                -11967092.321374053,
+                6833425.680979771
+              ],
+              [
+                -11986748.437812183,
+                6833928.375590551
+              ],
+              [
+                -12004764.729117827,
+                6812799.070076836
+              ],
+              [
+                -12019685.960566083,
+                6800836.646112257
+              ],
+              [
+                -12015096.642399978,
+                6832793.106256111
+              ],
+              [
+                -11995187.645943617,
+                6848328.631041045
+              ],
+              [
+                -11985453.128841316,
+                6868433.762739765
+              ],
+              [
+                -11991729.40255743,
+                6913653.083820871
+              ]
+            ]
           ]
         ]
       }
@@ -31265,132 +31549,20 @@
         "state_fips": "37",
         "state_abbr": "NC",
         "state_name": "North Carolina",
-        "house_seats": 14,
+        "house_seats": 13,
         "admitted": true,
-        "cell_count": 14,
+        "cell_count": 13,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 14,
+        "area_scale": 0.9636241116594315,
+        "state_anchor_x": -13182766.143443186,
+        "state_anchor_y": 5402475.290665118
       },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
-          [
-            [
-              [
-                -13010591.961882796,
-                5323795.90649217
-              ],
-              [
-                -12972300.992141204,
-                5312228.576279296
-              ],
-              [
-                -12943137.900491685,
-                5339605.86962385
-              ],
-              [
-                -12904846.898927685,
-                5328038.56928475
-              ],
-              [
-                -12899915.598756945,
-                5307158.66267844
-              ],
-              [
-                -12923247.584120566,
-                5284627.47077109
-              ],
-              [
-                -12937360.6170114,
-                5268446.471567266
-              ],
-              [
-                -12938823.977293741,
-                5265928.32973596
-              ],
-              [
-                -12948054.71478123,
-                5250044.130552869
-              ],
-              [
-                -12953117.72246559,
-                5232408.347952239
-              ],
-              [
-                -12954262.990702454,
-                5216433.66186483
-              ],
-              [
-                -12959983.2717507,
-                5210480.87991234
-              ],
-              [
-                -12960556.352872064,
-                5200119.116421389
-              ],
-              [
-                -12962515.15408644,
-                5164702.42905846
-              ],
-              [
-                -12965113.26583194,
-                5164315.1598465
-              ],
-              [
-                -12978838.70181168,
-                5169740.123209936
-              ],
-              [
-                -12994874.250095954,
-                5166558.698992784
-              ],
-              [
-                -13008986.496095909,
-                5165142.88902432
-              ],
-              [
-                -13009584.115218796,
-                5165082.93293289
-              ],
-              [
-                -13023929.439625546,
-                5159709.756463544
-              ],
-              [
-                -13045293.795905415,
-                5147971.906176465
-              ],
-              [
-                -13075489.945425976,
-                5167844.83472775
-              ],
-              [
-                -13134239.086823191,
-                5206509.283936485
-              ],
-              [
-                -13098081.22195011,
-                5241664.04421621
-              ],
-              [
-                -13059790.252208505,
-                5230096.714003335
-              ],
-              [
-                -13030627.16551941,
-                5257474.001428651
-              ],
-              [
-                -13039755.04857189,
-                5296418.61906684
-              ],
-              [
-                -13010591.961882796,
-                5323795.90649217
-              ]
-            ]
-          ],
           [
             [
               [
@@ -32771,8 +32943,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -15998581.667057725,
+        "state_anchor_y": 7260472.805542367
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -32897,12 +33073,16 @@
         "state_fips": "39",
         "state_abbr": "OH",
         "state_name": "Ohio",
-        "house_seats": 15,
+        "house_seats": 16,
         "admitted": true,
-        "cell_count": 15,
+        "cell_count": 16,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 15,
+        "area_scale": 1.0327955589886444,
+        "state_anchor_x": -13931977.310602423,
+        "state_anchor_y": 6157368.399122071
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -34398,6 +34578,122 @@
                 6420251.897314846
               ]
             ]
+          ],
+          [
+            [
+              [
+                -13587182.190336585,
+                6498201.796208491
+              ],
+              [
+                -13588848.174657675,
+                6496505.395119916
+              ],
+              [
+                -13598895.886123125,
+                6483234.66321546
+              ],
+              [
+                -13608305.412701475,
+                6475768.528186095
+              ],
+              [
+                -13620212.456936596,
+                6471204.36389574
+              ],
+              [
+                -13640705.015885536,
+                6485529.50773992
+              ],
+              [
+                -13660119.39390306,
+                6486099.149638246
+              ],
+              [
+                -13681524.865730384,
+                6469232.090599636
+              ],
+              [
+                -13692861.44214639,
+                6469708.59833133
+              ],
+              [
+                -13702591.6244712,
+                6478493.873119395
+              ],
+              [
+                -13710739.378178775,
+                6488988.961292985
+              ],
+              [
+                -13725188.929833328,
+                6493653.144306435
+              ],
+              [
+                -13736840.66098434,
+                6486521.67352089
+              ],
+              [
+                -13749733.29119328,
+                6486040.360670685
+              ],
+              [
+                -13759545.705670426,
+                6493045.829362591
+              ],
+              [
+                -13769387.545431644,
+                6505636.104793335
+              ],
+              [
+                -13774005.000106754,
+                6510908.047874146
+              ],
+              [
+                -13764731.27627574,
+                6518101.6521132
+              ],
+              [
+                -13770160.34638956,
+                6557731.5232927045
+              ],
+              [
+                -13738554.406256309,
+                6582248.17151994
+              ],
+              [
+                -13743983.476370115,
+                6621878.042699445
+              ],
+              [
+                -13712377.536236864,
+                6646394.690926695
+              ],
+              [
+                -13675342.52598981,
+                6631281.467974425
+              ],
+              [
+                -13669913.45587599,
+                6591651.59679492
+              ],
+              [
+                -13632878.44562892,
+                6576538.373842665
+              ],
+              [
+                -13627449.375515115,
+                6536908.502663161
+              ],
+              [
+                -13593119.1328659,
+                6519694.210828095
+              ],
+              [
+                -13587182.190336585,
+                6498201.796208491
+              ]
+            ]
           ]
         ]
       }
@@ -34415,8 +34711,12 @@
         "admitted": true,
         "cell_count": 5,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 5,
+        "area_scale": 1.0,
+        "state_anchor_x": -15626546.058951193,
+        "state_anchor_y": 5078494.514420013
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -34889,12 +35189,16 @@
         "state_fips": "41",
         "state_abbr": "OR",
         "state_name": "Oregon",
-        "house_seats": 6,
+        "house_seats": 5,
         "admitted": true,
-        "cell_count": 6,
+        "cell_count": 5,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 6,
+        "area_scale": 0.9128709291752769,
+        "state_anchor_x": -17863369.45536237,
+        "state_anchor_y": 6992521.0568788685
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -35254,118 +35558,6 @@
           [
             [
               [
-                -17814472.464716703,
-                7069356.6587541895
-              ],
-              [
-                -17803140.80925,
-                7115836.91086971
-              ],
-              [
-                -17793859.9241919,
-                7117350.012775635
-              ],
-              [
-                -17776860.9832296,
-                7119607.01559663
-              ],
-              [
-                -17741513.52534045,
-                7120376.037199531
-              ],
-              [
-                -17733604.087378502,
-                7119074.403857955
-              ],
-              [
-                -17641179.023214,
-                7101057.1213845145
-              ],
-              [
-                -17638597.4203767,
-                7100296.054596989
-              ],
-              [
-                -17636607.2065686,
-                7093508.57962557
-              ],
-              [
-                -17628013.347774,
-                7082518.26127221
-              ],
-              [
-                -17621908.870654948,
-                7077562.893187695
-              ],
-              [
-                -17620156.888798498,
-                7063926.428176695
-              ],
-              [
-                -17632069.50861225,
-                7047001.196960146
-              ],
-              [
-                -17643550.32662115,
-                7022694.150713295
-              ],
-              [
-                -17659525.74563085,
-                7003153.477409235
-              ],
-              [
-                -17667340.9459155,
-                6991871.493901575
-              ],
-              [
-                -17677008.3283278,
-                6984944.478574395
-              ],
-              [
-                -17676998.066026352,
-                6984074.1300243
-              ],
-              [
-                -17676855.66677085,
-                6971997.210755655
-              ],
-              [
-                -17674953.742383298,
-                6967693.152384945
-              ],
-              [
-                -17698061.16272835,
-                6959589.927585135
-              ],
-              [
-                -17727165.7000587,
-                6987030.280967611
-              ],
-              [
-                -17765479.47805815,
-                6975549.131582655
-              ],
-              [
-                -17765482.3413282,
-                6975548.27357199
-              ],
-              [
-                -17794584.372054,
-                7002990.454601221
-              ],
-              [
-                -17785370.9342442,
-                7041916.008561075
-              ],
-              [
-                -17814472.464716703,
-                7069356.6587541895
-              ]
-            ]
-          ],
-          [
-            [
-              [
                 -17803140.80925,
                 7115836.91086971
               ],
@@ -35543,12 +35735,16 @@
         "state_fips": "42",
         "state_abbr": "PA",
         "state_name": "Pennsylvania",
-        "house_seats": 17,
+        "house_seats": 18,
         "admitted": true,
-        "cell_count": 17,
+        "cell_count": 18,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 17,
+        "area_scale": 1.0289915108550531,
+        "state_anchor_x": -13129059.578221146,
+        "state_anchor_y": 6657672.3722934555
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -36964,6 +37160,70 @@
                 6789435.27125706
               ]
             ]
+          ],
+          [
+            [
+              [
+                -12575175.926639115,
+                6912787.32443242
+              ],
+              [
+                -12581807.406219343,
+                6911135.505713185
+              ],
+              [
+                -12701931.895665076,
+                6883331.72585647
+              ],
+              [
+                -12820516.919373404,
+                6857622.13482784
+              ],
+              [
+                -12843025.329336928,
+                6972890.3446938405
+              ],
+              [
+                -12827650.162060319,
+                6987537.45221197
+              ],
+              [
+                -12789757.445369158,
+                6975649.97739178
+              ],
+              [
+                -12760337.6101215,
+                7003849.990602025
+              ],
+              [
+                -12721939.065300943,
+                6992554.868475805
+              ],
+              [
+                -12712526.039841343,
+                6953678.185956566
+              ],
+              [
+                -12674151.332435025,
+                6942391.76387143
+              ],
+              [
+                -12644770.581860416,
+                6969926.11948741
+              ],
+              [
+                -12606954.50665254,
+                6958642.026834535
+              ],
+              [
+                -12597550.020050084,
+                6919814.08785301
+              ],
+              [
+                -12575175.926639115,
+                6912787.32443242
+              ]
+            ]
           ]
         ]
       }
@@ -36981,8 +37241,12 @@
         "admitted": true,
         "cell_count": 2,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.0,
+        "state_anchor_x": -11496774.320569238,
+        "state_anchor_y": 7395559.0718958415
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -37299,8 +37563,12 @@
         "admitted": true,
         "cell_count": 7,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 7,
+        "area_scale": 1.0,
+        "state_anchor_x": -13366430.817120392,
+        "state_anchor_y": 5037584.996107074
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -38081,8 +38349,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -16034339.619013133,
+        "state_anchor_y": 6756254.966191012
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -38299,8 +38571,12 @@
         "admitted": true,
         "cell_count": 9,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 9,
+        "area_scale": 1.0,
+        "state_anchor_x": -14301706.031788183,
+        "state_anchor_y": 5246512.046395825
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -39285,180 +39561,20 @@
         "state_fips": "48",
         "state_abbr": "TX",
         "state_name": "Texas",
-        "house_seats": 38,
+        "house_seats": 36,
         "admitted": true,
-        "cell_count": 38,
+        "cell_count": 36,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 38,
+        "area_scale": 0.9733285267845752,
+        "state_anchor_x": -15837103.38692844,
+        "state_anchor_y": 4462163.64501117
       },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
-          [
-            [
-              [
-                -15625473.15280125,
-                3843328.27825143
-              ],
-              [
-                -15623037.47115855,
-                3815887.747368765
-              ],
-              [
-                -15641736.38373015,
-                3812568.4780731
-              ],
-              [
-                -15650628.08834895,
-                3803914.449056505
-              ],
-              [
-                -15664572.89727045,
-                3810633.7939717947
-              ],
-              [
-                -15674840.97252045,
-                3821347.2249105303
-              ],
-              [
-                -15679561.464361051,
-                3826272.45793611
-              ],
-              [
-                -15719319.9318507,
-                3827349.98239914
-              ],
-              [
-                -15742300.505640449,
-                3831791.81138661
-              ],
-              [
-                -15743602.751272049,
-                3832815.26301516
-              ],
-              [
-                -15752349.56653245,
-                3839689.497880185
-              ],
-              [
-                -15768771.77358225,
-                3849036.70842807
-              ],
-              [
-                -15787967.827300949,
-                3850846.91433357
-              ],
-              [
-                -15790007.2476861,
-                3852655.60495314
-              ],
-              [
-                -15804238.8140724,
-                3865277.083492395
-              ],
-              [
-                -15828520.448624851,
-                3868512.684334365
-              ],
-              [
-                -15834563.55629685,
-                3881385.716195175
-              ],
-              [
-                -15841959.0056916,
-                3891758.802237735
-              ],
-              [
-                -15843894.26252505,
-                3903011.90392884
-              ],
-              [
-                -15845251.24977915,
-                3910902.492557775
-              ],
-              [
-                -15848909.88633945,
-                3917358.29950944
-              ],
-              [
-                -15852420.0782112,
-                3928889.5262176953
-              ],
-              [
-                -15863722.84769025,
-                3936839.35901331
-              ],
-              [
-                -15869752.522914901,
-                3949715.374596585
-              ],
-              [
-                -15865502.60493345,
-                3963559.44716529
-              ],
-              [
-                -15867837.44431035,
-                3968548.040421255
-              ],
-              [
-                -15867837.470200501,
-                3968548.0957379104
-              ],
-              [
-                -15839536.022651099,
-                3982902.88292274
-              ],
-              [
-                -15837369.101452949,
-                4022844.1641305997
-              ],
-              [
-                -15801695.47666815,
-                4040938.195928895
-              ],
-              [
-                -15768188.7730815,
-                4019090.946519315
-              ],
-              [
-                -15770355.69427965,
-                3979149.6653114553
-              ],
-              [
-                -15736848.990693001,
-                3957302.41590189
-              ],
-              [
-                -15739015.9118913,
-                3917361.134694015
-              ],
-              [
-                -15705509.208304651,
-                3895513.88528445
-              ],
-              [
-                -15707676.1295028,
-                3855572.6040765904
-              ],
-              [
-                -15674169.4259163,
-                3833725.3546670103
-              ],
-              [
-                -15645203.4077619,
-                3848417.2189425454
-              ],
-              [
-                -15638495.8011315,
-                3851819.386465305
-              ],
-              [
-                -15625473.15280125,
-                3843328.27825143
-              ]
-            ]
-          ],
           [
             [
               [
@@ -41510,98 +41626,6 @@
           [
             [
               [
-                -16442443.2264612,
-                4415105.7603327595
-              ],
-              [
-                -16448546.002549049,
-                4419519.63248652
-              ],
-              [
-                -16472797.30422225,
-                4433158.55295306
-              ],
-              [
-                -16483334.554470452,
-                4455173.2634331295
-              ],
-              [
-                -16507301.8218096,
-                4482481.32465744
-              ],
-              [
-                -16522887.9654384,
-                4497075.91919592
-              ],
-              [
-                -16538930.9955684,
-                4508197.31667387
-              ],
-              [
-                -16546199.4013062,
-                4516431.307333845
-              ],
-              [
-                -16551797.7112317,
-                4526506.758085455
-              ],
-              [
-                -16553645.14542705,
-                4535161.837312065
-              ],
-              [
-                -16560808.98629115,
-                4545618.908440755
-              ],
-              [
-                -16568686.10876085,
-                4554198.729676755
-              ],
-              [
-                -16577142.219155699,
-                4556763.9891246
-              ],
-              [
-                -16576308.62071065,
-                4575774.65760432
-              ],
-              [
-                -16456358.4845067,
-                4564053.561161235
-              ],
-              [
-                -16328957.3716557,
-                4553637.673472174
-              ],
-              [
-                -16329135.04926105,
-                4550259.31131348
-              ],
-              [
-                -16364808.67404585,
-                4532165.279515185
-              ],
-              [
-                -16366975.595244,
-                4492223.998307325
-              ],
-              [
-                -16402649.220028799,
-                4474129.96650903
-              ],
-              [
-                -16404816.1412271,
-                4434188.68530117
-              ],
-              [
-                -16442443.2264612,
-                4415105.7603327595
-              ]
-            ]
-          ],
-          [
-            [
-              [
                 -16259954.7208896,
                 4546506.093702195
               ],
@@ -42839,8 +42863,12 @@
         "admitted": true,
         "cell_count": 4,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 4,
+        "area_scale": 1.0,
+        "state_anchor_x": -16951768.815730043,
+        "state_anchor_y": 5841465.941491814
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -43121,8 +43149,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -12079168.559867874,
+        "state_anchor_y": 7917333.719797396
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -43367,8 +43399,12 @@
         "admitted": true,
         "cell_count": 11,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 11,
+        "area_scale": 1.0,
+        "state_anchor_x": -13236807.071647292,
+        "state_anchor_y": 5793790.806325139
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -44489,8 +44525,12 @@
         "admitted": true,
         "cell_count": 10,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 10,
+        "area_scale": 1.0,
+        "state_anchor_x": -17659504.305906087,
+        "state_anchor_y": 7368122.680235587
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -45359,12 +45399,16 @@
         "state_fips": "54",
         "state_abbr": "WV",
         "state_name": "West Virginia",
-        "house_seats": 2,
+        "house_seats": 3,
         "admitted": true,
-        "cell_count": 2,
+        "cell_count": 3,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 2,
+        "area_scale": 1.224744871391589,
+        "state_anchor_x": -13573034.055338454,
+        "state_anchor_y": 5914471.061874495
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -45936,6 +45980,262 @@
                 5920297.99081923
               ]
             ]
+          ],
+          [
+            [
+              [
+                -13314267.725408582,
+                6151537.646894795
+              ],
+              [
+                -13316588.998777261,
+                6147212.76369293
+              ],
+              [
+                -13316377.732936397,
+                6134084.44038971
+              ],
+              [
+                -13320801.938570987,
+                6122679.44348096
+              ],
+              [
+                -13326332.977426592,
+                6112935.844177265
+              ],
+              [
+                -13331155.386711167,
+                6102208.295837375
+              ],
+              [
+                -13333347.708598891,
+                6092040.781807834
+              ],
+              [
+                -13328409.207941972,
+                6087940.284517639
+              ],
+              [
+                -13333110.808932511,
+                6077636.3463050295
+              ],
+              [
+                -13338030.081533987,
+                6072623.38700807
+              ],
+              [
+                -13348829.989143033,
+                6072340.0032748105
+              ],
+              [
+                -13357173.638788486,
+                6064540.120249295
+              ],
+              [
+                -13364045.735280482,
+                6063579.94100627
+              ],
+              [
+                -13366741.490435775,
+                6060290.994579995
+              ],
+              [
+                -13367809.041321106,
+                6054235.9975126395
+              ],
+              [
+                -13392135.985344602,
+                6041784.475364795
+              ],
+              [
+                -13396167.358931957,
+                6045270.54467267
+              ],
+              [
+                -13400739.781641856,
+                6047735.667577655
+              ],
+              [
+                -13409111.831770442,
+                6037582.97455871
+              ],
+              [
+                -13416431.39748891,
+                6032392.63875074
+              ],
+              [
+                -13424605.045697702,
+                6031597.833989
+              ],
+              [
+                -13430222.309210926,
+                6039195.09539075
+              ],
+              [
+                -13437827.986745717,
+                6041551.686113751
+              ],
+              [
+                -13443773.518887062,
+                6044055.254971715
+              ],
+              [
+                -13447634.092929557,
+                6049064.8199
+              ],
+              [
+                -13447903.67755722,
+                6058064.254984295
+              ],
+              [
+                -13450075.354448957,
+                6056898.5275929645
+              ],
+              [
+                -13459631.243326636,
+                6057969.62070602
+              ],
+              [
+                -13472988.712561263,
+                6068188.815896586
+              ],
+              [
+                -13483718.780985303,
+                6078837.85707098
+              ],
+              [
+                -13487913.476943737,
+                6084287.59448813
+              ],
+              [
+                -13492851.415443378,
+                6089270.208253595
+              ],
+              [
+                -13500067.808214946,
+                6100083.885528905
+              ],
+              [
+                -13503641.212331193,
+                6103333.28970101
+              ],
+              [
+                -13504508.108048942,
+                6107244.533370154
+              ],
+              [
+                -13503652.99217472,
+                6111598.83697538
+              ],
+              [
+                -13502119.397832751,
+                6122742.931619884
+              ],
+              [
+                -13505785.976337213,
+                6131100.317224385
+              ],
+              [
+                -13501900.928613076,
+                6130516.63289669
+              ],
+              [
+                -13494103.217949977,
+                6130322.76309638
+              ],
+              [
+                -13490618.452829657,
+                6132910.937240316
+              ],
+              [
+                -13488798.019097207,
+                6145993.426385945
+              ],
+              [
+                -13483715.589196395,
+                6149272.592471914
+              ],
+              [
+                -13480868.577902222,
+                6155523.93376763
+              ],
+              [
+                -13484885.72903886,
+                6159997.371213784
+              ],
+              [
+                -13485193.768383406,
+                6166568.565114155
+              ],
+              [
+                -13480673.736277262,
+                6171806.725817344
+              ],
+              [
+                -13481534.3499765,
+                6175960.31162414
+              ],
+              [
+                -13480464.271579862,
+                6179580.8339126455
+              ],
+              [
+                -13478817.523310881,
+                6186590.846573735
+              ],
+              [
+                -13475288.778981708,
+                6191367.66620027
+              ],
+              [
+                -13472625.232932856,
+                6191060.572552685
+              ],
+              [
+                -13470594.238284796,
+                6185177.612342735
+              ],
+              [
+                -13465129.15704072,
+                6180428.88608264
+              ],
+              [
+                -13462145.502379892,
+                6183032.501831825
+              ],
+              [
+                -13458446.80358457,
+                6185133.520872875
+              ],
+              [
+                -13458420.076652898,
+                6186179.60819147
+              ],
+              [
+                -13438978.557319172,
+                6179803.06284602
+              ],
+              [
+                -13409178.699368685,
+                6206485.82803511
+              ],
+              [
+                -13371170.817896476,
+                6194019.776615376
+              ],
+              [
+                -13362263.952180302,
+                6154645.84379804
+              ],
+              [
+                -13324126.0998045,
+                6142583.26910741
+              ],
+              [
+                -13314267.725408582,
+                6151537.646894795
+              ]
+            ]
           ]
         ]
       }
@@ -45953,8 +46253,12 @@
         "admitted": true,
         "cell_count": 8,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 8,
+        "area_scale": 1.0,
+        "state_anchor_x": -14950150.537136272,
+        "state_anchor_y": 6813502.475554149
       },
       "geometry": {
         "type": "MultiPolygon",
@@ -47147,8 +47451,12 @@
         "admitted": true,
         "cell_count": 1,
         "source_boundary_id": "bootstrap-118",
-        "source_seat_version": "bootstrap-118-modern-seats",
-        "generator_version": "v2-template118"
+        "source_seat_version": "wikipedia-past-apportionments-2026-05-05",
+        "generator_version": "v4-fixed-hex-scaled-outline",
+        "state_ref_seats": 1,
+        "area_scale": 1.0,
+        "state_anchor_x": -16571430.5190446,
+        "state_anchor_y": 6455273.223855123
       },
       "geometry": {
         "type": "MultiPolygon",
