@@ -342,7 +342,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generate state-level polyhex geometries per Congress from 118 templates")
     parser.add_argument("--seats", default=str(ROOT / "data_processed" / "seats" / "state_seats_by_congress.csv"))
     parser.add_argument("--boundaries", default=str(ROOT / "data_processed" / "boundaries"))
-    parser.add_argument("--template-shp", default=str(ROOT / "data_raw" / "congress" / "118" / "HexCDv31.shp"))
+    parser.add_argument(
+        "--template-shp",
+        default=str(ROOT / "hexmap_reference_files" / "HexCDv31wm" / "HexCDv31wm.shp"),
+    )
     parser.add_argument("--out-root", default=str(ROOT / "data_processed" / "polyhex_states_by_congress"))
     args = parser.parse_args()
 

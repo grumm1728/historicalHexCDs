@@ -23,7 +23,7 @@ def geometry_to_parts(geom: dict) -> list[list[list[float]]]:
     raise ValueError(f"Unsupported geometry type: {gtype}")
 
 
-def export_congress_file(path: Path, out_dir: Path) -> None:
+def export_congress_file(path: Path, out_dir: Path, prj_text: str) -> None:
     congress_number = int(path.stem)
     obj = json.loads(path.read_text(encoding="utf-8"))
     features = obj.get("features", [])
@@ -62,13 +62,14 @@ def export_congress_file(path: Path, out_dir: Path) -> None:
         )
 
     writer.close()
-    (shp_base.with_suffix(".prj")).write_text(WGS84_PRJ, encoding="ascii")
+    (shp_base.with_suffix(".prj")).write_text(prj_text, encoding="ascii")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Export state-level polyhex GeoJSON to shapefiles")
     parser.add_argument("--input-root", default=str(ROOT / "data_processed" / "polyhex_states_by_congress"))
     parser.add_argument("--out-root", default=str(ROOT / "data_processed" / "shapefiles"))
+    parser.add_argument("--template-prj", default="")
     args = parser.parse_args()
 
     input_root = Path(args.input_root)
@@ -78,9 +79,15 @@ def main() -> None:
     if not files:
         raise SystemExit(f"No GeoJSON congress files found at {input_root}")
 
+    prj_text = WGS84_PRJ
+    if args.template_prj:
+        tp = Path(args.template_prj)
+        if tp.exists():
+            prj_text = tp.read_text(encoding="utf-8").strip() or WGS84_PRJ
+
     for file in files:
         congress_number = int(file.stem)
-        export_congress_file(file, out_root / str(congress_number))
+        export_congress_file(file, out_root / str(congress_number), prj_text)
 
     print(f"Exported shapefiles to {out_root}")
 

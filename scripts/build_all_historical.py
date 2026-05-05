@@ -9,6 +9,8 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+TEMPLATE_SHP = ROOT / "hexmap_reference_files" / "HexCDv31wm" / "HexCDv31wm.shp"
+TEMPLATE_PRJ = ROOT / "hexmap_reference_files" / "HexCDv31wm" / "HexCDv31wm.prj"
 
 
 def run(script_name: str, *args: str) -> None:
@@ -75,8 +77,8 @@ def main() -> None:
     run("validate_raw_inputs.py")
     run("build_seat_table.py", "--max-congress", str(args.max_congress))
     run("build_boundary_timeline.py")
-    run("generate_polyhex_states.py")
-    run("export_shapefiles.py")
+    run("generate_polyhex_states.py", "--template-shp", str(TEMPLATE_SHP))
+    run("export_shapefiles.py", "--template-prj", str(TEMPLATE_PRJ))
     build_congress_index(args.max_congress)
     print("Historical pipeline complete.")
 

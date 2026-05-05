@@ -15,6 +15,27 @@ let timer = null;
 let svg;
 let stateColor;
 
+function geometryBounds(geo) {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  function walk(v) {
+    if (!Array.isArray(v)) return;
+    if (v.length === 2 && Number.isFinite(v[0]) && Number.isFinite(v[1])) {
+      const [x, y] = v;
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
+      return;
+    }
+    for (const e of v) walk(e);
+  }
+  walk(geo);
+  return { minX, minY, maxX, maxY };
+}
+
 function setStatus(message) {
   statusEl.hidden = false;
   statusEl.textContent = message;
@@ -70,8 +91,11 @@ async function drawFrame(entry) {
     throw new Error(`Failed to load ${featurePath}`);
   }
   const geo = await resp.json();
-
-  const projection = d3.geoAlbersUsa().fitSize([width, height], geo);
+  const b = geometryBounds(geo);
+  const projected = Math.abs(b.maxX) > 1000 || Math.abs(b.minX) > 1000 || Math.abs(b.maxY) > 1000 || Math.abs(b.minY) > 1000;
+  const projection = projected
+    ? d3.geoIdentity().reflectY(true).fitSize([width, height], geo)
+    : d3.geoAlbersUsa().fitSize([width, height], geo);
   const path = d3.geoPath(projection);
 
   svg.selectAll("g").remove();
