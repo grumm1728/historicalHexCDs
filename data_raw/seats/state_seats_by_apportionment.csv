@@ -1,0 +1,1201 @@
+apportionment_label,effective_year,state_fips,state_abbr,state_name,house_seats,admitted,source_seat_version
+Const.,1789,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,01,AL,Alabama,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,05,AR,Arkansas,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,06,CA,California,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,08,CO,Colorado,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,09,CT,Connecticut,5,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,12,FL,Florida,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,13,GA,Georgia,3,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,19,IA,Iowa,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,16,ID,Idaho,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,17,IL,Illinois,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,18,IN,Indiana,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,20,KS,Kansas,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,21,KY,Kentucky,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,22,LA,Louisiana,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,25,MA,Massachusetts,8,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,24,MD,Maryland,6,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,23,ME,Maine,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,26,MI,Michigan,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,27,MN,Minnesota,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,29,MO,Missouri,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,28,MS,Mississippi,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,30,MT,Montana,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,37,NC,North Carolina,5,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,38,ND,North Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,31,NE,Nebraska,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,33,NH,New Hampshire,3,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,34,NJ,New Jersey,4,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,32,NV,Nevada,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,36,NY,New York,6,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,39,OH,Ohio,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,41,OR,Oregon,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,42,PA,Pennsylvania,8,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,44,RI,Rhode Island,1,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,45,SC,South Carolina,5,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,46,SD,South Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,47,TN,Tennessee,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,48,TX,Texas,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,51,VA,Virginia,10,True,wikipedia-past-apportionments-2026-05-06
+Const.,1789,50,VT,Vermont,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,53,WA,Washington,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,55,WI,Wisconsin,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,54,WV,West Virginia,0,False,wikipedia-past-apportionments-2026-05-06
+Const.,1789,56,WY,Wyoming,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,01,AL,Alabama,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,05,AR,Arkansas,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,06,CA,California,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,08,CO,Colorado,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,09,CT,Connecticut,7,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,12,FL,Florida,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,13,GA,Georgia,2,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,19,IA,Iowa,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,16,ID,Idaho,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,17,IL,Illinois,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,18,IN,Indiana,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,20,KS,Kansas,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,21,KY,Kentucky,2,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,22,LA,Louisiana,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,25,MA,Massachusetts,14,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,24,MD,Maryland,8,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,23,ME,Maine,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,26,MI,Michigan,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,27,MN,Minnesota,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,29,MO,Missouri,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,28,MS,Mississippi,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,30,MT,Montana,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,37,NC,North Carolina,10,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,38,ND,North Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,31,NE,Nebraska,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,33,NH,New Hampshire,4,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,34,NJ,New Jersey,5,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,32,NV,Nevada,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,36,NY,New York,10,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,39,OH,Ohio,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,41,OR,Oregon,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,42,PA,Pennsylvania,13,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,45,SC,South Carolina,6,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,46,SD,South Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,47,TN,Tennessee,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,48,TX,Texas,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,51,VA,Virginia,19,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,50,VT,Vermont,2,True,wikipedia-past-apportionments-2026-05-06
+1st,1793,53,WA,Washington,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,55,WI,Wisconsin,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,54,WV,West Virginia,0,False,wikipedia-past-apportionments-2026-05-06
+1st,1793,56,WY,Wyoming,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,01,AL,Alabama,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,05,AR,Arkansas,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,06,CA,California,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,08,CO,Colorado,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,09,CT,Connecticut,7,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,12,FL,Florida,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,13,GA,Georgia,4,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,19,IA,Iowa,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,16,ID,Idaho,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,17,IL,Illinois,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,18,IN,Indiana,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,20,KS,Kansas,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,21,KY,Kentucky,6,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,22,LA,Louisiana,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,25,MA,Massachusetts,17,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,24,MD,Maryland,9,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,23,ME,Maine,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,26,MI,Michigan,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,27,MN,Minnesota,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,29,MO,Missouri,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,28,MS,Mississippi,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,30,MT,Montana,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,37,NC,North Carolina,12,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,38,ND,North Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,31,NE,Nebraska,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,33,NH,New Hampshire,5,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,34,NJ,New Jersey,6,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,32,NV,Nevada,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,36,NY,New York,17,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,39,OH,Ohio,1,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,41,OR,Oregon,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,42,PA,Pennsylvania,18,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,45,SC,South Carolina,8,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,46,SD,South Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,47,TN,Tennessee,3,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,48,TX,Texas,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,51,VA,Virginia,22,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,50,VT,Vermont,4,True,wikipedia-past-apportionments-2026-05-06
+2nd,1803,53,WA,Washington,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,55,WI,Wisconsin,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,54,WV,West Virginia,0,False,wikipedia-past-apportionments-2026-05-06
+2nd,1803,56,WY,Wyoming,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,01,AL,Alabama,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,05,AR,Arkansas,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,06,CA,California,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,08,CO,Colorado,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,09,CT,Connecticut,7,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,10,DE,Delaware,2,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,12,FL,Florida,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,13,GA,Georgia,6,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,19,IA,Iowa,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,16,ID,Idaho,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,17,IL,Illinois,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,18,IN,Indiana,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,20,KS,Kansas,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,21,KY,Kentucky,10,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,22,LA,Louisiana,1,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,25,MA,Massachusetts,20,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,24,MD,Maryland,9,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,23,ME,Maine,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,26,MI,Michigan,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,27,MN,Minnesota,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,29,MO,Missouri,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,28,MS,Mississippi,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,30,MT,Montana,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,37,NC,North Carolina,13,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,38,ND,North Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,31,NE,Nebraska,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,33,NH,New Hampshire,6,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,34,NJ,New Jersey,6,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,32,NV,Nevada,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,36,NY,New York,27,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,39,OH,Ohio,6,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,41,OR,Oregon,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,42,PA,Pennsylvania,23,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,45,SC,South Carolina,9,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,46,SD,South Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,47,TN,Tennessee,6,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,48,TX,Texas,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,51,VA,Virginia,23,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,50,VT,Vermont,6,True,wikipedia-past-apportionments-2026-05-06
+3rd,1813,53,WA,Washington,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,55,WI,Wisconsin,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,54,WV,West Virginia,0,False,wikipedia-past-apportionments-2026-05-06
+3rd,1813,56,WY,Wyoming,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,01,AL,Alabama,3,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,05,AR,Arkansas,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,06,CA,California,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,08,CO,Colorado,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,09,CT,Connecticut,6,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,12,FL,Florida,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,13,GA,Georgia,7,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,19,IA,Iowa,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,16,ID,Idaho,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,17,IL,Illinois,1,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,18,IN,Indiana,3,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,20,KS,Kansas,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,21,KY,Kentucky,12,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,22,LA,Louisiana,3,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,25,MA,Massachusetts,13,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,24,MD,Maryland,9,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,23,ME,Maine,7,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,26,MI,Michigan,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,27,MN,Minnesota,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,29,MO,Missouri,1,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,28,MS,Mississippi,1,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,30,MT,Montana,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,37,NC,North Carolina,13,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,38,ND,North Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,31,NE,Nebraska,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,33,NH,New Hampshire,6,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,34,NJ,New Jersey,6,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,32,NV,Nevada,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,36,NY,New York,34,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,39,OH,Ohio,14,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,41,OR,Oregon,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,42,PA,Pennsylvania,26,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,45,SC,South Carolina,9,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,46,SD,South Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,47,TN,Tennessee,9,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,48,TX,Texas,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,51,VA,Virginia,22,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,50,VT,Vermont,5,True,wikipedia-past-apportionments-2026-05-06
+4th,1823,53,WA,Washington,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,55,WI,Wisconsin,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,54,WV,West Virginia,0,False,wikipedia-past-apportionments-2026-05-06
+4th,1823,56,WY,Wyoming,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,01,AL,Alabama,5,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,05,AR,Arkansas,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,06,CA,California,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,08,CO,Colorado,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,09,CT,Connecticut,6,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,12,FL,Florida,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,13,GA,Georgia,9,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,19,IA,Iowa,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,16,ID,Idaho,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,17,IL,Illinois,3,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,18,IN,Indiana,7,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,20,KS,Kansas,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,21,KY,Kentucky,13,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,22,LA,Louisiana,3,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,25,MA,Massachusetts,12,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,24,MD,Maryland,8,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,23,ME,Maine,8,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,26,MI,Michigan,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,27,MN,Minnesota,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,29,MO,Missouri,2,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,28,MS,Mississippi,2,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,30,MT,Montana,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,37,NC,North Carolina,13,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,38,ND,North Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,31,NE,Nebraska,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,33,NH,New Hampshire,5,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,34,NJ,New Jersey,6,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,32,NV,Nevada,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,36,NY,New York,40,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,39,OH,Ohio,19,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,41,OR,Oregon,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,42,PA,Pennsylvania,28,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,45,SC,South Carolina,9,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,46,SD,South Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,47,TN,Tennessee,13,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,48,TX,Texas,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,51,VA,Virginia,21,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,50,VT,Vermont,5,True,wikipedia-past-apportionments-2026-05-06
+5th,1833,53,WA,Washington,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,55,WI,Wisconsin,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,54,WV,West Virginia,0,False,wikipedia-past-apportionments-2026-05-06
+5th,1833,56,WY,Wyoming,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,01,AL,Alabama,7,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,05,AR,Arkansas,1,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,06,CA,California,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,08,CO,Colorado,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,09,CT,Connecticut,4,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,12,FL,Florida,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,13,GA,Georgia,8,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,19,IA,Iowa,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,16,ID,Idaho,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,17,IL,Illinois,7,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,18,IN,Indiana,10,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,20,KS,Kansas,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,21,KY,Kentucky,10,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,22,LA,Louisiana,4,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,25,MA,Massachusetts,10,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,24,MD,Maryland,6,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,23,ME,Maine,7,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,26,MI,Michigan,3,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,27,MN,Minnesota,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,29,MO,Missouri,5,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,28,MS,Mississippi,4,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,30,MT,Montana,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,37,NC,North Carolina,9,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,38,ND,North Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,31,NE,Nebraska,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,33,NH,New Hampshire,4,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,34,NJ,New Jersey,5,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,32,NV,Nevada,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,36,NY,New York,34,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,39,OH,Ohio,21,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,41,OR,Oregon,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,42,PA,Pennsylvania,24,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,45,SC,South Carolina,7,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,46,SD,South Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,47,TN,Tennessee,11,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,48,TX,Texas,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,51,VA,Virginia,15,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,50,VT,Vermont,4,True,wikipedia-past-apportionments-2026-05-06
+6th,1843,53,WA,Washington,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,55,WI,Wisconsin,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,54,WV,West Virginia,0,False,wikipedia-past-apportionments-2026-05-06
+6th,1843,56,WY,Wyoming,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,01,AL,Alabama,7,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,05,AR,Arkansas,2,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,06,CA,California,2,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,08,CO,Colorado,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,09,CT,Connecticut,4,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,12,FL,Florida,1,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,13,GA,Georgia,8,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,19,IA,Iowa,2,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,16,ID,Idaho,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,17,IL,Illinois,9,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,18,IN,Indiana,11,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,20,KS,Kansas,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,21,KY,Kentucky,10,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,22,LA,Louisiana,4,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,25,MA,Massachusetts,11,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,24,MD,Maryland,6,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,23,ME,Maine,6,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,26,MI,Michigan,4,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,27,MN,Minnesota,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,29,MO,Missouri,7,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,28,MS,Mississippi,5,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,30,MT,Montana,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,37,NC,North Carolina,8,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,38,ND,North Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,31,NE,Nebraska,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,33,NH,New Hampshire,3,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,34,NJ,New Jersey,5,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,32,NV,Nevada,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,36,NY,New York,33,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,39,OH,Ohio,21,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,41,OR,Oregon,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,42,PA,Pennsylvania,25,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,45,SC,South Carolina,6,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,46,SD,South Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,47,TN,Tennessee,10,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,48,TX,Texas,2,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,51,VA,Virginia,13,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,50,VT,Vermont,3,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,53,WA,Washington,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,55,WI,Wisconsin,3,True,wikipedia-past-apportionments-2026-05-06
+7th,1853,54,WV,West Virginia,0,False,wikipedia-past-apportionments-2026-05-06
+7th,1853,56,WY,Wyoming,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,01,AL,Alabama,6,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,05,AR,Arkansas,3,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,06,CA,California,3,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,08,CO,Colorado,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,09,CT,Connecticut,4,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,12,FL,Florida,1,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,13,GA,Georgia,7,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,19,IA,Iowa,6,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,16,ID,Idaho,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,17,IL,Illinois,14,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,18,IN,Indiana,11,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,20,KS,Kansas,1,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,21,KY,Kentucky,9,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,22,LA,Louisiana,5,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,25,MA,Massachusetts,10,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,24,MD,Maryland,5,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,23,ME,Maine,5,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,26,MI,Michigan,6,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,27,MN,Minnesota,2,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,29,MO,Missouri,9,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,28,MS,Mississippi,5,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,30,MT,Montana,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,37,NC,North Carolina,7,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,38,ND,North Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,31,NE,Nebraska,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,33,NH,New Hampshire,3,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,34,NJ,New Jersey,5,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,32,NV,Nevada,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,36,NY,New York,31,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,39,OH,Ohio,19,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,41,OR,Oregon,1,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,42,PA,Pennsylvania,24,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,45,SC,South Carolina,4,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,46,SD,South Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,47,TN,Tennessee,8,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,48,TX,Texas,4,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,51,VA,Virginia,11,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,50,VT,Vermont,3,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,53,WA,Washington,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,55,WI,Wisconsin,6,True,wikipedia-past-apportionments-2026-05-06
+8th,1863,54,WV,West Virginia,0,False,wikipedia-past-apportionments-2026-05-06
+8th,1863,56,WY,Wyoming,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,01,AL,Alabama,8,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,05,AR,Arkansas,4,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,06,CA,California,4,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,08,CO,Colorado,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,09,CT,Connecticut,4,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,12,FL,Florida,2,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,13,GA,Georgia,9,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,19,IA,Iowa,9,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,16,ID,Idaho,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,17,IL,Illinois,19,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,18,IN,Indiana,13,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,20,KS,Kansas,3,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,21,KY,Kentucky,10,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,22,LA,Louisiana,6,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,25,MA,Massachusetts,11,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,24,MD,Maryland,6,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,23,ME,Maine,5,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,26,MI,Michigan,9,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,27,MN,Minnesota,3,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,29,MO,Missouri,13,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,28,MS,Mississippi,6,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,30,MT,Montana,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,37,NC,North Carolina,8,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,38,ND,North Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,31,NE,Nebraska,1,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,33,NH,New Hampshire,3,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,34,NJ,New Jersey,7,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,32,NV,Nevada,1,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,36,NY,New York,33,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,39,OH,Ohio,20,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,41,OR,Oregon,1,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,42,PA,Pennsylvania,27,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,45,SC,South Carolina,5,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,46,SD,South Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,47,TN,Tennessee,10,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,48,TX,Texas,6,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,51,VA,Virginia,9,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,50,VT,Vermont,3,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,53,WA,Washington,0,False,wikipedia-past-apportionments-2026-05-06
+9th,1873,55,WI,Wisconsin,8,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,54,WV,West Virginia,3,True,wikipedia-past-apportionments-2026-05-06
+9th,1873,56,WY,Wyoming,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,01,AL,Alabama,8,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,05,AR,Arkansas,5,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,06,CA,California,6,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,08,CO,Colorado,1,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,09,CT,Connecticut,4,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,12,FL,Florida,2,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,13,GA,Georgia,10,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,19,IA,Iowa,11,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,16,ID,Idaho,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,17,IL,Illinois,20,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,18,IN,Indiana,13,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,20,KS,Kansas,7,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,21,KY,Kentucky,11,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,22,LA,Louisiana,6,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,25,MA,Massachusetts,12,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,24,MD,Maryland,6,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,23,ME,Maine,4,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,26,MI,Michigan,11,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,27,MN,Minnesota,5,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,29,MO,Missouri,14,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,28,MS,Mississippi,7,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,30,MT,Montana,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,37,NC,North Carolina,9,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,38,ND,North Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,31,NE,Nebraska,3,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,34,NJ,New Jersey,7,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,32,NV,Nevada,1,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,36,NY,New York,34,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,39,OH,Ohio,21,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,41,OR,Oregon,1,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,42,PA,Pennsylvania,28,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,45,SC,South Carolina,7,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,46,SD,South Dakota,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,47,TN,Tennessee,10,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,48,TX,Texas,11,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,51,VA,Virginia,10,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,50,VT,Vermont,2,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,53,WA,Washington,0,False,wikipedia-past-apportionments-2026-05-06
+10th,1883,55,WI,Wisconsin,9,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,54,WV,West Virginia,4,True,wikipedia-past-apportionments-2026-05-06
+10th,1883,56,WY,Wyoming,0,False,wikipedia-past-apportionments-2026-05-06
+11th,1893,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+11th,1893,01,AL,Alabama,9,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,05,AR,Arkansas,6,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+11th,1893,06,CA,California,7,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,08,CO,Colorado,2,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,09,CT,Connecticut,4,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,12,FL,Florida,2,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,13,GA,Georgia,11,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+11th,1893,19,IA,Iowa,11,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,16,ID,Idaho,1,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,17,IL,Illinois,22,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,18,IN,Indiana,13,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,20,KS,Kansas,8,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,21,KY,Kentucky,11,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,22,LA,Louisiana,6,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,25,MA,Massachusetts,13,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,24,MD,Maryland,6,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,23,ME,Maine,4,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,26,MI,Michigan,12,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,27,MN,Minnesota,7,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,29,MO,Missouri,15,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,28,MS,Mississippi,7,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,30,MT,Montana,1,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,37,NC,North Carolina,9,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,38,ND,North Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,31,NE,Nebraska,6,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,34,NJ,New Jersey,8,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+11th,1893,32,NV,Nevada,1,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,36,NY,New York,34,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,39,OH,Ohio,21,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+11th,1893,41,OR,Oregon,2,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,42,PA,Pennsylvania,30,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,45,SC,South Carolina,7,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,46,SD,South Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,47,TN,Tennessee,10,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,48,TX,Texas,13,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,49,UT,Utah,0,False,wikipedia-past-apportionments-2026-05-06
+11th,1893,51,VA,Virginia,10,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,50,VT,Vermont,2,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,53,WA,Washington,2,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,55,WI,Wisconsin,10,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,54,WV,West Virginia,4,True,wikipedia-past-apportionments-2026-05-06
+11th,1893,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+12th,1903,01,AL,Alabama,9,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,05,AR,Arkansas,7,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,04,AZ,Arizona,0,False,wikipedia-past-apportionments-2026-05-06
+12th,1903,06,CA,California,8,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,08,CO,Colorado,3,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,09,CT,Connecticut,5,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,12,FL,Florida,3,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,13,GA,Georgia,11,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+12th,1903,19,IA,Iowa,11,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,16,ID,Idaho,1,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,17,IL,Illinois,25,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,18,IN,Indiana,13,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,20,KS,Kansas,8,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,21,KY,Kentucky,11,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,22,LA,Louisiana,7,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,25,MA,Massachusetts,14,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,24,MD,Maryland,6,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,23,ME,Maine,4,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,26,MI,Michigan,12,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,27,MN,Minnesota,9,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,29,MO,Missouri,16,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,28,MS,Mississippi,8,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,30,MT,Montana,1,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,37,NC,North Carolina,10,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,38,ND,North Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,31,NE,Nebraska,6,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,34,NJ,New Jersey,10,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,35,NM,New Mexico,0,False,wikipedia-past-apportionments-2026-05-06
+12th,1903,32,NV,Nevada,1,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,36,NY,New York,37,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,39,OH,Ohio,21,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,40,OK,Oklahoma,0,False,wikipedia-past-apportionments-2026-05-06
+12th,1903,41,OR,Oregon,2,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,42,PA,Pennsylvania,32,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,45,SC,South Carolina,7,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,46,SD,South Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,47,TN,Tennessee,10,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,48,TX,Texas,16,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,49,UT,Utah,1,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,51,VA,Virginia,10,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,50,VT,Vermont,2,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,53,WA,Washington,3,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,55,WI,Wisconsin,11,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,54,WV,West Virginia,5,True,wikipedia-past-apportionments-2026-05-06
+12th,1903,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+13th,1913,01,AL,Alabama,10,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,05,AR,Arkansas,7,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,04,AZ,Arizona,1,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,06,CA,California,11,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,08,CO,Colorado,4,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,09,CT,Connecticut,5,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,12,FL,Florida,4,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,13,GA,Georgia,12,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+13th,1913,19,IA,Iowa,11,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,16,ID,Idaho,2,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,17,IL,Illinois,27,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,18,IN,Indiana,13,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,20,KS,Kansas,8,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,21,KY,Kentucky,11,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,22,LA,Louisiana,8,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,25,MA,Massachusetts,16,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,24,MD,Maryland,6,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,23,ME,Maine,4,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,26,MI,Michigan,13,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,27,MN,Minnesota,10,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,29,MO,Missouri,16,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,28,MS,Mississippi,8,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,30,MT,Montana,2,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,37,NC,North Carolina,10,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,38,ND,North Dakota,3,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,31,NE,Nebraska,6,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,34,NJ,New Jersey,12,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,35,NM,New Mexico,1,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,32,NV,Nevada,1,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,36,NY,New York,43,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,39,OH,Ohio,22,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,40,OK,Oklahoma,8,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,41,OR,Oregon,3,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,42,PA,Pennsylvania,36,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,44,RI,Rhode Island,3,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,45,SC,South Carolina,7,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,46,SD,South Dakota,3,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,47,TN,Tennessee,10,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,48,TX,Texas,18,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,49,UT,Utah,2,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,51,VA,Virginia,10,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,50,VT,Vermont,2,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,53,WA,Washington,5,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,55,WI,Wisconsin,11,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,54,WV,West Virginia,6,True,wikipedia-past-apportionments-2026-05-06
+13th,1913,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,01,AL,Alabama,9,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,05,AR,Arkansas,7,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,04,AZ,Arizona,1,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,06,CA,California,20,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,08,CO,Colorado,4,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,09,CT,Connecticut,6,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,12,FL,Florida,5,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,13,GA,Georgia,10,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,19,IA,Iowa,9,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,16,ID,Idaho,2,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,17,IL,Illinois,27,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,18,IN,Indiana,12,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,20,KS,Kansas,7,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,21,KY,Kentucky,9,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,22,LA,Louisiana,8,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,25,MA,Massachusetts,15,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,24,MD,Maryland,6,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,23,ME,Maine,3,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,26,MI,Michigan,17,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,27,MN,Minnesota,9,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,29,MO,Missouri,13,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,28,MS,Mississippi,7,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,30,MT,Montana,2,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,37,NC,North Carolina,11,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,38,ND,North Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,31,NE,Nebraska,5,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,34,NJ,New Jersey,14,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,35,NM,New Mexico,1,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,32,NV,Nevada,1,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,36,NY,New York,45,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,39,OH,Ohio,24,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,40,OK,Oklahoma,9,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,41,OR,Oregon,3,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,42,PA,Pennsylvania,34,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,45,SC,South Carolina,6,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,46,SD,South Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,47,TN,Tennessee,9,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,48,TX,Texas,21,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,49,UT,Utah,2,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,51,VA,Virginia,9,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,50,VT,Vermont,1,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,53,WA,Washington,6,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,55,WI,Wisconsin,10,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,54,WV,West Virginia,6,True,wikipedia-past-apportionments-2026-05-06
+15th[a],1933,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+16th,1943,01,AL,Alabama,9,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,05,AR,Arkansas,7,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,04,AZ,Arizona,2,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,06,CA,California,23,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,08,CO,Colorado,4,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,09,CT,Connecticut,6,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,12,FL,Florida,6,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,13,GA,Georgia,10,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+16th,1943,19,IA,Iowa,8,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,16,ID,Idaho,2,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,17,IL,Illinois,26,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,18,IN,Indiana,11,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,20,KS,Kansas,6,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,21,KY,Kentucky,9,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,22,LA,Louisiana,8,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,25,MA,Massachusetts,14,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,24,MD,Maryland,6,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,23,ME,Maine,3,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,26,MI,Michigan,17,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,27,MN,Minnesota,9,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,29,MO,Missouri,13,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,28,MS,Mississippi,7,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,30,MT,Montana,2,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,37,NC,North Carolina,12,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,38,ND,North Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,31,NE,Nebraska,4,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,34,NJ,New Jersey,14,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,35,NM,New Mexico,2,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,32,NV,Nevada,1,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,36,NY,New York,45,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,39,OH,Ohio,23,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,40,OK,Oklahoma,8,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,41,OR,Oregon,4,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,42,PA,Pennsylvania,33,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,45,SC,South Carolina,6,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,46,SD,South Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,47,TN,Tennessee,10,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,48,TX,Texas,21,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,49,UT,Utah,2,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,51,VA,Virginia,9,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,50,VT,Vermont,1,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,53,WA,Washington,6,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,55,WI,Wisconsin,10,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,54,WV,West Virginia,6,True,wikipedia-past-apportionments-2026-05-06
+16th,1943,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,02,AK,Alaska,0,False,wikipedia-past-apportionments-2026-05-06
+17th,1953,01,AL,Alabama,9,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,05,AR,Arkansas,6,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,04,AZ,Arizona,2,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,06,CA,California,30,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,08,CO,Colorado,4,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,09,CT,Connecticut,6,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,12,FL,Florida,8,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,13,GA,Georgia,10,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,15,HI,Hawaii,0,False,wikipedia-past-apportionments-2026-05-06
+17th,1953,19,IA,Iowa,8,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,16,ID,Idaho,2,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,17,IL,Illinois,25,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,18,IN,Indiana,11,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,20,KS,Kansas,6,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,21,KY,Kentucky,8,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,22,LA,Louisiana,8,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,25,MA,Massachusetts,14,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,24,MD,Maryland,7,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,23,ME,Maine,3,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,26,MI,Michigan,18,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,27,MN,Minnesota,9,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,29,MO,Missouri,11,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,28,MS,Mississippi,6,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,30,MT,Montana,2,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,37,NC,North Carolina,12,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,38,ND,North Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,31,NE,Nebraska,4,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,34,NJ,New Jersey,14,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,35,NM,New Mexico,2,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,32,NV,Nevada,1,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,36,NY,New York,43,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,39,OH,Ohio,23,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,40,OK,Oklahoma,6,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,41,OR,Oregon,4,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,42,PA,Pennsylvania,30,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,45,SC,South Carolina,6,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,46,SD,South Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,47,TN,Tennessee,9,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,48,TX,Texas,22,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,49,UT,Utah,2,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,51,VA,Virginia,10,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,50,VT,Vermont,1,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,53,WA,Washington,7,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,55,WI,Wisconsin,10,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,54,WV,West Virginia,6,True,wikipedia-past-apportionments-2026-05-06
+17th,1953,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,02,AK,Alaska,1,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,01,AL,Alabama,8,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,05,AR,Arkansas,4,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,04,AZ,Arizona,3,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,06,CA,California,38,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,08,CO,Colorado,4,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,09,CT,Connecticut,6,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,12,FL,Florida,12,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,13,GA,Georgia,10,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,15,HI,Hawaii,2,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,19,IA,Iowa,7,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,16,ID,Idaho,2,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,17,IL,Illinois,24,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,18,IN,Indiana,11,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,20,KS,Kansas,5,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,21,KY,Kentucky,7,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,22,LA,Louisiana,8,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,25,MA,Massachusetts,12,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,24,MD,Maryland,8,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,23,ME,Maine,2,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,26,MI,Michigan,19,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,27,MN,Minnesota,8,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,29,MO,Missouri,10,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,28,MS,Mississippi,5,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,30,MT,Montana,2,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,37,NC,North Carolina,11,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,38,ND,North Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,31,NE,Nebraska,3,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,34,NJ,New Jersey,15,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,35,NM,New Mexico,2,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,32,NV,Nevada,1,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,36,NY,New York,41,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,39,OH,Ohio,24,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,40,OK,Oklahoma,6,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,41,OR,Oregon,4,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,42,PA,Pennsylvania,27,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,45,SC,South Carolina,6,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,46,SD,South Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,47,TN,Tennessee,9,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,48,TX,Texas,23,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,49,UT,Utah,2,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,51,VA,Virginia,10,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,50,VT,Vermont,1,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,53,WA,Washington,7,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,55,WI,Wisconsin,10,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,54,WV,West Virginia,5,True,wikipedia-past-apportionments-2026-05-06
+18th,1963,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,02,AK,Alaska,1,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,01,AL,Alabama,7,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,05,AR,Arkansas,4,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,04,AZ,Arizona,4,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,06,CA,California,43,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,08,CO,Colorado,5,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,09,CT,Connecticut,6,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,12,FL,Florida,15,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,13,GA,Georgia,10,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,15,HI,Hawaii,2,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,19,IA,Iowa,6,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,16,ID,Idaho,2,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,17,IL,Illinois,24,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,18,IN,Indiana,11,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,20,KS,Kansas,5,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,21,KY,Kentucky,7,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,22,LA,Louisiana,8,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,25,MA,Massachusetts,12,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,24,MD,Maryland,8,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,23,ME,Maine,2,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,26,MI,Michigan,19,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,27,MN,Minnesota,8,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,29,MO,Missouri,10,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,28,MS,Mississippi,5,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,30,MT,Montana,2,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,37,NC,North Carolina,11,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,38,ND,North Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,31,NE,Nebraska,3,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,34,NJ,New Jersey,15,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,35,NM,New Mexico,2,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,32,NV,Nevada,1,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,36,NY,New York,39,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,39,OH,Ohio,23,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,40,OK,Oklahoma,6,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,41,OR,Oregon,4,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,42,PA,Pennsylvania,25,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,45,SC,South Carolina,6,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,46,SD,South Dakota,2,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,47,TN,Tennessee,8,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,48,TX,Texas,24,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,49,UT,Utah,2,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,51,VA,Virginia,10,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,50,VT,Vermont,1,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,53,WA,Washington,7,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,55,WI,Wisconsin,9,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,54,WV,West Virginia,4,True,wikipedia-past-apportionments-2026-05-06
+19th,1973,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,02,AK,Alaska,1,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,01,AL,Alabama,7,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,05,AR,Arkansas,4,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,04,AZ,Arizona,5,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,06,CA,California,45,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,08,CO,Colorado,6,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,09,CT,Connecticut,6,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,12,FL,Florida,19,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,13,GA,Georgia,10,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,15,HI,Hawaii,2,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,19,IA,Iowa,6,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,16,ID,Idaho,2,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,17,IL,Illinois,22,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,18,IN,Indiana,10,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,20,KS,Kansas,5,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,21,KY,Kentucky,7,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,22,LA,Louisiana,8,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,25,MA,Massachusetts,11,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,24,MD,Maryland,8,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,23,ME,Maine,2,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,26,MI,Michigan,18,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,27,MN,Minnesota,8,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,29,MO,Missouri,9,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,28,MS,Mississippi,5,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,30,MT,Montana,2,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,37,NC,North Carolina,11,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,38,ND,North Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,31,NE,Nebraska,3,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,34,NJ,New Jersey,14,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,35,NM,New Mexico,3,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,32,NV,Nevada,2,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,36,NY,New York,34,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,39,OH,Ohio,21,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,40,OK,Oklahoma,6,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,41,OR,Oregon,5,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,42,PA,Pennsylvania,23,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,45,SC,South Carolina,6,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,46,SD,South Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,47,TN,Tennessee,9,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,48,TX,Texas,27,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,49,UT,Utah,3,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,51,VA,Virginia,10,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,50,VT,Vermont,1,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,53,WA,Washington,8,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,55,WI,Wisconsin,9,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,54,WV,West Virginia,4,True,wikipedia-past-apportionments-2026-05-06
+20th,1983,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,02,AK,Alaska,1,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,01,AL,Alabama,7,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,05,AR,Arkansas,4,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,04,AZ,Arizona,6,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,06,CA,California,52,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,08,CO,Colorado,6,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,09,CT,Connecticut,6,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,12,FL,Florida,23,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,13,GA,Georgia,11,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,15,HI,Hawaii,2,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,19,IA,Iowa,5,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,16,ID,Idaho,2,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,17,IL,Illinois,20,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,18,IN,Indiana,10,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,20,KS,Kansas,4,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,21,KY,Kentucky,6,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,22,LA,Louisiana,7,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,25,MA,Massachusetts,10,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,24,MD,Maryland,8,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,23,ME,Maine,2,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,26,MI,Michigan,16,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,27,MN,Minnesota,8,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,29,MO,Missouri,9,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,28,MS,Mississippi,5,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,30,MT,Montana,1,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,37,NC,North Carolina,12,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,38,ND,North Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,31,NE,Nebraska,3,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,34,NJ,New Jersey,13,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,35,NM,New Mexico,3,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,32,NV,Nevada,2,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,36,NY,New York,31,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,39,OH,Ohio,19,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,40,OK,Oklahoma,6,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,41,OR,Oregon,5,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,42,PA,Pennsylvania,21,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,45,SC,South Carolina,6,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,46,SD,South Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,47,TN,Tennessee,9,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,48,TX,Texas,30,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,49,UT,Utah,3,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,51,VA,Virginia,11,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,50,VT,Vermont,1,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,53,WA,Washington,9,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,55,WI,Wisconsin,9,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,54,WV,West Virginia,3,True,wikipedia-past-apportionments-2026-05-06
+21st,1993,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,02,AK,Alaska,1,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,01,AL,Alabama,7,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,05,AR,Arkansas,4,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,04,AZ,Arizona,8,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,06,CA,California,53,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,08,CO,Colorado,7,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,09,CT,Connecticut,5,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,12,FL,Florida,25,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,13,GA,Georgia,13,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,15,HI,Hawaii,2,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,19,IA,Iowa,5,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,16,ID,Idaho,2,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,17,IL,Illinois,19,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,18,IN,Indiana,9,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,20,KS,Kansas,4,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,21,KY,Kentucky,6,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,22,LA,Louisiana,7,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,25,MA,Massachusetts,10,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,24,MD,Maryland,8,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,23,ME,Maine,2,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,26,MI,Michigan,15,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,27,MN,Minnesota,8,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,29,MO,Missouri,9,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,28,MS,Mississippi,4,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,30,MT,Montana,1,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,37,NC,North Carolina,13,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,38,ND,North Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,31,NE,Nebraska,3,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,34,NJ,New Jersey,13,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,35,NM,New Mexico,3,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,32,NV,Nevada,3,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,36,NY,New York,29,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,39,OH,Ohio,18,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,40,OK,Oklahoma,5,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,41,OR,Oregon,5,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,42,PA,Pennsylvania,19,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,45,SC,South Carolina,6,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,46,SD,South Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,47,TN,Tennessee,9,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,48,TX,Texas,32,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,49,UT,Utah,3,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,51,VA,Virginia,11,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,50,VT,Vermont,1,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,53,WA,Washington,9,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,55,WI,Wisconsin,8,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,54,WV,West Virginia,3,True,wikipedia-past-apportionments-2026-05-06
+22nd,2003,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,02,AK,Alaska,1,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,01,AL,Alabama,7,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,05,AR,Arkansas,4,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,04,AZ,Arizona,9,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,06,CA,California,53,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,08,CO,Colorado,7,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,09,CT,Connecticut,5,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,12,FL,Florida,27,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,13,GA,Georgia,14,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,15,HI,Hawaii,2,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,19,IA,Iowa,4,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,16,ID,Idaho,2,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,17,IL,Illinois,18,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,18,IN,Indiana,9,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,20,KS,Kansas,4,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,21,KY,Kentucky,6,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,22,LA,Louisiana,6,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,25,MA,Massachusetts,9,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,24,MD,Maryland,8,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,23,ME,Maine,2,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,26,MI,Michigan,14,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,27,MN,Minnesota,8,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,29,MO,Missouri,8,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,28,MS,Mississippi,4,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,30,MT,Montana,1,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,37,NC,North Carolina,13,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,38,ND,North Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,31,NE,Nebraska,3,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,34,NJ,New Jersey,12,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,35,NM,New Mexico,3,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,32,NV,Nevada,4,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,36,NY,New York,27,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,39,OH,Ohio,16,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,40,OK,Oklahoma,5,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,41,OR,Oregon,5,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,42,PA,Pennsylvania,18,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,45,SC,South Carolina,7,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,46,SD,South Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,47,TN,Tennessee,9,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,48,TX,Texas,36,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,49,UT,Utah,4,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,51,VA,Virginia,11,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,50,VT,Vermont,1,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,53,WA,Washington,10,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,55,WI,Wisconsin,8,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,54,WV,West Virginia,3,True,wikipedia-past-apportionments-2026-05-06
+23rd,2013,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,02,AK,Alaska,1,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,01,AL,Alabama,7,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,05,AR,Arkansas,4,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,04,AZ,Arizona,9,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,06,CA,California,52,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,08,CO,Colorado,8,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,09,CT,Connecticut,5,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,10,DE,Delaware,1,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,12,FL,Florida,28,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,13,GA,Georgia,14,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,15,HI,Hawaii,2,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,19,IA,Iowa,4,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,16,ID,Idaho,2,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,17,IL,Illinois,17,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,18,IN,Indiana,9,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,20,KS,Kansas,4,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,21,KY,Kentucky,6,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,22,LA,Louisiana,6,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,25,MA,Massachusetts,9,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,24,MD,Maryland,8,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,23,ME,Maine,2,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,26,MI,Michigan,13,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,27,MN,Minnesota,8,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,29,MO,Missouri,8,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,28,MS,Mississippi,4,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,30,MT,Montana,2,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,37,NC,North Carolina,14,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,38,ND,North Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,31,NE,Nebraska,3,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,33,NH,New Hampshire,2,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,34,NJ,New Jersey,12,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,35,NM,New Mexico,3,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,32,NV,Nevada,4,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,36,NY,New York,26,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,39,OH,Ohio,15,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,40,OK,Oklahoma,5,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,41,OR,Oregon,6,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,42,PA,Pennsylvania,17,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,44,RI,Rhode Island,2,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,45,SC,South Carolina,7,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,46,SD,South Dakota,1,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,47,TN,Tennessee,9,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,48,TX,Texas,38,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,49,UT,Utah,4,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,51,VA,Virginia,11,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,50,VT,Vermont,1,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,53,WA,Washington,10,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,55,WI,Wisconsin,8,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,54,WV,West Virginia,2,True,wikipedia-past-apportionments-2026-05-06
+24th,2023,56,WY,Wyoming,1,True,wikipedia-past-apportionments-2026-05-06

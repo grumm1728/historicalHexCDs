@@ -139,10 +139,69 @@ def write_output(path: Path, lookup: dict[str, tuple[str, str]], ap_cols: list[A
         writer.writerows(out_rows)
 
 
+def write_apportionment_output(
+    path: Path,
+    lookup: dict[str, tuple[str, str]],
+    ap_cols: list[ApportionmentColumn],
+    states: pd.DataFrame,
+) -> None:
+    fieldnames = [
+        "apportionment_label",
+        "effective_year",
+        "state_fips",
+        "state_abbr",
+        "state_name",
+        "house_seats",
+        "admitted",
+        "source_seat_version",
+    ]
+    version = f"wikipedia-past-apportionments-{date.today().isoformat()}"
+    out_rows: list[dict[str, object]] = []
+
+    for ap in sorted(ap_cols, key=lambda a: a.effected_year):
+        col = None
+        for candidate in states.columns[1:]:
+            if str(candidate[0]).strip() == ap.congress_label:
+                col = candidate
+                break
+        if col is None:
+            continue
+
+        for abbr in sorted(lookup):
+            state_fips, state_name = lookup[abbr]
+            row_match = states[states["state_abbr"] == abbr]
+            if row_match.empty:
+                seats = 0
+            else:
+                seats = int(row_match.iloc[0][col])
+            out_rows.append(
+                {
+                    "apportionment_label": ap.congress_label,
+                    "effective_year": ap.effected_year,
+                    "state_fips": state_fips,
+                    "state_abbr": abbr,
+                    "state_name": state_name,
+                    "house_seats": seats,
+                    "admitted": seats > 0,
+                    "source_seat_version": version,
+                }
+            )
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(out_rows)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Rebuild congress-exact seat table from Wikipedia past apportionments")
     parser.add_argument("--seed-csv", default=str(ROOT / "data_raw" / "seats" / "congress_exact_seats.csv"))
     parser.add_argument("--out", default=str(ROOT / "data_raw" / "seats" / "congress_exact_seats.csv"))
+    parser.add_argument(
+        "--apportionment-out",
+        default=str(ROOT / "data_raw" / "seats" / "state_seats_by_apportionment.csv"),
+    )
     parser.add_argument("--max-congress", type=int, default=119)
     args = parser.parse_args()
 
@@ -150,7 +209,9 @@ def main() -> None:
     tbl = fetch_past_apportionments_table()
     ap_cols, states = normalize_table(tbl)
     write_output(Path(args.out), lookup, ap_cols, states, args.max_congress)
+    write_apportionment_output(Path(args.apportionment_out), lookup, ap_cols, states)
     print(f"Wrote seat table to {args.out}")
+    print(f"Wrote apportionment table to {args.apportionment_out}")
 
 
 if __name__ == "__main__":

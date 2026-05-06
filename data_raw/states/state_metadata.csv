@@ -1,0 +1,51 @@
+state_fips,state_abbr,state_name,admission_order,admission_date_iso,admission_date_raw,admission_type,formed_from,source_admission_version
+10,DE,Delaware,1,1787-12-07,"December 7, 1787[8] (ratified)",ratified,Colony of Delaware[b],wikipedia-admission-dates-2026-05-06
+42,PA,Pennsylvania,2,1787-12-12,"December 12, 1787[10] (ratified)",ratified,Proprietary Province of Pennsylvania,wikipedia-admission-dates-2026-05-06
+34,NJ,New Jersey,3,1787-12-18,"December 18, 1787[11] (ratified)",ratified,Crown Colony of New Jersey,wikipedia-admission-dates-2026-05-06
+13,GA,Georgia,4,1788-01-02,"January 2, 1788[8] (ratified)",ratified,Crown Colony of Georgia,wikipedia-admission-dates-2026-05-06
+09,CT,Connecticut,5,1788-01-09,"January 9, 1788[12] (ratified)",ratified,Crown Colony of Connecticut,wikipedia-admission-dates-2026-05-06
+25,MA,Massachusetts,6,1788-02-06,"February 6, 1788[8] (ratified)",ratified,Crown Colony of Massachusetts Bay,wikipedia-admission-dates-2026-05-06
+24,MD,Maryland,7,1788-04-28,"April 28, 1788[8] (ratified)",ratified,Proprietary Province of Maryland,wikipedia-admission-dates-2026-05-06
+45,SC,South Carolina,8,1788-05-23,"May 23, 1788[8] (ratified)",ratified,Crown Colony of South Carolina,wikipedia-admission-dates-2026-05-06
+33,NH,New Hampshire,9,1788-06-21,"June 21, 1788[8] (ratified)",ratified,Crown Colony of New Hampshire,wikipedia-admission-dates-2026-05-06
+51,VA,Virginia,10,1788-06-25,"June 25, 1788[8] (ratified)",ratified,Crown Colony and Dominion of Virginia,wikipedia-admission-dates-2026-05-06
+36,NY,New York,11,1788-07-26,"July 26, 1788[13] (ratified)",ratified,Crown Colony of New York,wikipedia-admission-dates-2026-05-06
+37,NC,North Carolina,12,1789-11-21,"November 21, 1789[14] (ratified)",ratified,Crown Colony of North Carolina,wikipedia-admission-dates-2026-05-06
+44,RI,Rhode Island,13,1790-05-29,"May 29, 1790[8] (ratified)",ratified,Crown Colony of Rhode Island and Providence Plantations,wikipedia-admission-dates-2026-05-06
+50,VT,Vermont,14,1791-03-04,"March 4, 1791[15] (admitted)",admitted,Vermont Republic[c],wikipedia-admission-dates-2026-05-06
+21,KY,Kentucky,15,1792-06-01,"June 1, 1792[16] (admitted)",admitted,Virginia (nine counties in its District of Kentucky[d]),wikipedia-admission-dates-2026-05-06
+47,TN,Tennessee,16,1796-06-01,"June 1, 1796[18] (admitted)",admitted,Southwest Territory,wikipedia-admission-dates-2026-05-06
+39,OH,Ohio,17,1803-03-01,"March 1, 1803[19][e] (admitted)",admitted,Northwest Territory (part),wikipedia-admission-dates-2026-05-06
+22,LA,Louisiana,18,1812-04-30,"April 30, 1812[21] (admitted)",admitted,Territory of Orleans,wikipedia-admission-dates-2026-05-06
+18,IN,Indiana,19,1816-12-11,"December 11, 1816[22] (admitted)",admitted,Indiana Territory,wikipedia-admission-dates-2026-05-06
+28,MS,Mississippi,20,1817-12-10,"December 10, 1817[23] (admitted)",admitted,Mississippi Territory,wikipedia-admission-dates-2026-05-06
+17,IL,Illinois,21,1818-12-03,"December 3, 1818[24] (admitted)",admitted,Illinois Territory (part),wikipedia-admission-dates-2026-05-06
+01,AL,Alabama,22,1819-12-14,"December 14, 1819[25] (admitted)",admitted,Alabama Territory,wikipedia-admission-dates-2026-05-06
+23,ME,Maine,23,1820-03-15,"March 15, 1820[26] (admitted)",admitted,Massachusetts (District of Maine[f]),wikipedia-admission-dates-2026-05-06
+29,MO,Missouri,24,1821-08-10,"August 10, 1821[27] (admitted)",admitted,Missouri Territory (part),wikipedia-admission-dates-2026-05-06
+05,AR,Arkansas,25,1836-06-15,"June 15, 1836[28] (admitted)",admitted,Arkansas Territory,wikipedia-admission-dates-2026-05-06
+26,MI,Michigan,26,1837-01-26,"January 26, 1837[29] (admitted)",admitted,Michigan Territory,wikipedia-admission-dates-2026-05-06
+12,FL,Florida,27,1845-03-03,"March 3, 1845[30] (admitted)",admitted,Florida Territory,wikipedia-admission-dates-2026-05-06
+48,TX,Texas,28,1845-12-29,"December 29, 1845[31] (admitted)",admitted,Republic of Texas,wikipedia-admission-dates-2026-05-06
+19,IA,Iowa,29,1846-12-28,"December 28, 1846[32] (admitted)",admitted,Iowa Territory (part),wikipedia-admission-dates-2026-05-06
+55,WI,Wisconsin,30,1848-05-29,"May 29, 1848[33] (admitted)",admitted,Wisconsin Territory (part),wikipedia-admission-dates-2026-05-06
+06,CA,California,31,1850-09-09,"September 9, 1850[34] (admitted)",admitted,Unorganized territory / Mexican Cession (part)[g],wikipedia-admission-dates-2026-05-06
+27,MN,Minnesota,32,1858-05-11,"May 11, 1858[35] (admitted)",admitted,Minnesota Territory (part),wikipedia-admission-dates-2026-05-06
+41,OR,Oregon,33,1859-02-14,"February 14, 1859[36] (admitted)",admitted,Oregon Territory (part),wikipedia-admission-dates-2026-05-06
+20,KS,Kansas,34,1861-01-29,"January 29, 1861[37] (admitted)",admitted,Kansas Territory (part),wikipedia-admission-dates-2026-05-06
+54,WV,West Virginia,35,1863-06-20,"June 20, 1863[38] (admitted)",admitted,Virginia (50 Trans-Allegheny region counties[h]),wikipedia-admission-dates-2026-05-06
+32,NV,Nevada,36,1864-10-31,"October 31, 1864[41] (admitted)",admitted,Nevada Territory,wikipedia-admission-dates-2026-05-06
+31,NE,Nebraska,37,1867-03-01,"March 1, 1867[42] (admitted)",admitted,Nebraska Territory,wikipedia-admission-dates-2026-05-06
+08,CO,Colorado,38,1876-08-01,"August 1, 1876[43] (admitted)",admitted,Colorado Territory,wikipedia-admission-dates-2026-05-06
+38,ND,North Dakota,39,1889-11-02,"November 2, 1889[44][i] (admitted)",admitted,Dakota Territory (part),wikipedia-admission-dates-2026-05-06
+46,SD,South Dakota,40,1889-11-02,"November 2, 1889[44][i] (admitted)",admitted,Dakota Territory (part),wikipedia-admission-dates-2026-05-06
+30,MT,Montana,41,1889-11-08,"November 8, 1889[47] (admitted)",admitted,Montana Territory,wikipedia-admission-dates-2026-05-06
+53,WA,Washington,42,1889-11-11,"November 11, 1889[48] (admitted)",admitted,Washington Territory,wikipedia-admission-dates-2026-05-06
+16,ID,Idaho,43,1890-07-03,"July 3, 1890[49] (admitted)",admitted,Idaho Territory,wikipedia-admission-dates-2026-05-06
+56,WY,Wyoming,44,1890-07-10,"July 10, 1890[50] (admitted)",admitted,Wyoming Territory,wikipedia-admission-dates-2026-05-06
+49,UT,Utah,45,1896-01-04,"January 4, 1896[51] (admitted)",admitted,Utah Territory,wikipedia-admission-dates-2026-05-06
+40,OK,Oklahoma,46,1907-11-16,"November 16, 1907[52] (admitted)",admitted,Oklahoma Territory and Indian Territory,wikipedia-admission-dates-2026-05-06
+35,NM,New Mexico,47,1912-01-06,"January 6, 1912[53] (admitted)",admitted,New Mexico Territory,wikipedia-admission-dates-2026-05-06
+04,AZ,Arizona,48,1912-02-14,"February 14, 1912[53] (admitted)",admitted,Arizona Territory,wikipedia-admission-dates-2026-05-06
+02,AK,Alaska,49,1959-01-03,"January 3, 1959[54] (admitted)",admitted,Territory of Alaska,wikipedia-admission-dates-2026-05-06
+15,HI,Hawaii,50,1959-08-21,"August 21, 1959[55] (admitted)",admitted,Territory of Hawaii,wikipedia-admission-dates-2026-05-06
