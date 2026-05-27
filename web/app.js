@@ -6,6 +6,13 @@ const range = document.getElementById("congressRange");
 const label = document.getElementById("congressLabel");
 const tooltip = document.getElementById("tooltip");
 const outlineOnlyToggle = document.getElementById("outlineOnlyToggle");
+const showDistrictsToggle = document.getElementById("showDistrictsToggle");
+const civilWarBanner = document.getElementById("civilWarBanner");
+const readoutCongress = document.getElementById("readoutCongress");
+const readoutYears = document.getElementById("readoutYears");
+const readoutStates = document.getElementById("readoutStates");
+const readoutSeats = document.getElementById("readoutSeats");
+const readoutLargest = document.getElementById("readoutLargest");
 
 const width = 960;
 const height = 600;
@@ -15,6 +22,34 @@ let frameIndex = 0;
 let timer = null;
 let svg;
 let stateColor;
+// Distinguish CDs within a state by hashing state+cd_index into d3's category palette,
+// with a stable per-state base hue overlay so adjacent CDs in the same state look related.
+function cdColor(props) {
+  const base = stateColor(props.state_abbr || "unknown");
+  // Modulate base luminance by cd_index so adjacent CDs in the same state differ visibly.
+  const idx = Number(props.cd_index) || 1;
+  const total = Math.max(1, Number(props.house_seats) || 1);
+  const t = (idx - 1) / total;
+  // Blend base with white by 0..0.45 across CDs.
+  try {
+    const c = d3.color(base);
+    if (!c) return base;
+    const mix = 0.10 + 0.45 * t;
+    c.r = Math.round(c.r + (255 - c.r) * mix);
+    c.g = Math.round(c.g + (255 - c.g) * mix);
+    c.b = Math.round(c.b + (255 - c.b) * mix);
+    return c.formatRgb();
+  } catch {
+    return base;
+  }
+}
+const outlineGeometryCache = new Map();
+const CIVIL_WAR_HIDDEN_BY_CONGRESS = new Map([
+  [37, new Set(["AL", "AR", "FL", "GA", "LA", "MS", "NC", "SC", "TN", "TX", "VA"])],
+  [38, new Set(["AL", "AR", "FL", "GA", "LA", "MS", "NC", "SC", "TN", "TX", "VA"])],
+  [39, new Set(["AL", "AR", "FL", "GA", "LA", "MS", "NC", "SC", "TX", "VA"])],
+  [40, new Set(["MS", "TX", "VA"])],
+]);
 
 function geometryBounds(geo) {
   let minX = Infinity;
@@ -37,6 +72,108 @@ function geometryBounds(geo) {
   return { minX, minY, maxX, maxY };
 }
 
+function collectCoords(v, out) {
+  if (!Array.isArray(v)) return;
+  if (v.length === 2 && Number.isFinite(v[0]) && Number.isFinite(v[1])) {
+    out.push(v);
+    return;
+  }
+  for (const e of v) collectCoords(e, out);
+}
+
+function featureBounds(feature) {
+  const pts = [];
+  collectCoords(feature?.geometry?.coordinates, pts);
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const [x, y] of pts) {
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  }
+  return { minX, minY, maxX, maxY };
+}
+
+function translateCoords(v, dx, dy) {
+  if (!Array.isArray(v)) return v;
+  if (v.length === 2 && Number.isFinite(v[0]) && Number.isFinite(v[1])) {
+    return [v[0] + dx, v[1] + dy];
+  }
+  return v.map((e) => translateCoords(e, dx, dy));
+}
+
+function applyCollisionLayout(outlineGeo, congressNumber) {
+  if (!outlineGeo || !Array.isArray(outlineGeo.features) || outlineGeo.features.length < 2) {
+    return outlineGeo;
+  }
+  if (outlineGeometryCache.has(congressNumber)) {
+    return outlineGeometryCache.get(congressNumber);
+  }
+
+  const nodes = outlineGeo.features.map((f, i) => {
+    const b = featureBounds(f);
+    const cx = (b.minX + b.maxX) / 2;
+    const cy = (b.minY + b.maxY) / 2;
+    const w = Math.max(0, b.maxX - b.minX);
+    const h = Math.max(0, b.maxY - b.minY);
+    const r = Math.max(0.001, Math.hypot(w, h) * 0.5);
+    return { i, abbr: String(f?.properties?.state_abbr || ""), x: cx, y: cy, tx: cx, ty: cy, r };
+  });
+
+  const basePadding = 0.015;
+  const repel = 0.5;
+  const spring = 0.22;
+
+  // Keep target congress exactly at source-of-truth spacing.
+  const iterations = 110;
+  for (let iter = 0; iter < iterations; iter += 1) {
+    for (let a = 0; a < nodes.length; a += 1) {
+      for (let b = a + 1; b < nodes.length; b += 1) {
+        const n1 = nodes[a];
+        const n2 = nodes[b];
+        const dx = n2.x - n1.x;
+        const dy = n2.y - n1.y;
+        const d = Math.hypot(dx, dy) || 1e-9;
+        const minD = n1.r + n2.r + basePadding;
+        if (d < minD) {
+          const push = ((minD - d) / minD) * repel;
+          const ux = dx / d;
+          const uy = dy / d;
+          n1.x -= ux * push;
+          n1.y -= uy * push;
+          n2.x += ux * push;
+          n2.y += uy * push;
+        }
+      }
+    }
+    for (const n of nodes) {
+      n.x += (n.tx - n.x) * spring;
+      n.y += (n.ty - n.y) * spring;
+    }
+  }
+
+  const shifts = new Map(nodes.map((n) => [n.i, { dx: n.x - n.tx, dy: n.y - n.ty }]));
+  const byAbbr = new Map(nodes.map((n) => [n.abbr, { dx: n.x - n.tx, dy: n.y - n.ty }]));
+  const outFeatures = outlineGeo.features.map((f, i) => {
+    const shift = shifts.get(i) || { dx: 0, dy: 0 };
+    return {
+      ...f,
+      geometry: {
+        ...f.geometry,
+        coordinates: translateCoords(f.geometry.coordinates, shift.dx, shift.dy),
+      },
+    };
+  });
+
+  const result = { ...outlineGeo, features: outFeatures, _shiftByAbbr: byAbbr };
+  outlineGeometryCache.set(congressNumber, result);
+  return result;
+}
+
+
 function setStatus(message) {
   statusEl.hidden = false;
   statusEl.textContent = message;
@@ -45,6 +182,17 @@ function setStatus(message) {
 function clearStatus() {
   statusEl.hidden = true;
   statusEl.textContent = "";
+}
+
+function setCivilWarBanner(message) {
+  if (!civilWarBanner) return;
+  if (!message) {
+    civilWarBanner.hidden = true;
+    civilWarBanner.textContent = "";
+    return;
+  }
+  civilWarBanner.hidden = false;
+  civilWarBanner.textContent = message;
 }
 
 function setControlsEnabled(enabled) {
@@ -85,37 +233,97 @@ async function loadIndex() {
   }
 }
 
+function isV5Frame(entry) {
+  return String(entry?.generator_version || "").startsWith("v5");
+}
+
 async function drawFrame(entry) {
   const featurePath = entry.state_feature_path || entry.feature_path;
-  const [cellResp, outlineResp] = await Promise.all([
-    fetch(`./${featurePath}`),
-    entry.state_outline_path ? fetch(`./${entry.state_outline_path}`) : Promise.resolve(null),
-  ]);
-  if (!cellResp.ok) {
-    throw new Error(`Failed to load ${featurePath}`);
-  }
+  const cdPath = entry.cd_feature_path;
+  const showDistricts = Boolean(showDistrictsToggle?.checked) && Boolean(cdPath);
+  const v5 = isV5Frame(entry);
+
+  const fetches = [fetch(`./${featurePath}`)];
+  fetches.push(entry.state_outline_path ? fetch(`./${entry.state_outline_path}`) : Promise.resolve(null));
+  fetches.push(showDistricts ? fetch(`./${cdPath}`) : Promise.resolve(null));
+  const [cellResp, outlineResp, cdResp] = await Promise.all(fetches);
+
+  if (!cellResp.ok) throw new Error(`Failed to load ${featurePath}`);
   const geo = await cellResp.json();
-  const outlineGeo = outlineResp && outlineResp.ok ? await outlineResp.json() : null;
-  const b = geometryBounds(geo);
+  const rawOutlineGeo = outlineResp && outlineResp.ok ? await outlineResp.json() : null;
+  const cdGeo = cdResp && cdResp.ok ? await cdResp.json() : null;
+
+  const congressNumber = Number(entry.congress_number);
+  const hiddenSet = CIVIL_WAR_HIDDEN_BY_CONGRESS.get(congressNumber) || new Set();
+  geo.features = (geo.features || []).filter((f) => !hiddenSet.has(String(f?.properties?.state_abbr || "").toUpperCase()));
+  if (rawOutlineGeo && Array.isArray(rawOutlineGeo.features)) {
+    rawOutlineGeo.features = rawOutlineGeo.features.filter((f) => !hiddenSet.has(String(f?.properties?.state_abbr || "").toUpperCase()));
+  }
+  if (cdGeo && Array.isArray(cdGeo.features)) {
+    cdGeo.features = cdGeo.features.filter((f) => !hiddenSet.has(String(f?.properties?.state_abbr || "").toUpperCase()));
+  }
+
+  updateReadout(entry, geo.features);
+
+  // v5 uses absolute WM coordinates that already respect the cartogram layout.
+  // The legacy collision relax was for the old template generator only.
+  const outlineGeo = rawOutlineGeo
+    ? (v5 ? rawOutlineGeo : applyCollisionLayout(rawOutlineGeo, congressNumber))
+    : null;
+  const showSilhouettes = Boolean(outlineOnlyToggle?.checked);
+  const outlineAvailable = Boolean(outlineGeo && Array.isArray(outlineGeo.features) && outlineGeo.features.length > 0);
+
+  // Choose the geometry used for fit. Priority: v5 prefers CDs (most extent),
+  // then state polyhex cells, then outline as last resort.
+  let fitGeo = geo;
+  if (showDistricts && cdGeo && cdGeo.features?.length) fitGeo = cdGeo;
+  else if (showSilhouettes && outlineAvailable) fitGeo = outlineGeo;
+
+  const b = geometryBounds(fitGeo);
   const projected = Math.abs(b.maxX) > 1000 || Math.abs(b.minX) > 1000 || Math.abs(b.maxY) > 1000 || Math.abs(b.minY) > 1000;
   const projection = projected
-    ? d3.geoIdentity().reflectY(true).fitSize([width, height], geo)
-    : d3.geoAlbersUsa().fitSize([width, height], geo);
+    ? d3.geoIdentity().reflectY(true).fitSize([width, height], fitGeo)
+    : d3.geoAlbersUsa().fitSize([width, height], fitGeo);
   const path = d3.geoPath(projection);
 
   svg.selectAll("g").remove();
   const g = svg.append("g");
 
-  if (outlineGeo && Array.isArray(outlineGeo.features)) {
+  // Layer 1: state silhouettes (faint backdrop) when toggled.
+  if (showSilhouettes && outlineAvailable) {
+    const outlineData = outlineGeo.features
+      .map((f) => ({ f, d: path(f) }))
+      .filter((x) => Boolean(x.d));
     g.selectAll("path.state-outline")
-      .data(outlineGeo.features)
+      .data(outlineData)
       .join("path")
       .attr("class", "state-outline")
-      .attr("d", path)
-      .attr("fill", (d) => stateColor(d.properties.state_abbr || "unknown"));
+      .attr("d", (d) => d.d)
+      .attr("fill", (d) => stateColor(d.f.properties.state_abbr || "unknown"));
   }
 
-  if (!outlineOnlyToggle?.checked) {
+  // Layer 2: per-CD pentahex tiles when toggled (v5 only).
+  if (showDistricts && cdGeo && cdGeo.features?.length) {
+    g.selectAll("path.cd-tile")
+      .data(cdGeo.features)
+      .join("path")
+      .attr("class", "cd-tile")
+      .attr("d", path)
+      .attr("fill", (d) => cdColor(d.properties))
+      .on("mousemove", (event, d) => {
+        tooltip.hidden = false;
+        tooltip.style.left = `${event.offsetX + 16}px`;
+        tooltip.style.top = `${event.offsetY + 16}px`;
+        tooltip.innerHTML = [
+          `<strong>${d.properties.state_name || "Unknown"}</strong>`,
+          `CD ${d.properties.cd_index ?? "?"} of ${d.properties.house_seats ?? "?"}`,
+          `Hexes: ${d.properties.hex_count ?? 5}${d.properties.is_boundary_tile ? " (boundary)" : ""}`,
+          `Congress: ${entry.congress_number}`,
+        ].join("<br>");
+      })
+      .on("mouseleave", () => { tooltip.hidden = true; });
+  } else {
+    // Layer 2 fallback: state-level polyhex fill.
     g.selectAll("path.cell")
       .data(geo.features)
       .join("path")
@@ -134,11 +342,46 @@ async function drawFrame(entry) {
           `Congress: ${entry.congress_number}`,
         ].join("<br>");
       })
-      .on("mouseleave", () => {
-        tooltip.hidden = true;
-      });
-  } else {
-    tooltip.hidden = true;
+      .on("mouseleave", () => { tooltip.hidden = true; });
+  }
+
+  clearStatus();
+  setCivilWarBanner("");
+}
+
+function ordinal(n) {
+  const v = n % 100;
+  if (v >= 11 && v <= 13) return `${n}th`;
+  switch (n % 10) {
+    case 1: return `${n}st`;
+    case 2: return `${n}nd`;
+    case 3: return `${n}rd`;
+    default: return `${n}th`;
+  }
+}
+
+function updateReadout(entry, features) {
+  const visible = (features || []).filter((f) => Number(f?.properties?.house_seats) > 0);
+  const totalSeats = visible.reduce((s, f) => s + Number(f.properties.house_seats || 0), 0);
+  const stateCount = visible.length;
+  let largest = null;
+  for (const f of visible) {
+    if (!largest || Number(f.properties.house_seats) > Number(largest.properties.house_seats)) {
+      largest = f;
+    }
+  }
+  if (readoutCongress) readoutCongress.textContent = ordinal(Number(entry.congress_number));
+  if (readoutYears) {
+    const sy = String(entry.start_date || "").slice(0, 4);
+    const ey = String(entry.end_date || "").slice(0, 4);
+    readoutYears.textContent = sy && ey ? `${sy}–${ey}` : "-";
+  }
+  if (readoutStates) readoutStates.textContent = String(stateCount);
+  if (readoutSeats) readoutSeats.textContent = String(totalSeats);
+  if (readoutLargest) {
+    readoutLargest.textContent = largest
+      ? `${largest.properties.state_abbr} (${largest.properties.house_seats})`
+      : "-";
   }
 }
 
@@ -146,7 +389,7 @@ async function setFrame(i) {
   frameIndex = i;
   range.value = String(i);
   const entry = timeline[i];
-  label.textContent = `${entry.congress_number}th Congress (${entry.start_date} to ${entry.end_date})`;
+  label.textContent = `${ordinal(Number(entry.congress_number))} Congress (${entry.start_date} to ${entry.end_date})`;
   await drawFrame(entry);
 }
 
@@ -178,6 +421,12 @@ function setupControls() {
 
   if (outlineOnlyToggle) {
     outlineOnlyToggle.addEventListener("change", async () => {
+      stopPlayback();
+      await setFrame(frameIndex);
+    });
+  }
+  if (showDistrictsToggle) {
+    showDistrictsToggle.addEventListener("change", async () => {
       stopPlayback();
       await setFrame(frameIndex);
     });

@@ -1,5 +1,5 @@
 {
-  "generated_on": "2026-05-05",
+  "generated_on": "2026-05-26",
   "render_mode": "clipped_polyhex_only",
   "canonical_unit": "state",
   "max_congress_expected": 119,
@@ -11,14 +11,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/1.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/1.geojson",
       "shapefile_path": "data_processed/shapefiles/1/HexState_1.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 13,
-      "state_outline_count": 13
+      "state_outline_count": 13,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/1.geojson",
+      "cd_feature_count": 65,
+      "cells_used_total": 325
     },
     {
       "congress_number": 2,
@@ -27,14 +30,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/2.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/2.geojson",
       "shapefile_path": "data_processed/shapefiles/2/HexState_2.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 13,
-      "state_outline_count": 13
+      "state_outline_count": 13,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/2.geojson",
+      "cd_feature_count": 65,
+      "cells_used_total": 325
     },
     {
       "congress_number": 3,
@@ -43,14 +49,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/3.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/3.geojson",
       "shapefile_path": "data_processed/shapefiles/3/HexState_3.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 15,
-      "state_outline_count": 15
+      "state_outline_count": 15,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/3.geojson",
+      "cd_feature_count": 104,
+      "cells_used_total": 520
     },
     {
       "congress_number": 4,
@@ -59,14 +68,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/4.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/4.geojson",
       "shapefile_path": "data_processed/shapefiles/4/HexState_4.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 15,
-      "state_outline_count": 15
+      "state_outline_count": 15,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/4.geojson",
+      "cd_feature_count": 104,
+      "cells_used_total": 520
     },
     {
       "congress_number": 5,
@@ -75,14 +87,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/5.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/5.geojson",
       "shapefile_path": "data_processed/shapefiles/5/HexState_5.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 15,
-      "state_outline_count": 15
+      "state_outline_count": 15,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/5.geojson",
+      "cd_feature_count": 104,
+      "cells_used_total": 520
     },
     {
       "congress_number": 6,
@@ -91,14 +106,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/6.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/6.geojson",
       "shapefile_path": "data_processed/shapefiles/6/HexState_6.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 15,
-      "state_outline_count": 15
+      "state_outline_count": 15,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/6.geojson",
+      "cd_feature_count": 104,
+      "cells_used_total": 520
     },
     {
       "congress_number": 7,
@@ -107,14 +125,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/7.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/7.geojson",
       "shapefile_path": "data_processed/shapefiles/7/HexState_7.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 15,
-      "state_outline_count": 15
+      "state_outline_count": 15,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/7.geojson",
+      "cd_feature_count": 104,
+      "cells_used_total": 520
     },
     {
       "congress_number": 8,
@@ -123,14 +144,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/8.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/8.geojson",
       "shapefile_path": "data_processed/shapefiles/8/HexState_8.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 17,
-      "state_outline_count": 17
+      "state_outline_count": 17,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/8.geojson",
+      "cd_feature_count": 141,
+      "cells_used_total": 705
     },
     {
       "congress_number": 9,
@@ -139,14 +163,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/9.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/9.geojson",
       "shapefile_path": "data_processed/shapefiles/9/HexState_9.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 17,
-      "state_outline_count": 17
+      "state_outline_count": 17,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/9.geojson",
+      "cd_feature_count": 141,
+      "cells_used_total": 705
     },
     {
       "congress_number": 10,
@@ -155,14 +182,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/10.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/10.geojson",
       "shapefile_path": "data_processed/shapefiles/10/HexState_10.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 17,
-      "state_outline_count": 17
+      "state_outline_count": 17,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/10.geojson",
+      "cd_feature_count": 141,
+      "cells_used_total": 705
     },
     {
       "congress_number": 11,
@@ -171,14 +201,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/11.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/11.geojson",
       "shapefile_path": "data_processed/shapefiles/11/HexState_11.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 17,
-      "state_outline_count": 17
+      "state_outline_count": 17,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/11.geojson",
+      "cd_feature_count": 141,
+      "cells_used_total": 705
     },
     {
       "congress_number": 12,
@@ -187,14 +220,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/12.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/12.geojson",
       "shapefile_path": "data_processed/shapefiles/12/HexState_12.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 17,
-      "state_outline_count": 17
+      "state_outline_count": 17,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/12.geojson",
+      "cd_feature_count": 141,
+      "cells_used_total": 705
     },
     {
       "congress_number": 13,
@@ -203,14 +239,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/13.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/13.geojson",
       "shapefile_path": "data_processed/shapefiles/13/HexState_13.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 18,
-      "state_outline_count": 18
+      "state_outline_count": 18,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/13.geojson",
+      "cd_feature_count": 178,
+      "cells_used_total": 890
     },
     {
       "congress_number": 14,
@@ -219,14 +258,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/14.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/14.geojson",
       "shapefile_path": "data_processed/shapefiles/14/HexState_14.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 18,
-      "state_outline_count": 18
+      "state_outline_count": 18,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/14.geojson",
+      "cd_feature_count": 178,
+      "cells_used_total": 890
     },
     {
       "congress_number": 15,
@@ -235,14 +277,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/15.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/15.geojson",
       "shapefile_path": "data_processed/shapefiles/15/HexState_15.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 18,
-      "state_outline_count": 18
+      "state_outline_count": 18,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/15.geojson",
+      "cd_feature_count": 178,
+      "cells_used_total": 890
     },
     {
       "congress_number": 16,
@@ -251,14 +296,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/16.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/16.geojson",
       "shapefile_path": "data_processed/shapefiles/16/HexState_16.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 18,
-      "state_outline_count": 18
+      "state_outline_count": 18,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/16.geojson",
+      "cd_feature_count": 178,
+      "cells_used_total": 890
     },
     {
       "congress_number": 17,
@@ -267,14 +315,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/17.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/17.geojson",
       "shapefile_path": "data_processed/shapefiles/17/HexState_17.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 18,
-      "state_outline_count": 18
+      "state_outline_count": 18,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/17.geojson",
+      "cd_feature_count": 178,
+      "cells_used_total": 890
     },
     {
       "congress_number": 18,
@@ -283,14 +334,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/18.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/18.geojson",
       "shapefile_path": "data_processed/shapefiles/18/HexState_18.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 24,
-      "state_outline_count": 24
+      "state_outline_count": 24,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/18.geojson",
+      "cd_feature_count": 212,
+      "cells_used_total": 1060
     },
     {
       "congress_number": 19,
@@ -299,14 +353,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/19.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/19.geojson",
       "shapefile_path": "data_processed/shapefiles/19/HexState_19.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 24,
-      "state_outline_count": 24
+      "state_outline_count": 24,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/19.geojson",
+      "cd_feature_count": 212,
+      "cells_used_total": 1060
     },
     {
       "congress_number": 20,
@@ -315,14 +372,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/20.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/20.geojson",
       "shapefile_path": "data_processed/shapefiles/20/HexState_20.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 24,
-      "state_outline_count": 24
+      "state_outline_count": 24,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/20.geojson",
+      "cd_feature_count": 212,
+      "cells_used_total": 1060
     },
     {
       "congress_number": 21,
@@ -331,14 +391,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/21.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/21.geojson",
       "shapefile_path": "data_processed/shapefiles/21/HexState_21.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 24,
-      "state_outline_count": 24
+      "state_outline_count": 24,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/21.geojson",
+      "cd_feature_count": 212,
+      "cells_used_total": 1060
     },
     {
       "congress_number": 22,
@@ -347,14 +410,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/22.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/22.geojson",
       "shapefile_path": "data_processed/shapefiles/22/HexState_22.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 24,
-      "state_outline_count": 24
+      "state_outline_count": 24,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/22.geojson",
+      "cd_feature_count": 212,
+      "cells_used_total": 1060
     },
     {
       "congress_number": 23,
@@ -363,14 +429,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/23.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/23.geojson",
       "shapefile_path": "data_processed/shapefiles/23/HexState_23.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 24,
-      "state_outline_count": 24
+      "state_outline_count": 24,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/23.geojson",
+      "cd_feature_count": 238,
+      "cells_used_total": 1190
     },
     {
       "congress_number": 24,
@@ -379,14 +448,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/24.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/24.geojson",
       "shapefile_path": "data_processed/shapefiles/24/HexState_24.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 24,
-      "state_outline_count": 24
+      "state_outline_count": 24,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/24.geojson",
+      "cd_feature_count": 238,
+      "cells_used_total": 1190
     },
     {
       "congress_number": 25,
@@ -395,14 +467,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/25.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/25.geojson",
       "shapefile_path": "data_processed/shapefiles/25/HexState_25.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 24,
-      "state_outline_count": 24
+      "state_outline_count": 24,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/25.geojson",
+      "cd_feature_count": 238,
+      "cells_used_total": 1190
     },
     {
       "congress_number": 26,
@@ -411,14 +486,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/26.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/26.geojson",
       "shapefile_path": "data_processed/shapefiles/26/HexState_26.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 24,
-      "state_outline_count": 24
+      "state_outline_count": 24,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/26.geojson",
+      "cd_feature_count": 238,
+      "cells_used_total": 1190
     },
     {
       "congress_number": 27,
@@ -427,14 +505,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/27.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/27.geojson",
       "shapefile_path": "data_processed/shapefiles/27/HexState_27.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 24,
-      "state_outline_count": 24
+      "state_outline_count": 24,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/27.geojson",
+      "cd_feature_count": 238,
+      "cells_used_total": 1190
     },
     {
       "congress_number": 28,
@@ -443,14 +524,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/28.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/28.geojson",
       "shapefile_path": "data_processed/shapefiles/28/HexState_28.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 26,
-      "state_outline_count": 26
+      "state_outline_count": 26,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/28.geojson",
+      "cd_feature_count": 223,
+      "cells_used_total": 1115
     },
     {
       "congress_number": 29,
@@ -459,14 +543,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/29.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/29.geojson",
       "shapefile_path": "data_processed/shapefiles/29/HexState_29.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 26,
-      "state_outline_count": 26
+      "state_outline_count": 26,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/29.geojson",
+      "cd_feature_count": 223,
+      "cells_used_total": 1115
     },
     {
       "congress_number": 30,
@@ -475,14 +562,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/30.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/30.geojson",
       "shapefile_path": "data_processed/shapefiles/30/HexState_30.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 26,
-      "state_outline_count": 26
+      "state_outline_count": 26,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/30.geojson",
+      "cd_feature_count": 223,
+      "cells_used_total": 1115
     },
     {
       "congress_number": 31,
@@ -491,14 +581,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/31.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/31.geojson",
       "shapefile_path": "data_processed/shapefiles/31/HexState_31.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 26,
-      "state_outline_count": 26
+      "state_outline_count": 26,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/31.geojson",
+      "cd_feature_count": 223,
+      "cells_used_total": 1115
     },
     {
       "congress_number": 32,
@@ -507,14 +600,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/32.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/32.geojson",
       "shapefile_path": "data_processed/shapefiles/32/HexState_32.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 26,
-      "state_outline_count": 26
+      "state_outline_count": 26,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/32.geojson",
+      "cd_feature_count": 223,
+      "cells_used_total": 1115
     },
     {
       "congress_number": 33,
@@ -523,14 +619,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/33.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/33.geojson",
       "shapefile_path": "data_processed/shapefiles/33/HexState_33.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 31,
-      "state_outline_count": 31
+      "state_outline_count": 31,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/33.geojson",
+      "cd_feature_count": 234,
+      "cells_used_total": 1170
     },
     {
       "congress_number": 34,
@@ -539,14 +638,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/34.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/34.geojson",
       "shapefile_path": "data_processed/shapefiles/34/HexState_34.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 31,
-      "state_outline_count": 31
+      "state_outline_count": 31,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/34.geojson",
+      "cd_feature_count": 234,
+      "cells_used_total": 1170
     },
     {
       "congress_number": 35,
@@ -555,14 +657,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/35.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/35.geojson",
       "shapefile_path": "data_processed/shapefiles/35/HexState_35.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 31,
-      "state_outline_count": 31
+      "state_outline_count": 31,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/35.geojson",
+      "cd_feature_count": 234,
+      "cells_used_total": 1170
     },
     {
       "congress_number": 36,
@@ -571,14 +676,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/36.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/36.geojson",
       "shapefile_path": "data_processed/shapefiles/36/HexState_36.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 31,
-      "state_outline_count": 31
+      "state_outline_count": 31,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/36.geojson",
+      "cd_feature_count": 234,
+      "cells_used_total": 1170
     },
     {
       "congress_number": 37,
@@ -587,14 +695,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/37.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/37.geojson",
       "shapefile_path": "data_processed/shapefiles/37/HexState_37.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 31,
-      "state_outline_count": 31
+      "state_outline_count": 31,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/37.geojson",
+      "cd_feature_count": 234,
+      "cells_used_total": 1170
     },
     {
       "congress_number": 38,
@@ -603,14 +714,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/38.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/38.geojson",
       "shapefile_path": "data_processed/shapefiles/38/HexState_38.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 34,
-      "state_outline_count": 34
+      "state_outline_count": 34,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/38.geojson",
+      "cd_feature_count": 241,
+      "cells_used_total": 1205
     },
     {
       "congress_number": 39,
@@ -619,14 +733,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/39.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/39.geojson",
       "shapefile_path": "data_processed/shapefiles/39/HexState_39.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 34,
-      "state_outline_count": 34
+      "state_outline_count": 34,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/39.geojson",
+      "cd_feature_count": 241,
+      "cells_used_total": 1205
     },
     {
       "congress_number": 40,
@@ -635,14 +752,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/40.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/40.geojson",
       "shapefile_path": "data_processed/shapefiles/40/HexState_40.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 34,
-      "state_outline_count": 34
+      "state_outline_count": 34,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/40.geojson",
+      "cd_feature_count": 241,
+      "cells_used_total": 1205
     },
     {
       "congress_number": 41,
@@ -651,14 +771,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/41.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/41.geojson",
       "shapefile_path": "data_processed/shapefiles/41/HexState_41.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 34,
-      "state_outline_count": 34
+      "state_outline_count": 34,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/41.geojson",
+      "cd_feature_count": 241,
+      "cells_used_total": 1205
     },
     {
       "congress_number": 42,
@@ -667,14 +790,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/42.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/42.geojson",
       "shapefile_path": "data_processed/shapefiles/42/HexState_42.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 34,
-      "state_outline_count": 34
+      "state_outline_count": 34,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/42.geojson",
+      "cd_feature_count": 241,
+      "cells_used_total": 1205
     },
     {
       "congress_number": 43,
@@ -683,14 +809,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/43.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/43.geojson",
       "shapefile_path": "data_processed/shapefiles/43/HexState_43.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 37,
-      "state_outline_count": 37
+      "state_outline_count": 37,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/43.geojson",
+      "cd_feature_count": 292,
+      "cells_used_total": 1460
     },
     {
       "congress_number": 44,
@@ -699,14 +828,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/44.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/44.geojson",
       "shapefile_path": "data_processed/shapefiles/44/HexState_44.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 37,
-      "state_outline_count": 37
+      "state_outline_count": 37,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/44.geojson",
+      "cd_feature_count": 292,
+      "cells_used_total": 1460
     },
     {
       "congress_number": 45,
@@ -715,14 +847,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/45.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/45.geojson",
       "shapefile_path": "data_processed/shapefiles/45/HexState_45.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 37,
-      "state_outline_count": 37
+      "state_outline_count": 37,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/45.geojson",
+      "cd_feature_count": 292,
+      "cells_used_total": 1460
     },
     {
       "congress_number": 46,
@@ -731,14 +866,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/46.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/46.geojson",
       "shapefile_path": "data_processed/shapefiles/46/HexState_46.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 37,
-      "state_outline_count": 37
+      "state_outline_count": 37,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/46.geojson",
+      "cd_feature_count": 292,
+      "cells_used_total": 1460
     },
     {
       "congress_number": 47,
@@ -747,14 +885,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/47.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/47.geojson",
       "shapefile_path": "data_processed/shapefiles/47/HexState_47.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 37,
-      "state_outline_count": 37
+      "state_outline_count": 37,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/47.geojson",
+      "cd_feature_count": 292,
+      "cells_used_total": 1460
     },
     {
       "congress_number": 48,
@@ -763,14 +904,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/48.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/48.geojson",
       "shapefile_path": "data_processed/shapefiles/48/HexState_48.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 38,
-      "state_outline_count": 38
+      "state_outline_count": 38,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/48.geojson",
+      "cd_feature_count": 325,
+      "cells_used_total": 1625
     },
     {
       "congress_number": 49,
@@ -779,14 +923,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/49.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/49.geojson",
       "shapefile_path": "data_processed/shapefiles/49/HexState_49.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 38,
-      "state_outline_count": 38
+      "state_outline_count": 38,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/49.geojson",
+      "cd_feature_count": 325,
+      "cells_used_total": 1625
     },
     {
       "congress_number": 50,
@@ -795,14 +942,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/50.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/50.geojson",
       "shapefile_path": "data_processed/shapefiles/50/HexState_50.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 38,
-      "state_outline_count": 38
+      "state_outline_count": 38,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/50.geojson",
+      "cd_feature_count": 325,
+      "cells_used_total": 1625
     },
     {
       "congress_number": 51,
@@ -811,14 +961,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/51.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/51.geojson",
       "shapefile_path": "data_processed/shapefiles/51/HexState_51.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 38,
-      "state_outline_count": 38
+      "state_outline_count": 38,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/51.geojson",
+      "cd_feature_count": 325,
+      "cells_used_total": 1625
     },
     {
       "congress_number": 52,
@@ -827,14 +980,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/52.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/52.geojson",
       "shapefile_path": "data_processed/shapefiles/52/HexState_52.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 38,
-      "state_outline_count": 38
+      "state_outline_count": 38,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/52.geojson",
+      "cd_feature_count": 325,
+      "cells_used_total": 1625
     },
     {
       "congress_number": 53,
@@ -843,14 +999,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/53.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/53.geojson",
       "shapefile_path": "data_processed/shapefiles/53/HexState_53.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 44,
-      "state_outline_count": 44
+      "state_outline_count": 44,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/53.geojson",
+      "cd_feature_count": 355,
+      "cells_used_total": 1775
     },
     {
       "congress_number": 54,
@@ -859,14 +1018,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/54.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/54.geojson",
       "shapefile_path": "data_processed/shapefiles/54/HexState_54.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 44,
-      "state_outline_count": 44
+      "state_outline_count": 44,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/54.geojson",
+      "cd_feature_count": 355,
+      "cells_used_total": 1775
     },
     {
       "congress_number": 55,
@@ -875,14 +1037,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/55.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/55.geojson",
       "shapefile_path": "data_processed/shapefiles/55/HexState_55.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 44,
-      "state_outline_count": 44
+      "state_outline_count": 44,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/55.geojson",
+      "cd_feature_count": 355,
+      "cells_used_total": 1775
     },
     {
       "congress_number": 56,
@@ -891,14 +1056,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/56.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/56.geojson",
       "shapefile_path": "data_processed/shapefiles/56/HexState_56.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 44,
-      "state_outline_count": 44
+      "state_outline_count": 44,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/56.geojson",
+      "cd_feature_count": 355,
+      "cells_used_total": 1775
     },
     {
       "congress_number": 57,
@@ -907,14 +1075,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/57.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/57.geojson",
       "shapefile_path": "data_processed/shapefiles/57/HexState_57.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 44,
-      "state_outline_count": 44
+      "state_outline_count": 44,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/57.geojson",
+      "cd_feature_count": 355,
+      "cells_used_total": 1775
     },
     {
       "congress_number": 58,
@@ -923,14 +1094,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/58.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/58.geojson",
       "shapefile_path": "data_processed/shapefiles/58/HexState_58.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 45,
-      "state_outline_count": 45
+      "state_outline_count": 45,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/58.geojson",
+      "cd_feature_count": 385,
+      "cells_used_total": 1925
     },
     {
       "congress_number": 59,
@@ -939,14 +1113,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/59.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/59.geojson",
       "shapefile_path": "data_processed/shapefiles/59/HexState_59.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 45,
-      "state_outline_count": 45
+      "state_outline_count": 45,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/59.geojson",
+      "cd_feature_count": 385,
+      "cells_used_total": 1925
     },
     {
       "congress_number": 60,
@@ -955,14 +1132,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/60.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/60.geojson",
       "shapefile_path": "data_processed/shapefiles/60/HexState_60.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 45,
-      "state_outline_count": 45
+      "state_outline_count": 45,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/60.geojson",
+      "cd_feature_count": 385,
+      "cells_used_total": 1925
     },
     {
       "congress_number": 61,
@@ -971,14 +1151,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/61.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/61.geojson",
       "shapefile_path": "data_processed/shapefiles/61/HexState_61.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 45,
-      "state_outline_count": 45
+      "state_outline_count": 45,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/61.geojson",
+      "cd_feature_count": 385,
+      "cells_used_total": 1925
     },
     {
       "congress_number": 62,
@@ -987,14 +1170,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/62.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/62.geojson",
       "shapefile_path": "data_processed/shapefiles/62/HexState_62.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 45,
-      "state_outline_count": 45
+      "state_outline_count": 45,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/62.geojson",
+      "cd_feature_count": 385,
+      "cells_used_total": 1925
     },
     {
       "congress_number": 63,
@@ -1003,14 +1189,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/63.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/63.geojson",
       "shapefile_path": "data_processed/shapefiles/63/HexState_63.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/63.geojson",
+      "cd_feature_count": 430,
+      "cells_used_total": 2150
     },
     {
       "congress_number": 64,
@@ -1019,14 +1208,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/64.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/64.geojson",
       "shapefile_path": "data_processed/shapefiles/64/HexState_64.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/64.geojson",
+      "cd_feature_count": 430,
+      "cells_used_total": 2150
     },
     {
       "congress_number": 65,
@@ -1035,14 +1227,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/65.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/65.geojson",
       "shapefile_path": "data_processed/shapefiles/65/HexState_65.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/65.geojson",
+      "cd_feature_count": 430,
+      "cells_used_total": 2150
     },
     {
       "congress_number": 66,
@@ -1051,14 +1246,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/66.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/66.geojson",
       "shapefile_path": "data_processed/shapefiles/66/HexState_66.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/66.geojson",
+      "cd_feature_count": 430,
+      "cells_used_total": 2150
     },
     {
       "congress_number": 67,
@@ -1067,14 +1265,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/67.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/67.geojson",
       "shapefile_path": "data_processed/shapefiles/67/HexState_67.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/67.geojson",
+      "cd_feature_count": 430,
+      "cells_used_total": 2150
     },
     {
       "congress_number": 68,
@@ -1083,14 +1284,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/68.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/68.geojson",
       "shapefile_path": "data_processed/shapefiles/68/HexState_68.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/68.geojson",
+      "cd_feature_count": 430,
+      "cells_used_total": 2150
     },
     {
       "congress_number": 69,
@@ -1099,14 +1303,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/69.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/69.geojson",
       "shapefile_path": "data_processed/shapefiles/69/HexState_69.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/69.geojson",
+      "cd_feature_count": 430,
+      "cells_used_total": 2150
     },
     {
       "congress_number": 70,
@@ -1115,14 +1322,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/70.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/70.geojson",
       "shapefile_path": "data_processed/shapefiles/70/HexState_70.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/70.geojson",
+      "cd_feature_count": 430,
+      "cells_used_total": 2150
     },
     {
       "congress_number": 71,
@@ -1131,14 +1341,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/71.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/71.geojson",
       "shapefile_path": "data_processed/shapefiles/71/HexState_71.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/71.geojson",
+      "cd_feature_count": 430,
+      "cells_used_total": 2150
     },
     {
       "congress_number": 72,
@@ -1147,14 +1360,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/72.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/72.geojson",
       "shapefile_path": "data_processed/shapefiles/72/HexState_72.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/72.geojson",
+      "cd_feature_count": 430,
+      "cells_used_total": 2150
     },
     {
       "congress_number": 73,
@@ -1163,14 +1379,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/73.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/73.geojson",
       "shapefile_path": "data_processed/shapefiles/73/HexState_73.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/73.geojson",
+      "cd_feature_count": 431,
+      "cells_used_total": 2155
     },
     {
       "congress_number": 74,
@@ -1179,14 +1398,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/74.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/74.geojson",
       "shapefile_path": "data_processed/shapefiles/74/HexState_74.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/74.geojson",
+      "cd_feature_count": 431,
+      "cells_used_total": 2155
     },
     {
       "congress_number": 75,
@@ -1195,14 +1417,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/75.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/75.geojson",
       "shapefile_path": "data_processed/shapefiles/75/HexState_75.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/75.geojson",
+      "cd_feature_count": 431,
+      "cells_used_total": 2155
     },
     {
       "congress_number": 76,
@@ -1211,14 +1436,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/76.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/76.geojson",
       "shapefile_path": "data_processed/shapefiles/76/HexState_76.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/76.geojson",
+      "cd_feature_count": 431,
+      "cells_used_total": 2155
     },
     {
       "congress_number": 77,
@@ -1227,14 +1455,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/77.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/77.geojson",
       "shapefile_path": "data_processed/shapefiles/77/HexState_77.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/77.geojson",
+      "cd_feature_count": 431,
+      "cells_used_total": 2155
     },
     {
       "congress_number": 78,
@@ -1243,14 +1474,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/78.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/78.geojson",
       "shapefile_path": "data_processed/shapefiles/78/HexState_78.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/78.geojson",
+      "cd_feature_count": 431,
+      "cells_used_total": 2155
     },
     {
       "congress_number": 79,
@@ -1259,14 +1493,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/79.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/79.geojson",
       "shapefile_path": "data_processed/shapefiles/79/HexState_79.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/79.geojson",
+      "cd_feature_count": 431,
+      "cells_used_total": 2155
     },
     {
       "congress_number": 80,
@@ -1275,14 +1512,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/80.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/80.geojson",
       "shapefile_path": "data_processed/shapefiles/80/HexState_80.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/80.geojson",
+      "cd_feature_count": 431,
+      "cells_used_total": 2155
     },
     {
       "congress_number": 81,
@@ -1291,14 +1531,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/81.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/81.geojson",
       "shapefile_path": "data_processed/shapefiles/81/HexState_81.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/81.geojson",
+      "cd_feature_count": 431,
+      "cells_used_total": 2155
     },
     {
       "congress_number": 82,
@@ -1307,14 +1550,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/82.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/82.geojson",
       "shapefile_path": "data_processed/shapefiles/82/HexState_82.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/82.geojson",
+      "cd_feature_count": 431,
+      "cells_used_total": 2155
     },
     {
       "congress_number": 83,
@@ -1323,14 +1569,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/83.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/83.geojson",
       "shapefile_path": "data_processed/shapefiles/83/HexState_83.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/83.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 84,
@@ -1339,14 +1588,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/84.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/84.geojson",
       "shapefile_path": "data_processed/shapefiles/84/HexState_84.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/84.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 85,
@@ -1355,14 +1607,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/85.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/85.geojson",
       "shapefile_path": "data_processed/shapefiles/85/HexState_85.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/85.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 86,
@@ -1371,14 +1626,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/86.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/86.geojson",
       "shapefile_path": "data_processed/shapefiles/86/HexState_86.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/86.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 87,
@@ -1387,14 +1645,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/87.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/87.geojson",
       "shapefile_path": "data_processed/shapefiles/87/HexState_87.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 48,
-      "state_outline_count": 48
+      "state_outline_count": 48,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/87.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 88,
@@ -1403,14 +1664,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/88.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/88.geojson",
       "shapefile_path": "data_processed/shapefiles/88/HexState_88.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/88.geojson",
+      "cd_feature_count": 427,
+      "cells_used_total": 2135
     },
     {
       "congress_number": 89,
@@ -1419,14 +1683,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/89.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/89.geojson",
       "shapefile_path": "data_processed/shapefiles/89/HexState_89.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/89.geojson",
+      "cd_feature_count": 427,
+      "cells_used_total": 2135
     },
     {
       "congress_number": 90,
@@ -1435,14 +1702,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/90.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/90.geojson",
       "shapefile_path": "data_processed/shapefiles/90/HexState_90.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/90.geojson",
+      "cd_feature_count": 427,
+      "cells_used_total": 2135
     },
     {
       "congress_number": 91,
@@ -1451,14 +1721,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/91.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/91.geojson",
       "shapefile_path": "data_processed/shapefiles/91/HexState_91.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/91.geojson",
+      "cd_feature_count": 427,
+      "cells_used_total": 2135
     },
     {
       "congress_number": 92,
@@ -1467,14 +1740,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/92.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/92.geojson",
       "shapefile_path": "data_processed/shapefiles/92/HexState_92.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/92.geojson",
+      "cd_feature_count": 427,
+      "cells_used_total": 2135
     },
     {
       "congress_number": 93,
@@ -1483,14 +1759,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/93.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/93.geojson",
       "shapefile_path": "data_processed/shapefiles/93/HexState_93.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/93.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 94,
@@ -1499,14 +1778,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/94.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/94.geojson",
       "shapefile_path": "data_processed/shapefiles/94/HexState_94.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/94.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 95,
@@ -1515,14 +1797,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/95.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/95.geojson",
       "shapefile_path": "data_processed/shapefiles/95/HexState_95.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/95.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 96,
@@ -1531,14 +1816,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/96.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/96.geojson",
       "shapefile_path": "data_processed/shapefiles/96/HexState_96.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/96.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 97,
@@ -1547,14 +1835,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/97.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/97.geojson",
       "shapefile_path": "data_processed/shapefiles/97/HexState_97.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/97.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 98,
@@ -1563,14 +1854,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/98.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/98.geojson",
       "shapefile_path": "data_processed/shapefiles/98/HexState_98.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/98.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 99,
@@ -1579,14 +1873,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/99.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/99.geojson",
       "shapefile_path": "data_processed/shapefiles/99/HexState_99.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/99.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 100,
@@ -1595,14 +1892,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/100.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/100.geojson",
       "shapefile_path": "data_processed/shapefiles/100/HexState_100.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/100.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 101,
@@ -1611,14 +1911,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/101.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/101.geojson",
       "shapefile_path": "data_processed/shapefiles/101/HexState_101.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/101.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 102,
@@ -1627,14 +1930,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/102.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/102.geojson",
       "shapefile_path": "data_processed/shapefiles/102/HexState_102.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/102.geojson",
+      "cd_feature_count": 434,
+      "cells_used_total": 2170
     },
     {
       "congress_number": 103,
@@ -1643,14 +1949,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/103.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/103.geojson",
       "shapefile_path": "data_processed/shapefiles/103/HexState_103.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/103.geojson",
+      "cd_feature_count": 435,
+      "cells_used_total": 2175
     },
     {
       "congress_number": 104,
@@ -1659,14 +1968,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/104.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/104.geojson",
       "shapefile_path": "data_processed/shapefiles/104/HexState_104.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/104.geojson",
+      "cd_feature_count": 435,
+      "cells_used_total": 2175
     },
     {
       "congress_number": 105,
@@ -1675,14 +1987,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/105.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/105.geojson",
       "shapefile_path": "data_processed/shapefiles/105/HexState_105.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/105.geojson",
+      "cd_feature_count": 435,
+      "cells_used_total": 2175
     },
     {
       "congress_number": 106,
@@ -1691,14 +2006,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/106.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/106.geojson",
       "shapefile_path": "data_processed/shapefiles/106/HexState_106.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/106.geojson",
+      "cd_feature_count": 435,
+      "cells_used_total": 2175
     },
     {
       "congress_number": 107,
@@ -1707,14 +2025,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/107.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/107.geojson",
       "shapefile_path": "data_processed/shapefiles/107/HexState_107.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/107.geojson",
+      "cd_feature_count": 435,
+      "cells_used_total": 2175
     },
     {
       "congress_number": 108,
@@ -1723,14 +2044,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/108.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/108.geojson",
       "shapefile_path": "data_processed/shapefiles/108/HexState_108.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/108.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     },
     {
       "congress_number": 109,
@@ -1739,14 +2063,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/109.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/109.geojson",
       "shapefile_path": "data_processed/shapefiles/109/HexState_109.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/109.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     },
     {
       "congress_number": 110,
@@ -1755,14 +2082,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/110.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/110.geojson",
       "shapefile_path": "data_processed/shapefiles/110/HexState_110.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/110.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     },
     {
       "congress_number": 111,
@@ -1771,14 +2101,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/111.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/111.geojson",
       "shapefile_path": "data_processed/shapefiles/111/HexState_111.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/111.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     },
     {
       "congress_number": 112,
@@ -1787,14 +2120,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/112.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/112.geojson",
       "shapefile_path": "data_processed/shapefiles/112/HexState_112.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/112.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     },
     {
       "congress_number": 113,
@@ -1803,14 +2139,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/113.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/113.geojson",
       "shapefile_path": "data_processed/shapefiles/113/HexState_113.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/113.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     },
     {
       "congress_number": 114,
@@ -1819,14 +2158,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/114.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/114.geojson",
       "shapefile_path": "data_processed/shapefiles/114/HexState_114.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/114.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     },
     {
       "congress_number": 115,
@@ -1835,14 +2177,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/115.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/115.geojson",
       "shapefile_path": "data_processed/shapefiles/115/HexState_115.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/115.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     },
     {
       "congress_number": 116,
@@ -1851,14 +2196,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/116.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/116.geojson",
       "shapefile_path": "data_processed/shapefiles/116/HexState_116.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/116.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     },
     {
       "congress_number": 117,
@@ -1867,14 +2215,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/117.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/117.geojson",
       "shapefile_path": "data_processed/shapefiles/117/HexState_117.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/117.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     },
     {
       "congress_number": 118,
@@ -1883,14 +2234,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/118.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/118.geojson",
       "shapefile_path": "data_processed/shapefiles/118/HexState_118.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/118.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     },
     {
       "congress_number": 119,
@@ -1899,14 +2253,17 @@
       "state_feature_path": "data_processed/polyhex_states_by_congress/119.geojson",
       "state_outline_path": "data_processed/state_outlines_by_congress/119.geojson",
       "shapefile_path": "data_processed/shapefiles/119/HexState_119.shp",
-      "generator_version": "v4-fixed-hex-scaled-outline",
+      "generator_version": "v5-pentahex-tiling",
       "coverage_flags": {
         "missing_boundary_states": [],
         "missing_template_states": [],
         "used_overrides": false
       },
       "state_feature_count": 50,
-      "state_outline_count": 50
+      "state_outline_count": 50,
+      "cd_feature_path": "data_processed/polyhex_cds_by_congress/119.geojson",
+      "cd_feature_count": 433,
+      "cells_used_total": 2165
     }
   ]
 }

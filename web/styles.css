@@ -50,6 +50,34 @@ body {
   border-radius: 10px;
 }
 
+.readout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.9rem;
+}
+
+.readout-cell {
+  padding: 0.55rem 0.7rem;
+  background: var(--panel);
+  border: 1px solid #d4d6cb;
+  border-radius: 8px;
+}
+
+.readout-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #5b6e72;
+}
+
+.readout-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 0.15rem;
+  color: var(--accent);
+}
+
 .status {
   margin: 0.5rem 0 0.9rem;
   padding: 0.65rem 0.8rem;
@@ -57,6 +85,12 @@ body {
   background: #fff3ef;
   color: #7a2d1e;
   border-radius: 8px;
+}
+
+.civilwar {
+  border-color: #c8b06e;
+  background: #fff9e8;
+  color: #5d4610;
 }
 
 .controls button {
@@ -93,10 +127,22 @@ body {
 }
 
 .state-outline {
-  stroke: rgb(25 35 40 / 55%);
-  stroke-width: 1.4;
-  fill-opacity: 0.22;
+  stroke: none;
+  fill-opacity: 0.18;
   vector-effect: non-scaling-stroke;
+}
+
+.cd-tile {
+  stroke: rgb(25 35 40 / 75%);
+  stroke-width: 0.6;
+  fill-opacity: 0.88;
+  vector-effect: non-scaling-stroke;
+  transition: fill-opacity 120ms ease;
+}
+
+.cd-tile:hover {
+  fill-opacity: 1.0;
+  stroke-width: 1.2;
 }
 
 .cell:hover {
