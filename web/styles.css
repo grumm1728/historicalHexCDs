@@ -120,9 +120,9 @@ body {
 }
 
 .cell {
-  stroke: rgb(25 35 40 / 45%);
-  stroke-width: 0.7;
-  fill-opacity: 0.42;
+  stroke: rgb(25 35 40 / 55%);
+  stroke-width: 0.8;
+  fill-opacity: 0.1;
   vector-effect: non-scaling-stroke;
 }
 
