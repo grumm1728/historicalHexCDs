@@ -27,11 +27,21 @@ def axial_to_xy(q: int, r: int, R: float, origin: tuple[float, float]) -> tuple[
 
 
 def hex_polygon(cx: float, cy: float, R: float) -> list[list[float]]:
-    """Closed ring of 6 vertices, flat-top hex centered at (cx, cy)."""
+    """Closed ring of 6 vertices, flat-top hex centered at (cx, cy).
+
+    Vertex coordinates are rounded to millimetre precision so that shared
+    vertices between axially-adjacent hexes compare exactly equal under
+    floating-point. Without this rounding, two paths that mathematically
+    converge on the same point (e.g. neighbor1.cy + R*sin(60°) vs
+    neighbor2.cy + R*sin(-60°)) differ by ~1 ulp, which makes shapely treat
+    edge-shared hexes as merely corner-touching MultiPolygons.
+    """
     ring: list[list[float]] = []
     for k in range(6):
         a = math.radians(60.0 * k)
-        ring.append([cx + R * math.cos(a), cy + R * math.sin(a)])
+        x = round(cx + R * math.cos(a), 3)
+        y = round(cy + R * math.sin(a), 3)
+        ring.append([x, y])
     ring.append(ring[0])
     return ring
 

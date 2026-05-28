@@ -22,6 +22,8 @@ let frameIndex = 0;
 let timer = null;
 let svg;
 let stateColor;
+let stableProjection = null;
+let stablePath = null;
 // Distinguish CDs within a state by hashing state+cd_index into d3's category palette,
 // with a stable per-state base hue overlay so adjacent CDs in the same state look related.
 function cdColor(props) {
@@ -68,7 +70,18 @@ function geometryBounds(geo) {
     }
     for (const e of v) walk(e);
   }
-  walk(geo);
+  // Accept FeatureCollection / Feature / Geometry / raw coordinates.
+  if (geo && typeof geo === "object" && !Array.isArray(geo)) {
+    if (Array.isArray(geo.features)) {
+      for (const f of geo.features) walk(f?.geometry?.coordinates);
+    } else if (geo.geometry) {
+      walk(geo.geometry.coordinates);
+    } else if (geo.coordinates) {
+      walk(geo.coordinates);
+    }
+  } else {
+    walk(geo);
+  }
   return { minX, minY, maxX, maxY };
 }
 
@@ -233,6 +246,51 @@ async function loadIndex() {
   }
 }
 
+// Build the stable, fits-every-frame projection from the largest frame's CDs
+// (typically C119). The viewport never bounces because we fitSize once and
+// reuse the projection for every frame.
+async function buildStableProjection() {
+  // Pick the frame with the most CDs (or the last one as a proxy).
+  const v5Frames = timeline.filter((e) => String(e.generator_version || "").startsWith("v5") && e.cd_feature_path);
+  const ref = v5Frames.length
+    ? v5Frames.reduce((a, b) => ((a.cd_feature_count || 0) >= (b.cd_feature_count || 0) ? a : b))
+    : timeline[timeline.length - 1];
+  const path = ref.cd_feature_path || ref.state_feature_path;
+  try {
+    const resp = await fetch(`./${path}`);
+    if (!resp.ok) return;
+    const geo = await resp.json();
+    if (!geo?.features?.length) return;
+    const b = geometryBounds(geo);
+    // Add small padding so boundary tiles aren't flush against the SVG edge.
+    const padX = (b.maxX - b.minX) * 0.02;
+    const padY = (b.maxY - b.minY) * 0.02;
+    const padded = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "Polygon",
+            coordinates: [[
+              [b.minX - padX, b.minY - padY],
+              [b.maxX + padX, b.minY - padY],
+              [b.maxX + padX, b.maxY + padY],
+              [b.minX - padX, b.maxY + padY],
+              [b.minX - padX, b.minY - padY],
+            ]],
+          },
+        },
+      ],
+    };
+    stableProjection = d3.geoIdentity().reflectY(true).fitSize([width, height], padded);
+    stablePath = d3.geoPath(stableProjection);
+  } catch (err) {
+    console.warn("buildStableProjection failed:", err);
+  }
+}
+
 function isV5Frame(entry) {
   return String(entry?.generator_version || "").startsWith("v5");
 }
@@ -273,18 +331,23 @@ async function drawFrame(entry) {
   const showSilhouettes = Boolean(outlineOnlyToggle?.checked);
   const outlineAvailable = Boolean(outlineGeo && Array.isArray(outlineGeo.features) && outlineGeo.features.length > 0);
 
-  // Choose the geometry used for fit. Priority: v5 prefers CDs (most extent),
-  // then state polyhex cells, then outline as last resort.
-  let fitGeo = geo;
-  if (showDistricts && cdGeo && cdGeo.features?.length) fitGeo = cdGeo;
-  else if (showSilhouettes && outlineAvailable) fitGeo = outlineGeo;
-
-  const b = geometryBounds(fitGeo);
-  const projected = Math.abs(b.maxX) > 1000 || Math.abs(b.minX) > 1000 || Math.abs(b.maxY) > 1000 || Math.abs(b.minY) > 1000;
-  const projection = projected
-    ? d3.geoIdentity().reflectY(true).fitSize([width, height], fitGeo)
-    : d3.geoAlbersUsa().fitSize([width, height], fitGeo);
-  const path = d3.geoPath(projection);
+  // Reuse the stable projection so the viewport doesn't bounce when seat counts
+  // grow / shrink across Congresses. Fall back to per-frame fit only if the
+  // stable projection wasn't built (e.g., loading a non-v5 frame).
+  let path;
+  if (stablePath) {
+    path = stablePath;
+  } else {
+    let fitGeo = geo;
+    if (showDistricts && cdGeo && cdGeo.features?.length) fitGeo = cdGeo;
+    else if (showSilhouettes && outlineAvailable) fitGeo = outlineGeo;
+    const b = geometryBounds(fitGeo);
+    const projected = Math.abs(b.maxX) > 1000 || Math.abs(b.minX) > 1000 || Math.abs(b.maxY) > 1000 || Math.abs(b.minY) > 1000;
+    const projection = projected
+      ? d3.geoIdentity().reflectY(true).fitSize([width, height], fitGeo)
+      : d3.geoAlbersUsa().fitSize([width, height], fitGeo);
+    path = d3.geoPath(projection);
+  }
 
   svg.selectAll("g").remove();
   const g = svg.append("g");
@@ -451,6 +514,7 @@ async function main() {
 
   try {
     await loadIndex();
+    await buildStableProjection();
     setupControls();
     await setFrame(0);
     setControlsEnabled(true);
