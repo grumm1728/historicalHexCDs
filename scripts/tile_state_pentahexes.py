@@ -10,20 +10,30 @@ Outputs:
   - data_processed/tiling_warnings.json                   (partial/fallback rows)
 
 Algorithm:
-1. Pick a seed hex for each state: the unclaimed hex whose center is closest
-   to the state's real Census centroid.
-2. Round-robin expand by largest-unmet-need ratio. On each turn the state
-   claims the unclaimed hex adjacent to its current cluster whose center is
-   closest to its centroid. If no adjacent unclaimed hex exists, it claims the
-   globally closest unclaimed hex (a "jump"), then continues expanding.
-3. Partition each state's cell set into pentahex (5-hex) tiles via
-   region-growing from boundary cells.
-4. Render tiles as the union of their 5 hexes (no boundary clipping — the
+1. Allocate a contiguous territory of exactly `seats * 5` cells to each state.
+   Seed each state with the unclaimed cell nearest its real centroid (preferring
+   cells inside its outline), then grow all states one cell at a time in
+   round-robin by largest remaining deficit ratio. Each growth step claims the
+   frontier cell that (a) lies inside the state's own real outline if possible,
+   then (b) is closest to the state centroid. Dense states whose real footprint
+   is too small to hold `seats * 5` cells thus fill their interior first and then
+   inflate outward into open space (cartogram behavior), while the outline guides
+   placement so territories roughly track real geography.
+2. Partition each state's territory into pentahex (5-hex) tiles via
+   region-growing from boundary cells (partition_into_pentahexes).
+3. Render tiles as the union of their 5 hexes (no boundary clipping — the
    real-outline clip step is intentionally skipped here because the hex grid
    IS the cartogram in this design).
 
 This algorithm gives each admitted state exactly `seats * 5` cells, in a
 single connected region, clustered around its real geographic position.
+
+Known limitation: a state whose seat count vastly exceeds what its real
+footprint can hold (the extreme case is New York at 45 seats = 225 cells in the
+73rd-77th Congresses, 1933-1943) is processed last and can be walled in by its
+smaller neighbors before it reaches enough open grid, leaving it partially
+tiled. These cases are recorded as "partial" rows in tiling_warnings.json; they
+can be hand-corrected via overrides/polyhex_overrides.yaml if needed.
 """
 from __future__ import annotations
 
@@ -36,8 +46,9 @@ from collections import defaultdict, deque
 from datetime import date, timedelta
 from pathlib import Path
 
-from shapely.geometry import MultiPolygon, Polygon, mapping, shape
+from shapely.geometry import MultiPolygon, Point, Polygon, mapping, shape
 from shapely.ops import unary_union
+from shapely.strtree import STRtree
 
 ROOT = Path(__file__).resolve().parent.parent
 GENERATOR_VERSION = "v5-pentahex-tiling"
@@ -111,121 +122,123 @@ def squared_dist(a: tuple[float, float], b: tuple[float, float]) -> float:
     return dx * dx + dy * dy
 
 
-def place_pentahex_tiles(
-    seat_by_fips: dict[str, int],
-    centroid_by_fips: dict[str, tuple[float, float]],
+def build_cell_outline_map(
     hex_by_qr: dict[tuple[int, int], dict],
-) -> tuple[dict[str, list[list[tuple[int, int]]]], dict[str, str]]:
-    """Place pentahex tiles one at a time, state-by-state.
+    outlines: dict[str, dict],
+) -> dict[tuple[int, int], str]:
+    """Map each hex cell to the FIPS of the real state outline its center falls in.
 
-    For each state in round-robin priority order (largest remaining-tile-need
-    first), grow ONE pentahex tile: pick the seed hex closest to the state
-    centroid among unclaimed hexes adjacent to the state's existing tiles (or
-    globally unclaimed if the state has no tiles yet), then add 4 more
-    connected unclaimed hexes biased toward the state centroid.
-
-    Returns:
-      tiles_by_state: list of 5-hex tiles per state (length == seats on success)
-      statuses:       "ok" | "partial" | "skipped" per state
+    Cells whose center lies in no state's outline (ocean, foreign land) are
+    omitted. Computed once and reused across all Congresses since the outlines
+    are fixed modern geometry.
     """
-    statuses: dict[str, str] = {}
-    tiles_by_state: dict[str, list[list[tuple[int, int]]]] = {fips: [] for fips in seat_by_fips}
-    needs = {fips: seat_by_fips[fips] for fips in seat_by_fips if seat_by_fips[fips] > 0}
-    if not needs:
-        return tiles_by_state, {f: "skipped" for f in seat_by_fips}
+    items = [(fips, feat["_geom"]) for fips, feat in outlines.items()]
+    fips_list = [fips for fips, _ in items]
+    geoms = [g for _, g in items]
+    tree = STRtree(geoms)
+    out: dict[tuple[int, int], str] = {}
+    for qr, feat in hex_by_qr.items():
+        pt = Point(feat["_xy"])
+        for i in tree.query(pt):
+            if geoms[i].contains(pt):
+                out[qr] = fips_list[i]
+                break
+    return out
+
+
+def allocate_territories(
+    need: dict[str, int],
+    centroid_by_fips: dict[str, tuple[float, float]],
+    cell_outline_fips: dict[tuple[int, int], str],
+    hex_by_qr: dict[tuple[int, int], dict],
+) -> dict[str, set[tuple[int, int]]]:
+    """Grow a contiguous territory of exactly `need[fips]` cells for each state.
+
+    Process states smallest-need-first so tiny dense states (e.g. Delaware) lock
+    in a compact, connected territory before bigger neighbors inflate around them.
+    Each state is seeded with the unclaimed cell nearest its centroid (preferring
+    cells inside its own outline) and then grown to its full `need` by repeatedly
+    claiming the frontier cell that lies inside the state's own outline if
+    possible, then is closest to its centroid. Growth only ever takes cells
+    adjacent to the existing territory, so each territory stays connected; if a
+    state is fully boxed in before reaching `need` it stops (leaving a smaller,
+    still-connected territory) rather than grabbing a disconnected far cell.
+    """
+    cells_by_state: dict[str, set[tuple[int, int]]] = {fips: set() for fips in need}
+    inside: dict[str, set[tuple[int, int]]] = defaultdict(set)
+    for qr, fips in cell_outline_fips.items():
+        if fips in need:
+            inside[fips].add(qr)
 
     unclaimed: set[tuple[int, int]] = set(hex_by_qr.keys())
 
-    # Priority queue: place tiles in order of biggest remaining deficit ratio,
-    # so big states don't monopolize while small states get squeezed out.
-    def deficit_ratio(fips: str) -> float:
-        return needs[fips] / seat_by_fips[fips]
+    # Smallest-need states first so tiny dense states lock in compact, connected
+    # territory before bigger neighbors inflate around them.
+    order = sorted(need, key=lambda f: (need[f], f))
 
-    # Tiebreak by ascending total budget (small states go first so they reach
-    # the cells nearest their centroid before bigger neighbors crowd them out).
-    pq: list[tuple[float, int, str]] = []  # (-deficit_ratio, total_budget, fips)
-    for fips in needs:
-        heapq.heappush(pq, (-deficit_ratio(fips), seat_by_fips[fips], fips))
-
-    def try_grow_from(seed: tuple[int, int], center: tuple[float, float]) -> list[tuple[int, int]] | None:
-        tile = [seed]
-        used = {seed}
-        while len(tile) < 5:
-            cands: list[tuple[int, int]] = []
-            for c in tile:
-                for nb in neighbors(c):
-                    if nb in unclaimed and nb not in used:
-                        cands.append(nb)
-            if not cands:
-                return None
-            # Prefer unclaimed neighbor closest to state centroid; tie-break by
-            # higher "still-available-neighbor count" so we don't paint ourselves
-            # into a corner.
-            chosen = min(
-                cands,
-                key=lambda qr: (
-                    squared_dist(hex_by_qr[qr]["_xy"], center),
-                    -sum(1 for nb in neighbors(qr) if nb in unclaimed and nb not in used),
-                ),
-            )
-            tile.append(chosen)
-            used.add(chosen)
-        return tile
-
-    SEEDS_TO_TRY = 8
-
-    while pq and unclaimed:
-        _, _, fips = heapq.heappop(pq)
-        if needs[fips] <= 0:
-            continue
+    for fips in order:
+        if not unclaimed:
+            break
         center = centroid_by_fips[fips]
-        existing: set[tuple[int, int]] = set()
-        for tile in tiles_by_state[fips]:
-            existing.update(tile)
+        own_inside = inside.get(fips, frozenset())
+        cells = cells_by_state[fips]
 
-        # Build candidate seeds in priority order.
-        if existing:
-            frontier = set()
-            for c in existing:
+        # Seed: nearest unclaimed cell inside the state's own outline, else the
+        # globally nearest unclaimed cell.
+        own_unclaimed = [qr for qr in own_inside if qr in unclaimed]
+        pool = own_unclaimed if own_unclaimed else list(unclaimed)
+        seed = min(pool, key=lambda qr: squared_dist(hex_by_qr[qr]["_xy"], center))
+        cells.add(seed)
+        unclaimed.discard(seed)
+
+        # Grow to full need via connected frontier expansion.
+        while len(cells) < need[fips]:
+            frontier: set[tuple[int, int]] = set()
+            for c in cells:
                 for nb in neighbors(c):
                     if nb in unclaimed:
                         frontier.add(nb)
             if not frontier:
-                # Fully surrounded for this round; allow re-attempt next round only if
-                # neighbors get freed (they won't, so this state is effectively done).
-                statuses[fips] = "partial"
-                continue
-            seed_candidates = sorted(
+                break  # boxed in; leave a smaller connected territory
+            chosen = min(
                 frontier,
                 key=lambda qr: (
+                    0 if qr in own_inside else 1,
                     squared_dist(hex_by_qr[qr]["_xy"], center),
-                    -sum(1 for nb in neighbors(qr) if nb in unclaimed),
                 ),
             )
-        else:
-            # First tile: globally closest unclaimed. Try a few near the centroid.
-            seed_candidates = sorted(
-                unclaimed,
-                key=lambda qr: squared_dist(hex_by_qr[qr]["_xy"], center),
-            )
+            cells.add(chosen)
+            unclaimed.discard(chosen)
 
-        chosen_tile = None
-        for seed in seed_candidates[:SEEDS_TO_TRY]:
-            tile = try_grow_from(seed, center)
-            if tile is not None:
-                chosen_tile = tile
-                break
+    return cells_by_state
 
-        if chosen_tile is None:
-            statuses[fips] = "partial"
+
+def place_pentahex_tiles(
+    seat_by_fips: dict[str, int],
+    centroid_by_fips: dict[str, tuple[float, float]],
+    cell_outline_fips: dict[tuple[int, int], str],
+    hex_by_qr: dict[tuple[int, int], dict],
+) -> tuple[dict[str, list[list[tuple[int, int]]]], dict[str, str]]:
+    """Allocate an outline-guided territory per state, then tile each as pentahexes.
+
+    Returns:
+      tiles_by_state: list of 5-hex tiles per state (length == seats on success)
+      statuses:       "ok" | "partial" | "skipped" | "no-tiles" per state
+    """
+    statuses: dict[str, str] = {}
+    tiles_by_state: dict[str, list[list[tuple[int, int]]]] = {fips: [] for fips in seat_by_fips}
+    need = {fips: seat_by_fips[fips] * 5 for fips in seat_by_fips if seat_by_fips[fips] > 0}
+    if not need:
+        return tiles_by_state, {f: "skipped" for f in seat_by_fips}
+
+    cells_by_state = allocate_territories(need, centroid_by_fips, cell_outline_fips, hex_by_qr)
+
+    for fips in need:
+        cells = cells_by_state[fips]
+        if not cells:
             continue
-
-        tiles_by_state[fips].append(chosen_tile)
-        for qr in chosen_tile:
-            unclaimed.discard(qr)
-        needs[fips] -= 1
-        if needs[fips] > 0:
-            heapq.heappush(pq, (-deficit_ratio(fips), seat_by_fips[fips], fips))
+        boundary = {c for c in cells if any(nb not in cells for nb in neighbors(c))}
+        tiles_by_state[fips] = partition_into_pentahexes(cells, boundary)
 
     for fips, seats in seat_by_fips.items():
         if seats <= 0:
@@ -353,6 +366,10 @@ def main() -> None:
     R = float(meta["R"])
     hex_area = hex_area_from_R(R)
 
+    # Map each grid cell to the real state outline it falls in (fixed across
+    # Congresses), used to guide territory allocation toward real geography.
+    cell_outline_fips = build_cell_outline_map(hex_by_qr, outlines)
+
     cds_root = Path(args.cds_out_root)
     states_root = Path(args.states_out_root)
     outlines_root = Path(args.outlines_out_root)
@@ -382,7 +399,7 @@ def main() -> None:
             meta_by_fips[fips] = row
             centroid_by_fips[fips] = outline_feat["_centroid"]
 
-        tiles_by_state, statuses = place_pentahex_tiles(seat_by_fips, centroid_by_fips, hex_by_qr)
+        tiles_by_state, statuses = place_pentahex_tiles(seat_by_fips, centroid_by_fips, cell_outline_fips, hex_by_qr)
 
         cd_features: list[dict] = []
         state_features: list[dict] = []
