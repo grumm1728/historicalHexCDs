@@ -29,20 +29,23 @@ def build_congress_index(max_congress: int) -> None:
     for item in polyhex_index.get("timeline", []):
         congress_number = int(item["congress_number"])
         shapefile_path = Path("data_processed") / "shapefiles" / str(congress_number) / f"HexState_{congress_number}.shp"
-        timeline.append(
-            {
-                "congress_number": congress_number,
-                "start_date": item.get("start_date") or None,
-                "end_date": item.get("end_date") or None,
-                "state_feature_path": item["state_feature_path"],
-                "state_outline_path": item.get("state_outline_path"),
-                "shapefile_path": str(shapefile_path.as_posix()),
-                "generator_version": item.get("generator_version", "unknown"),
-                "coverage_flags": item.get("coverage_flags", {}),
-                "state_feature_count": item.get("state_feature_count", 0),
-                "state_outline_count": item.get("state_outline_count", 0),
-            }
-        )
+        entry = {
+            "congress_number": congress_number,
+            "start_date": item.get("start_date") or None,
+            "end_date": item.get("end_date") or None,
+            "state_feature_path": item["state_feature_path"],
+            "state_outline_path": item.get("state_outline_path"),
+            "shapefile_path": str(shapefile_path.as_posix()),
+            "generator_version": item.get("generator_version", "unknown"),
+            "coverage_flags": item.get("coverage_flags", {}),
+            "state_feature_count": item.get("state_feature_count", 0),
+            "state_outline_count": item.get("state_outline_count", 0),
+        }
+        if item.get("cd_feature_path"):
+            entry["cd_feature_path"] = item["cd_feature_path"]
+            entry["cd_feature_count"] = item.get("cd_feature_count", 0)
+            entry["cells_used_total"] = item.get("cells_used_total", 0)
+        timeline.append(entry)
 
     timeline.sort(key=lambda x: x["congress_number"])
     index = {
@@ -64,6 +67,17 @@ def main() -> None:
         action="store_true",
         help="If NHGIS boundary input is missing, derive modern outlines from the 118 sample and reuse for all Congresses.",
     )
+    parser.add_argument(
+        "--legacy-template-generator",
+        action="store_true",
+        help="Use the legacy template-based generator (HexCDv31wm) instead of the v5 pentahex tiler.",
+    )
+    parser.add_argument(
+        "--hex-grid-R",
+        type=float,
+        default=35000.0,
+        help="Hex circumradius (meters) for the v5 national grid. Default 35000.",
+    )
     args = parser.parse_args()
 
     boundary_input = ROOT / "data_raw" / "nhgis" / "state_boundaries_by_congress.geojson"
@@ -79,7 +93,17 @@ def main() -> None:
     run("validate_raw_inputs.py")
     run("build_seat_table.py", "--max-congress", str(args.max_congress))
     run("build_boundary_timeline.py")
-    run("generate_polyhex_states.py", "--template-shp", str(TEMPLATE_SHP))
+
+    if args.legacy_template_generator:
+        run("generate_polyhex_states.py", "--template-shp", str(TEMPLATE_SHP))
+    else:
+        # v5 pentahex tiling pipeline.
+        outlines_wm = ROOT / "data_processed" / "states" / "state_outlines_modern_wm.geojson"
+        if not outlines_wm.exists():
+            run("fetch_modern_state_outlines.py")
+        run("build_hex_grid.py", "--R", str(args.hex_grid_R), "--ymin", "2500000")
+        run("tile_state_pentahexes.py")
+
     run("export_shapefiles.py", "--template-prj", str(TEMPLATE_PRJ))
     build_congress_index(args.max_congress)
     print("Historical pipeline complete.")

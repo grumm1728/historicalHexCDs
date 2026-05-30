@@ -1,10 +1,14 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
 import json
 from collections import defaultdict
 from pathlib import Path
+
+import shapefile
+from shapely.geometry import Polygon, MultiPolygon, shape, mapping
+from shapely.ops import unary_union
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -19,65 +23,109 @@ STATE_FIPS_BY_ABBR = {
 }
 
 
-def to_multipolygon(geometry: dict) -> list:
-    gtype = geometry.get("type")
-    if gtype == "Polygon":
-        return [geometry.get("coordinates", [])]
-    if gtype == "MultiPolygon":
-        return geometry.get("coordinates", [])
-    return []
+def shape_to_polygons(s: shapefile.Shape) -> list[Polygon]:
+    points = s.points
+    parts = list(s.parts)
+    if not parts:
+        return []
+    out: list[Polygon] = []
+    for i, start in enumerate(parts):
+        end = parts[i + 1] if i + 1 < len(parts) else len(points)
+        ring = [(float(x), float(y)) for x, y in points[start:end]]
+        if len(ring) < 4:
+            continue
+        if ring[0] != ring[-1]:
+            ring.append(ring[0])
+        try:
+            poly = Polygon(ring)
+            if not poly.is_valid:
+                poly = poly.buffer(0)
+            if poly.is_empty:
+                continue
+            out.append(poly)
+        except Exception:
+            continue
+    return out
+
+
+def dissolve_state_hexes(template_shp: Path) -> dict[str, dict]:
+    reader = shapefile.Reader(str(template_shp))
+    fields = [f[0] for f in reader.fields if f[0] != "DeletionFlag"]
+    state_idx = fields.index("STATEAB")
+    name_idx = fields.index("STATENAME") if "STATENAME" in fields else None
+
+    by_state: dict[str, dict] = defaultdict(lambda: {"name": "", "polygons": []})
+    for sr in reader.iterShapeRecords():
+        abbr = str(sr.record[state_idx]).strip().upper()
+        if not abbr:
+            continue
+        if name_idx is not None and not by_state[abbr]["name"]:
+            by_state[abbr]["name"] = str(sr.record[name_idx]).strip()
+        by_state[abbr]["polygons"].extend(shape_to_polygons(sr.shape))
+
+    dissolved: dict[str, dict] = {}
+    for abbr, data in by_state.items():
+        polys = data["polygons"]
+        if not polys:
+            continue
+        merged = unary_union(polys)
+        # Slight buffer to close hairline seams between hexes, then unbuffer
+        # to keep the outer silhouette stable.
+        sealed = merged.buffer(1.0).buffer(-1.0)
+        if sealed.is_empty:
+            sealed = merged
+        if isinstance(sealed, Polygon):
+            sealed = MultiPolygon([sealed])
+        elif not isinstance(sealed, MultiPolygon):
+            sealed = MultiPolygon([g for g in getattr(sealed, "geoms", []) if isinstance(g, Polygon)])
+        dissolved[abbr] = {"name": data["name"] or abbr, "geometry": mapping(sealed)}
+    return dissolved
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Create modern-outline fallback boundaries for all Congresses")
-    parser.add_argument("--source", default=str(ROOT / "data_processed" / "polyhex_by_congress" / "118.geojson"))
+    parser = argparse.ArgumentParser(
+        description="Create modern-outline fallback boundaries (in Web Mercator) by dissolving the HexCDv31wm template per state."
+    )
+    parser.add_argument(
+        "--template-shp",
+        default=str(ROOT / "hexmap_reference_files" / "HexCDv31wm" / "HexCDv31wm.shp"),
+    )
     parser.add_argument("--out", default=str(ROOT / "data_raw" / "nhgis" / "state_boundaries_by_congress.geojson"))
     parser.add_argument("--from-congress", type=int, default=1)
     parser.add_argument("--to-congress", type=int, default=119)
     args = parser.parse_args()
 
-    src = Path(args.source)
+    template_shp = Path(args.template_shp)
+    if not template_shp.exists():
+        raise SystemExit(f"Template shapefile missing: {template_shp}")
+
     out = Path(args.out)
-
-    if not src.exists():
-        raise SystemExit(
-            f"Fallback source missing: {src}. Generate it with scripts/build_timeline.py or provide NHGIS boundaries."
-        )
-
-    raw = json.loads(src.read_text(encoding="utf-8"))
-    by_state = defaultdict(lambda: {"state_name": "", "multipoly": []})
-
-    for feature in raw.get("features", []):
-        props = feature.get("properties", {})
-        abbr = str(props.get("state_abbr", "")).strip().upper()
-        if not abbr:
-            continue
-        by_state[abbr]["state_name"] = str(props.get("state_name", abbr)).strip() or abbr
-        by_state[abbr]["multipoly"].extend(to_multipolygon(feature.get("geometry", {})))
+    dissolved = dissolve_state_hexes(template_shp)
 
     features = []
-    for abbr, data in sorted(by_state.items()):
-        state_fips = STATE_FIPS_BY_ABBR.get(abbr)
-        if not state_fips:
+    for abbr in sorted(dissolved):
+        fips = STATE_FIPS_BY_ABBR.get(abbr)
+        if not fips:
             continue
+        data = dissolved[abbr]
         features.append(
             {
                 "type": "Feature",
                 "properties": {
                     "from_congress": int(args.from_congress),
                     "to_congress": int(args.to_congress),
-                    "state_fips": state_fips,
+                    "state_fips": fips,
                     "state_abbr": abbr,
-                    "state_name": data["state_name"],
-                    "source_boundary_id": "modern-fallback-from-118",
+                    "state_name": data["name"],
+                    "source_boundary_id": "modern-fallback-from-hexcdv31wm",
                 },
-                "geometry": {"type": "MultiPolygon", "coordinates": data["multipoly"]},
+                "geometry": data["geometry"],
             }
         )
 
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"type": "FeatureCollection", "features": features}, indent=2), encoding="utf-8")
-    print(f"Wrote modern-outline fallback boundaries to {out}")
+    print(f"Wrote modern-outline fallback boundaries (WM) to {out}")
 
 
 if __name__ == "__main__":

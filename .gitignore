@@ -2,3 +2,13 @@ node_modules/
 __pycache__/
 *.pyc
 .DS_Store
+
+# Local editor / per-machine config
+.claude/settings.local.json
+
+# Downloaded source caches (regenerable from scripts/fetch_modern_state_outlines.py)
+data_raw/_cache/
+
+# Third-party reference PDFs (not redistributable)
+*.pdf
+source data/
