@@ -3,37 +3,28 @@
 Census centroids), then partition each state's cells into pentahex CD tiles.
 
 Outputs:
-  - data_processed/polyhex_cds_by_congress/<n>.geojson    (one Feature per CD)
-  - data_processed/polyhex_states_by_congress/<n>.geojson (state-level dissolve)
-  - data_processed/state_outlines_by_congress/<n>.geojson (per-Congress real outlines, for reference)
-  - data_processed/polyhex_states_by_congress/_index.json (timeline summary)
-  - data_processed/tiling_warnings.json                   (partial/fallback rows)
+  - data_processed/polyhex_cds_by_congress/<n>.geojson         (one Feature per CD)
+  - data_processed/polyhex_states_by_congress/<n>.geojson      (state-level dissolve)
+  - data_processed/state_outlines_by_congress/<n>.geojson      (per-Congress real + scaled outlines)
+  - data_processed/polyhex_states_by_congress/_index.json      (timeline summary)
+  - data_processed/tiling_warnings.json                        (partial/fallback rows)
 
-Algorithm:
-1. Allocate a contiguous territory of exactly `seats * 5` cells to each state.
-   Seed each state with the unclaimed cell nearest its real centroid (preferring
-   cells inside its outline), then grow all states one cell at a time in
-   round-robin by largest remaining deficit ratio. Each growth step claims the
-   frontier cell that (a) lies inside the state's own real outline if possible,
-   then (b) is closest to the state centroid. Dense states whose real footprint
-   is too small to hold `seats * 5` cells thus fill their interior first and then
-   inflate outward into open space (cartogram behavior), while the outline guides
-   placement so territories roughly track real geography.
-2. Partition each state's territory into pentahex (5-hex) tiles via
-   region-growing from boundary cells (partition_into_pentahexes).
-3. Render tiles as the union of their 5 hexes (no boundary clipping — the
-   real-outline clip step is intentionally skipped here because the hex grid
-   IS the cartogram in this design).
-
-This algorithm gives each admitted state exactly `seats * 5` cells, in a
-single connected region, clustered around its real geographic position.
-
-Known limitation: a state whose seat count vastly exceeds what its real
-footprint can hold (the extreme case is New York at 45 seats = 225 cells in the
-73rd-77th Congresses, 1933-1943) is processed last and can be walled in by its
-smaller neighbors before it reaches enough open grid, leaving it partially
-tiled. These cases are recorded as "partial" rows in tiling_warnings.json; they
-can be hand-corrected via overrides/polyhex_overrides.yaml if needed.
+Algorithm (HexCDv31-style cartogram via scaled outlines):
+1. For each Congress, scale each state's real outline so its area equals
+   `seats * 5 * hex_area`, around the state's real centroid (compute_scaled_layout).
+   Then iteratively push apart any overlapping pairs so the final layout is
+   non-overlapping while preserving roughly real-world relative positions.
+2. If the resulting layout extends beyond the base hex grid bbox, in-memory
+   expand the grid (same R/origin, more axial cells) so every state has room.
+3. Allocate a contiguous territory of exactly `seats * 5` cells per state by
+   point-in-polygon against the scaled+displaced outlines (build_cell_outline_map +
+   allocate_territories). Because each scaled outline holds approximately the
+   right number of cells, territories almost always fit inside their own state's
+   region — minimal outward inflation, no boxing.
+4. Partition each territory into pentahex (5-hex) tiles via region-growing from
+   boundary cells (partition_into_pentahexes).
+5. Render tiles as the union of their 5 hexes. (Phase 2 will clip border tiles
+   to the scaled state outline to reproduce HexCDv31wm's snap-to-edge styling.)
 """
 from __future__ import annotations
 
@@ -46,12 +37,13 @@ from collections import defaultdict, deque
 from datetime import date, timedelta
 from pathlib import Path
 
+from shapely.affinity import scale as shapely_scale, translate as shapely_translate
 from shapely.geometry import MultiPolygon, Point, Polygon, mapping, shape
 from shapely.ops import unary_union
 from shapely.strtree import STRtree
 
 ROOT = Path(__file__).resolve().parent.parent
-GENERATOR_VERSION = "v5-pentahex-tiling"
+GENERATOR_VERSION = "v6-pentahex-scaled-outlines"
 
 NEIGHBOR_OFFSETS = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1)]
 
@@ -111,6 +103,27 @@ def hex_area_from_R(R: float) -> float:
     return 1.5 * math.sqrt(3.0) * (R ** 2)
 
 
+def write_geojson_with_retry(path: Path, common_props: dict, features: list, attempts: int = 5) -> None:
+    """Write a GeoJSON FeatureCollection, retrying on transient Windows OSError 22.
+
+    The pentahex regen writes 357 files in a tight loop; Windows occasionally
+    returns EINVAL on the very next open() if antivirus or the file indexer is
+    still holding a handle from a recent write. A tiny sleep-and-retry clears it.
+    """
+    import time as _time
+    payload = json.dumps({"type": "FeatureCollection", "properties": common_props, "features": features})
+    last_err: OSError | None = None
+    for i in range(attempts):
+        try:
+            path.write_text(payload, encoding="utf-8")
+            return
+        except OSError as e:
+            last_err = e
+            _time.sleep(0.2 * (i + 1))
+    if last_err is not None:
+        raise last_err
+
+
 def neighbors(qr: tuple[int, int]) -> list[tuple[int, int]]:
     q, r = qr
     return [(q + dq, r + dr) for dq, dr in NEIGHBOR_OFFSETS]
@@ -122,17 +135,184 @@ def squared_dist(a: tuple[float, float], b: tuple[float, float]) -> float:
     return dx * dx + dy * dy
 
 
+def compute_scaled_layout(
+    seat_by_fips: dict[str, int],
+    outlines: dict[str, dict],
+    hex_area: float,
+    R: float,
+    max_iter: int = 1000,
+) -> dict[str, dict]:
+    """Scale each state's outline to delegation size, then resolve overlaps.
+
+    For each admitted state:
+      - target_area = seats * 5 * hex_area
+      - area_scale  = sqrt(target_area / real_area)
+      - geom is scaled around the state's real centroid
+
+    Then iteratively pick the most-overlapping pair of states and push both
+    halfway apart along their centroid-to-centroid vector until separation
+    reaches `target_gap = 0.5 * R`. Iterative pairwise displacement: simple,
+    deterministic, and converges fast for these dozens of polygons.
+
+    Returns fips -> dict with:
+      geom (Shapely scaled+displaced),
+      centroid (post-displacement, used as the state's pull-anchor),
+      anchor   (original real centroid, the scale center),
+      scale    (area_scale used),
+      displacement (dx, dy applied after scaling).
+    """
+    target_gap = 0.5 * R
+    layout: dict[str, dict] = {}
+    for fips, seats in seat_by_fips.items():
+        outline_feat = outlines.get(fips)
+        if outline_feat is None or seats <= 0:
+            continue
+        real_geom = outline_feat["_geom"]
+        real_area = real_geom.area
+        if real_area <= 0:
+            continue
+        cx, cy = outline_feat["_centroid"]
+        target_area = seats * 5 * hex_area
+        scale = math.sqrt(target_area / real_area)
+        scaled = shapely_scale(real_geom, xfact=scale, yfact=scale, origin=(cx, cy))
+        if not scaled.is_valid:
+            scaled = scaled.buffer(0)
+        layout[fips] = {
+            "geom": scaled,
+            "centroid": (cx, cy),
+            "anchor": (cx, cy),
+            "scale": scale,
+            "displacement": (0.0, 0.0),
+        }
+
+    fips_list = list(layout)
+
+    def displace(fips: str, dx: float, dy: float) -> None:
+        rec = layout[fips]
+        rec["geom"] = shapely_translate(rec["geom"], xoff=dx, yoff=dy)
+        cx, cy = rec["centroid"]
+        rec["centroid"] = (cx + dx, cy + dy)
+        ddx, ddy = rec["displacement"]
+        rec["displacement"] = (ddx + dx, ddy + dy)
+
+    for _ in range(max_iter):
+        # Find the most-overlapping pair (largest intersection area).
+        worst: tuple[str, str] | None = None
+        worst_area = 0.0
+        # STRtree against current geoms for O(N log N) candidate filtering.
+        geoms = [layout[f]["geom"] for f in fips_list]
+        tree = STRtree(geoms)
+        for i, a in enumerate(fips_list):
+            ga = geoms[i]
+            for j in tree.query(ga):
+                if j <= i:
+                    continue
+                b = fips_list[j]
+                gb = geoms[j]
+                if not ga.intersects(gb):
+                    continue
+                inter_area = ga.intersection(gb).area
+                if inter_area > worst_area:
+                    worst_area = inter_area
+                    worst = (a, b)
+        if worst is None:
+            break
+        a, b = worst
+        ax, ay = layout[a]["centroid"]
+        bx, by = layout[b]["centroid"]
+        dx, dy = ax - bx, ay - by
+        dist_sq = dx * dx + dy * dy
+        if dist_sq < 1e-9:
+            # Coincident centroids — pick an arbitrary axis to break symmetry.
+            dx, dy = 1.0, 0.0
+            dist = 1.0
+        else:
+            dist = math.sqrt(dist_sq)
+            dx /= dist
+            dy /= dist
+        # Small symmetric nudge per iteration. Large per-iter pushes overshoot
+        # and cascade — small nudges relax the layout smoothly. Step adapts to
+        # overlap magnitude: bigger overlaps get bigger nudges but capped so a
+        # single iteration never displaces a state by more than target_gap.
+        overlap_diameter = 2.0 * math.sqrt(worst_area / math.pi)
+        step = min(0.5 * target_gap, 0.25 * overlap_diameter + 0.25 * target_gap)
+        half = step * 0.5
+        displace(a, dx * half, dy * half)
+        displace(b, -dx * half, -dy * half)
+
+    return layout
+
+
+def expand_grid_if_needed(
+    hex_by_qr: dict[tuple[int, int], dict],
+    R: float,
+    origin: tuple[float, float],
+    target_bbox: tuple[float, float, float, float],
+    margin: float = 0.0,
+) -> None:
+    """Add hex cells to `hex_by_qr` in-place to cover `target_bbox` (xmin,ymin,xmax,ymax).
+
+    Uses the same axial-coord scheme as scripts/build_hex_grid.py so existing cell
+    (q, r) indices remain valid. New cells get full _geom / _qr / _xy attrs.
+    """
+    xmin, ymin, xmax, ymax = target_bbox
+    xmin -= margin
+    ymin -= margin
+    xmax += margin
+    ymax += margin
+    ox, oy = origin
+    xstep = R * 1.5
+    ystep = R * math.sqrt(3.0)
+
+    # Axial index ranges to cover the expanded bbox; mirrors build_hex_grid.main().
+    q_lo = int(math.floor((xmin - ox) / xstep)) - 1
+    q_hi = int(math.ceil((xmax - ox) / xstep)) + 1
+
+    for q in range(q_lo, q_hi + 1):
+        # y depends on r + q/2; reconstruct r-range from the y bbox.
+        y_offset = oy + R * math.sqrt(3.0) * (q / 2.0)
+        r_lo = int(math.floor((ymin - y_offset) / ystep)) - 1
+        r_hi = int(math.ceil((ymax - y_offset) / ystep)) + 1
+        for r in range(r_lo, r_hi + 1):
+            qr = (q, r)
+            if qr in hex_by_qr:
+                continue
+            cx = ox + R * 1.5 * q
+            cy = oy + R * math.sqrt(3.0) * (r + q / 2.0)
+            if cx < xmin - R or cx > xmax + R:
+                continue
+            if cy < ymin - R or cy > ymax + R:
+                continue
+            # Build a flat-top hex polygon (matches build_hex_grid.hex_polygon).
+            ring: list[list[float]] = []
+            for k in range(6):
+                a = math.radians(60.0 * k)
+                ring.append([round(cx + R * math.cos(a), 3), round(cy + R * math.sin(a), 3)])
+            ring.append(ring[0])
+            poly = Polygon(ring)
+            feat = {
+                "type": "Feature",
+                "properties": {"q": q, "r": r, "cx": cx, "cy": cy, "R": R},
+                "geometry": {"type": "Polygon", "coordinates": [ring]},
+                "_geom": poly,
+                "_qr": qr,
+                "_xy": (cx, cy),
+            }
+            hex_by_qr[qr] = feat
+
+
 def build_cell_outline_map(
     hex_by_qr: dict[tuple[int, int], dict],
     outlines: dict[str, dict],
+    geom_key: str = "_geom",
 ) -> dict[tuple[int, int], str]:
-    """Map each hex cell to the FIPS of the real state outline its center falls in.
+    """Map each hex cell to the FIPS of the state outline its center falls in.
 
-    Cells whose center lies in no state's outline (ocean, foreign land) are
-    omitted. Computed once and reused across all Congresses since the outlines
-    are fixed modern geometry.
+    `outlines` is fips -> feature-or-record dict; the polygon is read from
+    `record[geom_key]`. Cells whose center lies in no outline (ocean / foreign
+    land / between displaced states) are omitted.
     """
-    items = [(fips, feat["_geom"]) for fips, feat in outlines.items()]
+    items = [(fips, feat[geom_key]) for fips, feat in outlines.items()]
     fips_list = [fips for fips, _ in items]
     geoms = [g for _, g in items]
     tree = STRtree(geoms)
@@ -365,10 +545,7 @@ def main() -> None:
     grid, meta, hex_by_qr = load_hex_grid(Path(args.hex_grid), Path(args.hex_grid_meta))
     R = float(meta["R"])
     hex_area = hex_area_from_R(R)
-
-    # Map each grid cell to the real state outline it falls in (fixed across
-    # Congresses), used to guide territory allocation toward real geography.
-    cell_outline_fips = build_cell_outline_map(hex_by_qr, outlines)
+    origin = tuple(meta["origin"])  # type: ignore[arg-type]
 
     cds_root = Path(args.cds_out_root)
     states_root = Path(args.states_out_root)
@@ -397,7 +574,30 @@ def main() -> None:
                 continue
             seat_by_fips[fips] = seats
             meta_by_fips[fips] = row
-            centroid_by_fips[fips] = outline_feat["_centroid"]
+
+        # HexCDv31-style scaled outlines: scale each state to its delegation-size
+        # area around its real centroid, then iteratively push overlapping pairs
+        # apart so the layout is non-overlapping. The pre-allocator then sees a
+        # set of outlines that already have ~the right cell count inside.
+        layout = compute_scaled_layout(seat_by_fips, outlines, hex_area, R)
+
+        # Expand the hex grid (in place) if the scaled+displaced layout reaches
+        # past the current grid bbox; keeps tile size constant across Congresses.
+        if layout:
+            xs_min = min(rec["geom"].bounds[0] for rec in layout.values())
+            ys_min = min(rec["geom"].bounds[1] for rec in layout.values())
+            xs_max = max(rec["geom"].bounds[2] for rec in layout.values())
+            ys_max = max(rec["geom"].bounds[3] for rec in layout.values())
+            expand_grid_if_needed(hex_by_qr, R, origin, (xs_min, ys_min, xs_max, ys_max), margin=2 * R)
+
+        # Build cell -> fips from scaled outlines, and use displaced centroids
+        # as each state's pull-anchor inside the allocator.
+        cell_outline_fips = build_cell_outline_map(hex_by_qr, layout, geom_key="geom")
+        centroid_by_fips = {fips: rec["centroid"] for fips, rec in layout.items()}
+        # States with no layout entry (missing/invalid outline) get no chance to tile.
+        for f in seat_by_fips:
+            if f not in centroid_by_fips and f in outlines:
+                centroid_by_fips[f] = outlines[f]["_centroid"]
 
         tiles_by_state, statuses = place_pentahex_tiles(seat_by_fips, centroid_by_fips, cell_outline_fips, hex_by_qr)
 
@@ -484,6 +684,19 @@ def main() -> None:
                     }
                 )
 
+            layout_rec = layout.get(fips)
+            if layout_rec is not None:
+                scaled_geom = layout_rec["geom"]
+                area_scale = layout_rec["scale"]
+                disp_x, disp_y = layout_rec["displacement"]
+                anchor_x, anchor_y = layout_rec["anchor"]
+                centroid_x, centroid_y = layout_rec["centroid"]
+            else:
+                scaled_geom = outline_geom
+                area_scale = 1.0
+                disp_x = disp_y = 0.0
+                anchor_x, anchor_y = outline_feat["_centroid"]
+                centroid_x, centroid_y = outline_feat["_centroid"]
             outline_features.append(
                 {
                     "type": "Feature",
@@ -493,9 +706,17 @@ def main() -> None:
                         "state_abbr": str(row["state_abbr"]).strip().upper(),
                         "state_name": str(row["state_name"]),
                         "house_seats": seats,
+                        "area_scale": area_scale,
+                        "displacement_x": disp_x,
+                        "displacement_y": disp_y,
+                        "anchor_x": anchor_x,
+                        "anchor_y": anchor_y,
+                        "centroid_x": centroid_x,
+                        "centroid_y": centroid_y,
+                        "real_geometry": mapping(outline_geom),
                         "generator_version": GENERATOR_VERSION,
                     },
-                    "geometry": mapping(outline_geom),
+                    "geometry": mapping(scaled_geom),
                 }
             )
 
@@ -520,18 +741,9 @@ def main() -> None:
             "hex_grid_R": R,
         }
 
-        (cds_root / f"{congress_number}.geojson").write_text(
-            json.dumps({"type": "FeatureCollection", "properties": common_props, "features": cd_features}),
-            encoding="utf-8",
-        )
-        (states_root / f"{congress_number}.geojson").write_text(
-            json.dumps({"type": "FeatureCollection", "properties": common_props, "features": state_features}),
-            encoding="utf-8",
-        )
-        (outlines_root / f"{congress_number}.geojson").write_text(
-            json.dumps({"type": "FeatureCollection", "properties": common_props, "features": outline_features}),
-            encoding="utf-8",
-        )
+        write_geojson_with_retry(cds_root / f"{congress_number}.geojson", common_props, cd_features)
+        write_geojson_with_retry(states_root / f"{congress_number}.geojson", common_props, state_features)
+        write_geojson_with_retry(outlines_root / f"{congress_number}.geojson", common_props, outline_features)
 
         summary["timeline"].append(
             {
