@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+## At the start of each session
+
+Run `gh issue list` to check open issues for current bugs and ideas before starting work.
+
 ## What this project is
 
 Historical **hex congressional-district maps** ("HexCDs"). A cartogram covering all
