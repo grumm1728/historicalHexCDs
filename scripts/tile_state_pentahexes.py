@@ -23,8 +23,10 @@ Algorithm (HexCDv31-style cartogram via scaled outlines):
    region — minimal outward inflation, no boxing.
 4. Partition each territory into pentahex (5-hex) tiles via region-growing from
    boundary cells (partition_into_pentahexes).
-5. Render tiles as the union of their 5 hexes. (Phase 2 will clip border tiles
-   to the scaled state outline to reproduce HexCDv31wm's snap-to-edge styling.)
+5. Render tiles as the union of their 5 hexes. Border tiles (those touching the
+   territory edge) are additionally clipped to the scaled state outline so the
+   outline snaps to tile edges, reproducing HexCDv31wm's look. Interior tiles are
+   left as plain hex unions (render_tile).
 """
 from __future__ import annotations
 
@@ -38,14 +40,23 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from shapely.affinity import scale as shapely_scale, translate as shapely_translate
-from shapely.geometry import MultiPolygon, Point, Polygon, mapping, shape
-from shapely.ops import unary_union
+from shapely.geometry import MultiPoint, MultiPolygon, Point, Polygon, mapping, shape
+from shapely.ops import unary_union, voronoi_diagram
 from shapely.strtree import STRtree
 
 ROOT = Path(__file__).resolve().parent.parent
 GENERATOR_VERSION = "v6-pentahex-scaled-outlines"
 
 NEIGHBOR_OFFSETS = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1)]
+
+# Northeast cluster: small, seat-dense states that jam together once scaled to
+# delegation size. compute_scaled_layout gives this cluster a local radial
+# expansion so the crammed states get room to breathe, without warping the rest
+# of the (geographic) layout. FIPS: CT DE DC ME MD MA NH NJ NY PA RI VT.
+NE_FIPS = frozenset({"09", "10", "11", "23", "24", "25", "33", "34", "36", "42", "44", "50"})
+# 1.25 is the strongest local expansion that stays warning-free across all 119
+# Congresses; 1.3 reshapes early Massachusetts (14 seats) into an un-tileable blob.
+NE_EXPAND = 1.25
 
 
 def congress_start_date(congress_number: int) -> date:
@@ -103,23 +114,33 @@ def hex_area_from_R(R: float) -> float:
     return 1.5 * math.sqrt(3.0) * (R ** 2)
 
 
-def write_geojson_with_retry(path: Path, common_props: dict, features: list, attempts: int = 5) -> None:
+def write_geojson_with_retry(path: Path, common_props: dict, features: list, attempts: int = 12) -> None:
     """Write a GeoJSON FeatureCollection, retrying on transient Windows OSError 22.
 
     The pentahex regen writes 357 files in a tight loop; Windows occasionally
     returns EINVAL on the very next open() if antivirus or the file indexer is
-    still holding a handle from a recent write. A tiny sleep-and-retry clears it.
+    still holding a handle from a recently written file. To dodge that race we
+    write to a temp sibling (a fresh handle nothing is scanning) and atomically
+    os.replace() it onto the target, with an escalating sleep-and-retry.
     """
+    import os as _os
     import time as _time
     payload = json.dumps({"type": "FeatureCollection", "properties": common_props, "features": features})
+    tmp = path.with_name(path.name + ".tmp")
     last_err: OSError | None = None
     for i in range(attempts):
         try:
-            path.write_text(payload, encoding="utf-8")
+            tmp.write_text(payload, encoding="utf-8")
+            _os.replace(tmp, path)
             return
         except OSError as e:
             last_err = e
-            _time.sleep(0.2 * (i + 1))
+            _time.sleep(min(0.25 * (i + 1), 2.0))
+    try:
+        if tmp.exists():
+            tmp.unlink()
+    except OSError:
+        pass
     if last_err is not None:
         raise last_err
 
@@ -141,6 +162,7 @@ def compute_scaled_layout(
     hex_area: float,
     R: float,
     max_iter: int = 1000,
+    ne_expand: float = NE_EXPAND,
 ) -> dict[str, dict]:
     """Scale each state's outline to delegation size, then resolve overlaps.
 
@@ -148,6 +170,12 @@ def compute_scaled_layout(
       - target_area = seats * 5 * hex_area
       - area_scale  = sqrt(target_area / real_area)
       - geom is scaled around the state's real centroid
+
+    The Northeast cluster (NE_FIPS) is then given a local radial expansion by
+    `ne_expand` (positions pushed out from the seat-weighted NE centroid) so those
+    crammed small states get maneuvering room. This is a placement-only nudge local
+    to the NE; the rest of the map stays geographic and the overlap-resolver below
+    absorbs the push where the cluster meets its inland neighbours.
 
     Then iteratively pick the most-overlapping pair of states and push both
     halfway apart along their centroid-to-centroid vector until separation
@@ -194,6 +222,18 @@ def compute_scaled_layout(
         rec["centroid"] = (cx + dx, cy + dy)
         ddx, ddy = rec["displacement"]
         rec["displacement"] = (ddx + dx, ddy + dy)
+
+    # Targeted Northeast de-jam: spread the NE cluster outward from its seat-weighted
+    # centroid before overlap resolution, so its small dense states (RI, CT, DE, NJ…)
+    # start with room instead of being relaxed into a tight jam.
+    ne_members = [f for f in fips_list if f in NE_FIPS]
+    if ne_expand != 1.0 and ne_members:
+        sw = sum(seat_by_fips[f] for f in ne_members)
+        ncx = sum(layout[f]["centroid"][0] * seat_by_fips[f] for f in ne_members) / sw
+        ncy = sum(layout[f]["centroid"][1] * seat_by_fips[f] for f in ne_members) / sw
+        for f in ne_members:
+            cx, cy = layout[f]["centroid"]
+            displace(f, (ne_expand - 1.0) * (cx - ncx), (ne_expand - 1.0) * (cy - ncy))
 
     for _ in range(max_iter):
         # Find the most-overlapping pair (largest intersection area).
@@ -331,6 +371,7 @@ def allocate_territories(
     centroid_by_fips: dict[str, tuple[float, float]],
     cell_outline_fips: dict[tuple[int, int], str],
     hex_by_qr: dict[tuple[int, int], dict],
+    steal_exempt: frozenset[str] = frozenset(),
 ) -> dict[str, set[tuple[int, int]]]:
     """Grow a contiguous territory of exactly `need[fips]` cells for each state.
 
@@ -338,11 +379,26 @@ def allocate_territories(
     in a compact, connected territory before bigger neighbors inflate around them.
     Each state is seeded with the unclaimed cell nearest its centroid (preferring
     cells inside its own outline) and then grown to its full `need` by repeatedly
-    claiming the frontier cell that lies inside the state's own outline if
-    possible, then is closest to its centroid. Growth only ever takes cells
-    adjacent to the existing territory, so each territory stays connected; if a
-    state is fully boxed in before reaching `need` it stops (leaving a smaller,
-    still-connected territory) rather than grabbing a disconnected far cell.
+    claiming the frontier cell with the best preference tier, then closest to its
+    centroid. Frontier cells are ranked in three tiers:
+      0. inside this state's own scaled outline,
+      1. inside no state's outline (ocean / foreign land / gaps between states),
+      2. inside ANOTHER admitted state's outline — taken only as a last resort.
+
+    Tier 2 keeps a state from cannibalising a neighbour's cells just because they
+    sit nearer its centroid: without it, a small state allocated early inflates
+    straight through a big neighbour's region (e.g. VA/OH/WV eating PA's southern
+    cells), leaving the big state to undershoot its own outline. Growth only ever
+    takes cells adjacent to the existing territory, so each territory stays
+    connected; if a state is fully boxed in before reaching `need` it stops
+    (leaving a smaller, still-connected territory) rather than grabbing a far cell.
+
+    States in `steal_exempt` skip the tier-2 penalty (free and another-state cells
+    rank equally, tier 1). The caller exempts states whose strict-tier territory
+    is an un-tileable shape: forbidding theft can force a small, fragmented coastal
+    state (e.g. MD across the Chesapeake) onto scattered, spurred cells that no set
+    of connected pentahexes can cover. Letting such a state reclaim nearby cells
+    restores a compact, tileable blob.
     """
     cells_by_state: dict[str, set[tuple[int, int]]] = {fips: set() for fips in need}
     inside: dict[str, set[tuple[int, int]]] = defaultdict(set)
@@ -363,10 +419,24 @@ def allocate_territories(
         own_inside = inside.get(fips, frozenset())
         cells = cells_by_state[fips]
 
-        # Seed: nearest unclaimed cell inside the state's own outline, else the
-        # globally nearest unclaimed cell.
+        exempt = fips in steal_exempt
+
+        def cell_tier(qr: tuple[int, int]) -> int:
+            owner = cell_outline_fips.get(qr)
+            if owner == fips:
+                return 0  # this state's own outline
+            if owner is None or exempt:
+                return 1  # free to take (or this state is exempt from the anti-steal rule)
+            return 2  # inside another admitted state's outline — last resort
+
+        # Seed: nearest unclaimed own-outline cell; else nearest free cell; else
+        # the globally nearest unclaimed cell (same tier order as growth).
         own_unclaimed = [qr for qr in own_inside if qr in unclaimed]
-        pool = own_unclaimed if own_unclaimed else list(unclaimed)
+        if own_unclaimed:
+            pool = own_unclaimed
+        else:
+            free_unclaimed = [qr for qr in unclaimed if qr not in cell_outline_fips]
+            pool = free_unclaimed if free_unclaimed else list(unclaimed)
         seed = min(pool, key=lambda qr: squared_dist(hex_by_qr[qr]["_xy"], center))
         cells.add(seed)
         unclaimed.discard(seed)
@@ -383,7 +453,7 @@ def allocate_territories(
             chosen = min(
                 frontier,
                 key=lambda qr: (
-                    0 if qr in own_inside else 1,
+                    cell_tier(qr),
                     squared_dist(hex_by_qr[qr]["_xy"], center),
                 ),
             )
@@ -411,14 +481,39 @@ def place_pentahex_tiles(
     if not need:
         return tiles_by_state, {f: "skipped" for f in seat_by_fips}
 
-    cells_by_state = allocate_territories(need, centroid_by_fips, cell_outline_fips, hex_by_qr)
+    # Allocate, then tile. The anti-steal rule (see allocate_territories) can hand a
+    # small fragmented state an un-tileable shape; when that happens we exempt the
+    # offending state(s) and re-allocate, since the theft-allowed growth yields a
+    # compact, tileable blob. This converges: in the worst case every state is
+    # exempt, which reproduces the original theft-allowed allocation. The exempt
+    # set only grows, so each pass strictly reduces the failure set or stops.
+    steal_exempt: frozenset[str] = frozenset()
+    max_passes = len(need) + 1
+    for _ in range(max_passes):
+        cells_by_state = allocate_territories(
+            need, centroid_by_fips, cell_outline_fips, hex_by_qr, steal_exempt=steal_exempt
+        )
+        tiles_by_state = {fips: [] for fips in seat_by_fips}
+        for fips in need:
+            cells = cells_by_state[fips]
+            if not cells:
+                continue
+            boundary = {c for c in cells if any(nb not in cells for nb in neighbors(c))}
+            tiles_by_state[fips] = partition_into_pentahexes(cells, boundary)
 
-    for fips in need:
-        cells = cells_by_state[fips]
-        if not cells:
-            continue
-        boundary = {c for c in cells if any(nb not in cells for nb in neighbors(c))}
-        tiles_by_state[fips] = partition_into_pentahexes(cells, boundary)
+        # A state "fails" when its assigned cells were not fully tiled (and it isn't
+        # already exempt). Exempt those and re-run; a state boxed in below `need`
+        # (genuinely partial) can't be helped by exemption, so don't loop on it.
+        newly_failing = {
+            fips
+            for fips in need
+            if fips not in steal_exempt
+            and len(cells_by_state[fips]) == need[fips]
+            and len(tiles_by_state[fips]) * 5 != len(cells_by_state[fips])
+        }
+        if not newly_failing:
+            break
+        steal_exempt = steal_exempt | newly_failing
 
     for fips, seats in seat_by_fips.items():
         if seats <= 0:
@@ -510,22 +605,165 @@ def partition_into_pentahexes(
     return tiles
 
 
-def render_tile(tile: list[tuple[int, int]], hex_by_qr: dict[tuple[int, int], dict]):
-    polys = [hex_by_qr[qr]["_geom"] for qr in tile]
-    union = unary_union(polys)
-    if not union.is_valid:
-        union = union.buffer(0)
-    if isinstance(union, Polygon):
-        return MultiPolygon([union])
-    if isinstance(union, MultiPolygon):
-        return union
+def _as_multipolygon(geom):
+    """Normalize a Shapely geometry to a MultiPolygon, dropping non-areal parts."""
+    if isinstance(geom, Polygon):
+        return MultiPolygon([geom])
+    if isinstance(geom, MultiPolygon):
+        return geom
     flat: list[Polygon] = []
-    for g in getattr(union, "geoms", []):
+    for g in getattr(geom, "geoms", []):
         if isinstance(g, Polygon):
             flat.append(g)
         elif isinstance(g, MultiPolygon):
             flat.extend(list(g.geoms))
-    return MultiPolygon(flat) if flat else union
+    return MultiPolygon(flat) if flat else geom
+
+
+def render_tile(
+    tile: list[tuple[int, int]],
+    hex_by_qr: dict[tuple[int, int], dict],
+    clip_geom=None,
+):
+    """Render a 5-hex tile as a MultiPolygon.
+
+    Interior tiles (clip_geom is None) are the plain union of their hexes.
+    Boundary tiles pass the scaled state outline as `clip_geom`; the union is
+    intersected with it so the outline snaps to tile edges (HexCDv31wm's look).
+    The clip may yield a MultiPolygon for complex coasts (Long Island, the SF
+    peninsula, NJ islands) — that's expected. If a boundary tile lies (almost)
+    entirely outside the outline — possible when the allocator inflated past the
+    state's region — the clip would erase the CD, so we keep the plain union to
+    preserve tile integrity.
+    """
+    polys = [hex_by_qr[qr]["_geom"] for qr in tile]
+    union = unary_union(polys)
+    if not union.is_valid:
+        union = union.buffer(0)
+    if clip_geom is not None:
+        clipped = union.intersection(clip_geom)
+        if not clipped.is_valid:
+            clipped = clipped.buffer(0)
+        if not clipped.is_empty and clipped.area > 0:
+            union = clipped
+    return _as_multipolygon(union)
+
+
+def _nearest_tile_split(comp, adj, geoms, R):
+    """Split one residual component `comp` among adjacent tiles `adj` (indices into
+    `geoms`) by nearest tile. Returns {tile_index: geometry}.
+
+    Implemented as a Voronoi diagram over points sampled along the adjacent tiles'
+    boundaries, labelled by tile; each Voronoi cell (the region nearest its seed)
+    is intersected with `comp` and accumulated onto that seed's tile. This spreads
+    a wide undershoot strip across every tile that faces it instead of dumping it
+    on one — keeping per-CD areas closer to five hexes.
+    """
+    seeds: list[Point] = []
+    label: list[int] = []
+    for i in adj:
+        g = geoms[i]
+        for poly in (g.geoms if g.geom_type == "MultiPolygon" else [g]):
+            bdry = poly.exterior
+            steps = max(6, int(bdry.length / (0.3 * R)))
+            for k in range(steps):
+                seeds.append(bdry.interpolate(k / steps, normalized=True))
+                label.append(i)
+    if len(seeds) < 2:
+        return {adj[0]: comp}
+    try:
+        vor = voronoi_diagram(MultiPoint(seeds), envelope=comp.buffer(R).envelope)
+    except Exception:
+        return {adj[0]: comp}
+    seed_tree = STRtree(seeds)
+    shares: dict[int, object] = {}
+    for cell in vor.geoms:
+        piece = cell.intersection(comp)
+        if piece.is_empty or piece.area <= 0:
+            continue
+        owner = None
+        for si in seed_tree.query(cell):
+            if cell.contains(seeds[int(si)]):
+                owner = label[int(si)]
+                break
+        if owner is None:
+            q = seed_tree.query(cell)
+            owner = label[int(q[0])] if len(q) else adj[0]
+        shares[owner] = piece if owner not in shares else unary_union([shares[owner], piece])
+    return shares or {adj[0]: comp}
+
+
+def render_state_tiles(
+    tiles: list[list[tuple[int, int]]],
+    hex_by_qr: dict[tuple[int, int], dict],
+    scaled_outline,
+    boundary_cells: set[tuple[int, int]],
+    R: float,
+    hex_area: float,
+):
+    """Render every tile of one state, snapping the state to its scaled outline.
+
+    Each tile starts as its (boundary-clipped) hex geometry via render_tile. The
+    union of those clipped tiles undershoots the outline by a thin perimeter strip
+    plus the odd larger lobe (cells never reach a straight edge; the allocator may
+    fall a few cells short of the outline's exact area). That residual gap is split
+    back onto the tiles so the per-state union equals the outline (option-3 snap):
+      - tiny slivers (the vast majority) merge into the adjacent tile with the
+        longest shared edge;
+      - rarer large components split across all adjacent tiles by nearest tile, so
+        a wide undershoot strip is shared rather than dumped on one CD.
+    Returns one MultiPolygon per input tile (parallel to `tiles`).
+    """
+    geoms = []
+    for tile in tiles:
+        touches = any(qr in boundary_cells for qr in tile)
+        clip = scaled_outline if (touches and scaled_outline is not None) else None
+        geoms.append(render_tile(tile, hex_by_qr, clip))
+    if scaled_outline is None or not geoms:
+        return geoms
+
+    union = unary_union(geoms)
+    residual = scaled_outline.difference(union)
+    if not residual.is_valid:
+        residual = residual.buffer(0)
+    if residual.is_empty or residual.area <= 0:
+        return geoms
+
+    big_thresh = 0.4 * (5.0 * hex_area)
+    small_buf = [g.buffer(0.1 * R) for g in geoms]
+    tree = STRtree(small_buf)
+    extra: list[list[object]] = [[] for _ in geoms]
+
+    comps = (
+        list(residual.geoms)
+        if residual.geom_type.startswith("Multi") or residual.geom_type == "GeometryCollection"
+        else [residual]
+    )
+    for comp in comps:
+        if comp.is_empty or comp.area <= 0:
+            continue
+        adj = [int(i) for i in tree.query(comp) if small_buf[int(i)].intersects(comp)]
+        if not adj:
+            nearest = min(range(len(geoms)), key=lambda i: geoms[i].distance(comp))
+            extra[nearest].append(comp)
+        elif comp.area < big_thresh or len(adj) == 1:
+            best = max(adj, key=lambda i: small_buf[i].intersection(comp).area)
+            extra[best].append(comp)
+        else:
+            for i, piece in _nearest_tile_split(comp, adj, geoms, R).items():
+                if piece is not None and not piece.is_empty and piece.area > 0:
+                    extra[i].append(piece)
+
+    out = []
+    for g, ex in zip(geoms, extra):
+        if not ex:
+            out.append(g)
+            continue
+        merged = unary_union([g, *ex])
+        if not merged.is_valid:
+            merged = merged.buffer(0)
+        out.append(_as_multipolygon(merged))
+    return out
 
 
 def main() -> None:
@@ -609,6 +847,9 @@ def main() -> None:
         for fips, seats in seat_by_fips.items():
             outline_feat = outlines[fips]
             outline_geom = outline_feat["_geom"]
+            layout_rec = layout.get(fips)
+            # Scaled+displaced outline this state's border tiles get clipped to.
+            scaled_outline = layout_rec["geom"] if layout_rec is not None else None
             tiles = tiles_by_state.get(fips, [])
             all_cells: set[tuple[int, int]] = set()
             for t in tiles:
@@ -623,10 +864,13 @@ def main() -> None:
                         break
 
             row = meta_by_fips[fips]
+            # Render the whole state at once: clip boundary tiles to the scaled
+            # outline, then redistribute the leftover gap so the state snaps to its
+            # outline (option-3 snap-to-edge).
+            tile_geoms = render_state_tiles(tiles, hex_by_qr, scaled_outline, boundary_cells, R, hex_area)
             cd_feats_for_state: list[dict] = []
-            for idx, tile in enumerate(tiles, start=1):
+            for idx, (tile, geom) in enumerate(zip(tiles, tile_geoms), start=1):
                 touches_boundary = any(qr in boundary_cells for qr in tile)
-                geom = render_tile(tile, hex_by_qr)
                 ratio = geom.area / (5.0 * hex_area) if hex_area > 0 else 0.0
                 cd_feats_for_state.append(
                     {
@@ -684,7 +928,6 @@ def main() -> None:
                     }
                 )
 
-            layout_rec = layout.get(fips)
             if layout_rec is not None:
                 scaled_geom = layout_rec["geom"]
                 area_scale = layout_rec["scale"]
