@@ -46,6 +46,34 @@ function cdColor(props) {
   }
 }
 const outlineGeometryCache = new Map();
+
+// url -> Promise<parsed JSON>  (stores in-flight promises too, so concurrent
+// calls for the same URL share one fetch rather than firing duplicates)
+const fetchCache = new Map();
+
+function cachedFetchJson(url) {
+  if (!fetchCache.has(url)) {
+    const p = fetch(url)
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}: ${url}`);
+        return r.json();
+      })
+      .catch((err) => {
+        fetchCache.delete(url); // allow retry on transient failures
+        throw err;
+      });
+    fetchCache.set(url, p);
+  }
+  return fetchCache.get(url);
+}
+
+function prefetchFrame(i) {
+  if (i < 0 || i >= timeline.length) return;
+  const entry = timeline[i];
+  const featurePath = entry.state_feature_path || entry.feature_path;
+  if (featurePath) cachedFetchJson(`./${featurePath}`).catch(() => {});
+  if (entry.cd_feature_path) cachedFetchJson(`./${entry.cd_feature_path}`).catch(() => {});
+}
 const CIVIL_WAR_HIDDEN_BY_CONGRESS = new Map([
   [37, new Set(["AL", "AR", "FL", "GA", "LA", "MS", "NC", "SC", "TN", "TX", "VA"])],
   [38, new Set(["AL", "AR", "FL", "GA", "LA", "MS", "NC", "SC", "TN", "TX", "VA"])],
@@ -301,15 +329,11 @@ async function drawFrame(entry) {
   const showDistricts = Boolean(showDistrictsToggle?.checked) && Boolean(cdPath);
   const v5 = isV5Frame(entry);
 
-  const fetches = [fetch(`./${featurePath}`)];
-  fetches.push(entry.state_outline_path ? fetch(`./${entry.state_outline_path}`) : Promise.resolve(null));
-  fetches.push(showDistricts ? fetch(`./${cdPath}`) : Promise.resolve(null));
-  const [cellResp, outlineResp, cdResp] = await Promise.all(fetches);
-
-  if (!cellResp.ok) throw new Error(`Failed to load ${featurePath}`);
-  const geo = await cellResp.json();
-  const rawOutlineGeo = outlineResp && outlineResp.ok ? await outlineResp.json() : null;
-  const cdGeo = cdResp && cdResp.ok ? await cdResp.json() : null;
+  const [geo, rawOutlineGeo, cdGeo] = await Promise.all([
+    cachedFetchJson(`./${featurePath}`),
+    entry.state_outline_path ? cachedFetchJson(`./${entry.state_outline_path}`).catch(() => null) : Promise.resolve(null),
+    showDistricts ? cachedFetchJson(`./${cdPath}`).catch(() => null) : Promise.resolve(null),
+  ]);
 
   const congressNumber = Number(entry.congress_number);
   const hiddenSet = CIVIL_WAR_HIDDEN_BY_CONGRESS.get(congressNumber) || new Set();
@@ -408,6 +432,7 @@ async function drawFrame(entry) {
       .on("mouseleave", () => { tooltip.hidden = true; });
   }
 
+  prefetchFrame(frameIndex + 1);
   clearStatus();
   setCivilWarBanner("");
 }

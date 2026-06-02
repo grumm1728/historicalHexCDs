@@ -114,6 +114,24 @@ def hex_area_from_R(R: float) -> float:
     return 1.5 * math.sqrt(3.0) * (R ** 2)
 
 
+def _round_geojson_coords(obj: object, precision: int = 1) -> object:
+    """Recursively round all coordinate values in a GeoJSON geometry or feature list.
+
+    Shapely's mapping() emits full float64 precision (~15 sig figs).  Web Mercator
+    coordinates at 960 px wide only need 1 decimal place (0.1 m ≈ 0.00002 px).
+    Rounding here cuts per-file sizes by ~35% with no visible effect.
+    """
+    if isinstance(obj, list):
+        if obj and isinstance(obj[0], (int, float)) and not isinstance(obj[0], bool):
+            return [round(v, precision) for v in obj]
+        return [_round_geojson_coords(item, precision) for item in obj]
+    if isinstance(obj, dict):
+        if "coordinates" in obj:
+            return {**obj, "coordinates": _round_geojson_coords(obj["coordinates"], precision)}
+        return {k: _round_geojson_coords(v, precision) for k, v in obj.items()}
+    return obj
+
+
 def write_geojson_with_retry(path: Path, common_props: dict, features: list, attempts: int = 12) -> None:
     """Write a GeoJSON FeatureCollection, retrying on transient Windows OSError 22.
 
@@ -125,7 +143,8 @@ def write_geojson_with_retry(path: Path, common_props: dict, features: list, att
     """
     import os as _os
     import time as _time
-    payload = json.dumps({"type": "FeatureCollection", "properties": common_props, "features": features})
+    rounded = _round_geojson_coords(features, precision=1)
+    payload = json.dumps({"type": "FeatureCollection", "properties": common_props, "features": rounded})
     tmp = path.with_name(path.name + ".tmp")
     last_err: OSError | None = None
     for i in range(attempts):
@@ -956,7 +975,6 @@ def main() -> None:
                         "anchor_y": anchor_y,
                         "centroid_x": centroid_x,
                         "centroid_y": centroid_y,
-                        "real_geometry": mapping(outline_geom),
                         "generator_version": GENERATOR_VERSION,
                     },
                     "geometry": mapping(scaled_geom),
