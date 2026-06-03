@@ -58,6 +58,12 @@ NE_FIPS = frozenset({"09", "10", "11", "23", "24", "25", "33", "34", "36", "42",
 # Congresses; 1.3 reshapes early Massachusetts (14 seats) into an un-tileable blob.
 NE_EXPAND = 1.25
 
+# States whose land is split across open water by the Great Lakes clip and so must be
+# allocated as multiple connected components (each a multiple of 5 hexes) rather than one
+# blob. Scope today: Michigan ("26") = Upper + Lower Peninsula. Gated to this set so the
+# multi-component path never perturbs island states (NY/MA/HI/AK/...) that tile fine today.
+MULTI_COMPONENT_FIPS = frozenset({"26"})
+
 
 def congress_start_date(congress_number: int) -> date:
     year = 1789 + (congress_number - 1) * 2
@@ -385,6 +391,49 @@ def build_cell_outline_map(
     return out
 
 
+def _connected_components(cells: set[tuple[int, int]]) -> list[set[tuple[int, int]]]:
+    """Split a cell set into connected components (hex adjacency)."""
+    remaining = set(cells)
+    comps: list[set[tuple[int, int]]] = []
+    while remaining:
+        start = next(iter(remaining))
+        comp = {start}
+        queue = deque([start])
+        remaining.discard(start)
+        while queue:
+            cur = queue.popleft()
+            for nb in neighbors(cur):
+                if nb in remaining:
+                    remaining.discard(nb)
+                    comp.add(nb)
+                    queue.append(nb)
+        comps.append(comp)
+    return comps
+
+
+def _split_targets_multiple_of_5(sizes: list[int], total: int) -> list[int]:
+    """Distribute `total` cells (a multiple of 5) across components as multiples of 5,
+    proportional to each component's own-cell count. Used for states whose land splits
+    across water (e.g. Michigan's Upper/Lower Peninsula) so each side gets a whole number
+    of pentahexes and no tile straddles the gap."""
+    units = total // 5
+    span = sum(sizes) or 1
+    base = [int(round(s / span * units)) for s in sizes]
+    diff = units - sum(base)
+    order = sorted(range(len(sizes)), key=lambda i: sizes[i], reverse=True)
+    k = 0
+    while diff != 0 and order:
+        i = order[k % len(order)]
+        if diff > 0:
+            base[i] += 1
+            diff -= 1
+        elif base[i] > 0:
+            base[i] -= 1
+            diff += 1
+        k += 1
+    return [b * 5 for b in base]
+
+
 def allocate_territories(
     need: dict[str, int],
     centroid_by_fips: dict[str, tuple[float, float]],
@@ -448,36 +497,62 @@ def allocate_territories(
                 return 1  # free to take (or this state is exempt from the anti-steal rule)
             return 2  # inside another admitted state's outline — last resort
 
-        # Seed: nearest unclaimed own-outline cell; else nearest free cell; else
-        # the globally nearest unclaimed cell (same tier order as growth).
-        own_unclaimed = [qr for qr in own_inside if qr in unclaimed]
-        if own_unclaimed:
-            pool = own_unclaimed
-        else:
-            free_unclaimed = [qr for qr in unclaimed if qr not in cell_outline_fips]
-            pool = free_unclaimed if free_unclaimed else list(unclaimed)
-        seed = min(pool, key=lambda qr: squared_dist(hex_by_qr[qr]["_xy"], center))
-        cells.add(seed)
-        unclaimed.discard(seed)
+        def grow_region(count: int, seed_pool: list[tuple[int, int]]) -> None:
+            """Seed at the nearest cell in `seed_pool`, then add `count` connected cells
+            via frontier expansion (tiered preference). Growth is confined to the region
+            grown from this seed, so a later call for a separate component never re-grows
+            an earlier one."""
+            if not seed_pool or count <= 0:
+                return
+            seed = min(seed_pool, key=lambda qr: squared_dist(hex_by_qr[qr]["_xy"], center))
+            region = {seed}
+            cells.add(seed)
+            unclaimed.discard(seed)
+            while len(region) < count:
+                frontier: set[tuple[int, int]] = set()
+                for c in region:
+                    for nb in neighbors(c):
+                        if nb in unclaimed:
+                            frontier.add(nb)
+                if not frontier:
+                    break  # boxed in; leave a smaller connected territory
+                chosen = min(
+                    frontier,
+                    key=lambda qr: (cell_tier(qr), squared_dist(hex_by_qr[qr]["_xy"], center)),
+                )
+                region.add(chosen)
+                cells.add(chosen)
+                unclaimed.discard(chosen)
 
-        # Grow to full need via connected frontier expansion.
-        while len(cells) < need[fips]:
-            frontier: set[tuple[int, int]] = set()
-            for c in cells:
-                for nb in neighbors(c):
-                    if nb in unclaimed:
-                        frontier.add(nb)
-            if not frontier:
-                break  # boxed in; leave a smaller connected territory
-            chosen = min(
-                frontier,
-                key=lambda qr: (
-                    cell_tier(qr),
-                    squared_dist(hex_by_qr[qr]["_xy"], center),
-                ),
-            )
-            cells.add(chosen)
-            unclaimed.discard(chosen)
+        # States whose land splits across water (Michigan's Upper/Lower Peninsula, once
+        # the Great Lakes are clipped out of the outline) have own-outline cells in two+
+        # disconnected components. A single connected growth can only fill one; worse, it
+        # would spill into the lake gap (tier-1 water) to reach `need`. Instead, give each
+        # component a multiple-of-5 share and grow it independently. Because the components
+        # are not hex-adjacent, no pentahex can straddle the gap and each side tiles cleanly.
+        own_components = (
+            _connected_components(set(own_inside))
+            if own_inside and fips in MULTI_COMPONENT_FIPS
+            else []
+        )
+        if len(own_components) > 1:
+            own_components.sort(key=len, reverse=True)
+            targets = _split_targets_multiple_of_5([len(c) for c in own_components], need[fips])
+            for comp, target in zip(own_components, targets):
+                if target <= 0:
+                    continue
+                comp_unclaimed = [qr for qr in comp if qr in unclaimed]
+                grow_region(target, comp_unclaimed)
+        else:
+            # Single-component (the common case): nearest own cell, else nearest free
+            # cell, else the globally nearest unclaimed cell; grow to full need.
+            own_unclaimed = [qr for qr in own_inside if qr in unclaimed]
+            if own_unclaimed:
+                pool = own_unclaimed
+            else:
+                free_unclaimed = [qr for qr in unclaimed if qr not in cell_outline_fips]
+                pool = free_unclaimed if free_unclaimed else list(unclaimed)
+            grow_region(need[fips], pool)
 
     return cells_by_state
 

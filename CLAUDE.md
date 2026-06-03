@@ -139,6 +139,39 @@ failing states are added to `steal_exempt` and the whole allocation is redone wi
 allowed for them. Converges within a few passes; worst case = the original theft-allowed
 allocation with 0 warnings.
 
+## Great Lakes clip & multi-component states (Michigan)
+
+**The problem:** Cells are allocated center-in-polygon against each state's outline. A
+state whose administrative outline runs out over open lake water (Michigan, whose outline
+spans Lakes Michigan/Huron/Superior between the Upper and Lower Peninsulas) would fill the
+lakes with hexes — districts floating in open water.
+
+**The fix (two parts):**
+1. **`fetch_modern_state_outlines.py` land-clips the outline.** It downloads Natural Earth
+   `ne_10m_lakes`, unions the named Great Lakes, and subtracts them from each state in
+   `GREAT_LAKES_CLIP_ABBRS` (today just `MI`), dropping tiny islands (`clip_to_land`,
+   `min_part_frac`). Michigan becomes a 2-part MultiPolygon (UP + LP). Only the pipeline
+   outputs (`*_modern.geojson` deg + `*_modern_wm.geojson`) are clipped; the raw NE export
+   (`state_outlines_natural_earth.geojson`) stays the full admin outline. Provenance is
+   tagged `natural-earth-10m-lakeclip-*`.
+2. **`allocate_territories` allocates split land as components.** For FIPS in
+   `MULTI_COMPONENT_FIPS` (today `{"26"}`), a state's own-outline cells are split into
+   connected components; `_split_targets_multiple_of_5` gives each component a multiple-of-5
+   share of `need` proportional to its size, and each is seeded + grown independently
+   (`grow_region`). **No bridge or partition change is needed:** because the components are
+   never hex-adjacent, `partition_into_pentahexes` (which only grows through adjacent cells,
+   and whose feasibility check already requires each component to be a multiple of 5) tiles
+   each peninsula cleanly and no pentahex straddles the water gap.
+
+**Gotchas:**
+- The branch is **gated to `MULTI_COMPONENT_FIPS`** so it never perturbs island states
+  (NY/MA/HI/AK/...) that already tile fine as one blob. Re-sweep all 119 Congresses before
+  adding a FIPS here.
+- When MI's delegation is small, the scaled outline shrinks the UP/LP gap below one hex
+  width: the two parts' cells become adjacent and MI allocates as a single connected blob
+  (still land-only — no lake fill). When the gap stays open, the multi-component path gives
+  each peninsula its own whole number of pentahexes. Both outcomes are warning-free.
+
 ## NE de-jam and the density/geography tradeoff
 
 **The problem:** The Northeast (NY/PA/NJ/CT/RI/MA/NH/VT/MD/DE/ME/DC) contains ~85 seats
