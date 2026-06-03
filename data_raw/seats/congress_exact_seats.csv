@@ -767,9 +767,9 @@ congress_number,state_fips,state_abbr,state_name,house_seats,admitted,source_sea
 16,20,KS,Kansas,0,False,wikipedia-past-apportionments-2026-05-06
 16,21,KY,Kentucky,10,True,wikipedia-past-apportionments-2026-05-06
 16,22,LA,Louisiana,1,True,wikipedia-past-apportionments-2026-05-06
-16,25,MA,Massachusetts,13,True,historical-admission-correction-2026-06-02
+16,25,MA,Massachusetts,20,True,maine-as-massachusetts-2026-06-02
 16,24,MD,Maryland,9,True,wikipedia-past-apportionments-2026-05-06
-16,23,ME,Maine,7,True,historical-admission-correction-2026-06-02
+16,23,ME,Maine,0,False,maine-as-massachusetts-2026-06-02
 16,26,MI,Michigan,0,False,wikipedia-past-apportionments-2026-05-06
 16,27,MN,Minnesota,0,False,wikipedia-past-apportionments-2026-05-06
 16,29,MO,Missouri,0,False,wikipedia-past-apportionments-2026-05-06

@@ -71,13 +71,30 @@ MULTI_COMPONENT_FIPS = frozenset({"26"})
 # it holds seats — so no Congress numbers are hardcoded. Only the lineage is curated, because
 # `formed_from` metadata routes through territories (Southwest Territory, etc.), not parents.
 PREDECESSOR_PARENT = {
-    "21": "51",  # Kentucky      -> Virginia        (admitted 1792, first seated C3)
+    "21": "51",  # Kentucky      -> Virginia        (admitted 1792, first seated C2)
     "54": "51",  # West Virginia -> Virginia        (admitted 1863, first seated C38)
-    "23": "25",  # Maine         -> Massachusetts   (admitted 1820, first seated C17)
     "47": "37",  # Tennessee     -> North Carolina  (admitted 1796, first seated C4)
-    "01": "13",  # Alabama       -> Georgia         (admitted 1819)
-    "28": "13",  # Mississippi   -> Georgia         (admitted 1817)
+    "01": "13",  # Alabama       -> Georgia         (admitted 1819, first seated C16)
+    "28": "13",  # Mississippi   -> Georgia         (admitted 1817, first seated C15)
 }
+# Maine (FIPS 23) is the one child geographically SEPARATED from its parent (NH lies between
+# Maine and Massachusetts), so unioning it into MA's outline made the allocator seed/size the
+# Maine lobe arbitrarily. Instead we allocate Maine in its OWN modern outline, sized to the
+# number of MA districts that historically sat in the Maine territory, then relabel those
+# tiles as Massachusetts (Maine was not yet a state) at render time.
+#   congress -> (maine_total_districts, me_labeled_districts)
+# `me_labeled` tiles stay Maine (FIPS 23); the rest become Massachusetts. C16 is the
+# admission-year wrinkle: 7 Maine-territory seats were still MA, plus Maine's 1 at-large
+# (7 of 8 -> MA, 1 -> ME); the full 7-seat reassignment to Maine lands in C17.
+MAINE_IN_MA = {
+    1: (1, 0), 2: (1, 0),
+    3: (3, 0), 4: (3, 0), 5: (3, 0), 6: (3, 0), 7: (3, 0),
+    8: (4, 0), 9: (4, 0), 10: (4, 0), 11: (4, 0), 12: (4, 0),
+    13: (7, 0), 14: (7, 0), 15: (7, 0),
+    16: (8, 1),
+}
+MA_FIPS = "25"
+ME_FIPS = "23"
 
 
 def congress_start_date(congress_number: int) -> date:
@@ -1077,6 +1094,20 @@ def main() -> None:
             seat_by_fips[fips] = seats
             meta_by_fips[fips] = row
 
+        # Maine-as-part-of-Massachusetts: while Maine was MA territory, split MA's delegation
+        # into MA-proper (allocated in MA's outline) and a Maine block (allocated in Maine's
+        # own outline, sized to the historical district count). Maine's tiles are relabeled to
+        # Massachusetts after rendering (see the relabel pass below), except `me_labeled` of
+        # them at C16. This sizes the Maine lobe correctly without unioning the two outlines.
+        if congress_number in MAINE_IN_MA and MA_FIPS in seat_by_fips:
+            maine_total, me_labeled = MAINE_IN_MA[congress_number]
+            ma_proper = seat_by_fips[MA_FIPS] - (maine_total - me_labeled)
+            seat_by_fips[MA_FIPS] = ma_proper
+            seat_by_fips[ME_FIPS] = maine_total
+            me_row = next((r for r in seat_rows if str(r["state_fips"]).zfill(2) == ME_FIPS), None)
+            if me_row is not None:
+                meta_by_fips[ME_FIPS] = me_row
+
         # Historical composite outlines: before a child state is first seated, fold its
         # modern outline into its parent so the parent is drawn at its true historical
         # extent (early VA includes KY+WV, MA includes ME, etc.). `eff_outlines` overrides
@@ -1245,6 +1276,62 @@ def main() -> None:
                         "tiles_produced": len(cd_feats_for_state),
                     }
                 )
+
+        # Maine relabel pass: the Maine block was rendered as its own state (FIPS 23); now
+        # relabel those tiles back to Massachusetts (Maine was not yet a state), keeping
+        # `me_labeled` of them as Maine (the C16 at-large district). Then renumber cd indices,
+        # fix house_seats, and rebuild the MA/ME state dissolves from the relabeled districts.
+        if congress_number in MAINE_IN_MA:
+            _, me_labeled = MAINE_IN_MA[congress_number]
+            me_cds = [f for f in cd_features if f["properties"]["state_fips"] == ME_FIPS]
+            # Keep the northernmost `me_labeled` tiles as Maine; relabel the rest to MA.
+            me_cds.sort(key=lambda f: shape(f["geometry"]).representative_point().y, reverse=True)
+            keep_me = {id(f) for f in me_cds[:me_labeled]}
+            for f in me_cds:
+                if id(f) not in keep_me:
+                    p = f["properties"]
+                    p["state_fips"], p["state_abbr"], p["state_name"] = MA_FIPS, "MA", "Massachusetts"
+            counts: dict[str, int] = {}
+            for f in cd_features:
+                fp = f["properties"]["state_fips"]
+                counts[fp] = counts.get(fp, 0) + 1
+            seen: dict[str, int] = {}
+            for f in cd_features:
+                fp = f["properties"]["state_fips"]
+                if fp in (MA_FIPS, ME_FIPS):
+                    seen[fp] = seen.get(fp, 0) + 1
+                    f["properties"]["cd_index"] = seen[fp]
+                    f["properties"]["house_seats"] = counts[fp]
+            # Rebuild MA/ME state dissolves; relabel the Maine scaled-outline feature to MA
+            # when no Maine district remains (C1-C15).
+            state_features = [sf for sf in state_features if sf["properties"]["state_fips"] not in (MA_FIPS, ME_FIPS)]
+            for fp, abbr, name in ((MA_FIPS, "MA", "Massachusetts"), (ME_FIPS, "ME", "Maine")):
+                grp = [f for f in cd_features if f["properties"]["state_fips"] == fp]
+                if not grp:
+                    continue
+                sg = unary_union([shape(f["geometry"]) for f in grp])
+                if isinstance(sg, Polygon):
+                    sg = MultiPolygon([sg])
+                cells = sum(f["properties"]["hex_count"] for f in grp)
+                state_features.append({
+                    "type": "Feature",
+                    "properties": {
+                        "congress_number": congress_number,
+                        "start_date": congress_start_date(congress_number).isoformat(),
+                        "end_date": congress_end_date(congress_number).isoformat(),
+                        "state_fips": fp, "state_abbr": abbr, "state_name": name,
+                        "house_seats": counts[fp], "admitted": True,
+                        "cell_count": cells, "cells_used": cells, "tiling_status": "ok",
+                        "source_seat_version": "maine-as-massachusetts",
+                        "source_boundary_id": "natural-earth-10m",
+                        "generator_version": GENERATOR_VERSION,
+                    },
+                    "geometry": mapping(sg),
+                })
+            if counts.get(ME_FIPS, 0) == 0:
+                for of in outline_features:
+                    if of["properties"]["state_fips"] == ME_FIPS:
+                        of["properties"]["state_fips"], of["properties"]["state_abbr"], of["properties"]["state_name"] = MA_FIPS, "MA", "Massachusetts"
 
         common_props = {
             "congress_number": congress_number,

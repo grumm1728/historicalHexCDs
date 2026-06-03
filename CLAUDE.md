@@ -188,9 +188,20 @@ It overrides only affected parents and never mutates the module-level `outlines`
 FIPS) is the one hand-maintained piece — `formed_from` metadata routes through territories,
 not parent states, so it can't be auto-derived. The **cutover Congress is NOT hardcoded**: a
 child detaches the first Congress it has `house_seats > 0` (i.e. appears in `seat_by_fips`).
-Per the current seat table that yields KY→C3, TN→C8, ME→C18, AL/MS→C18, WV→C43. These follow
-apportionment timing in the seat data and can lag real admission dates; correcting them is a
-**seat-table** concern (`build_seat_table.py`), not this feature.
+Per the corrected seat table that yields KY→C2, TN→C4, MS→C15, AL→C16, WV→C38 (admission-
+year apportionments, fixed in `data_raw/seats/congress_exact_seats.csv`).
+
+**Maine is the exception — it is NOT in `PREDECESSOR_PARENT`.** Maine is the one child
+geographically *separated* from its parent (New Hampshire lies between Maine and
+Massachusetts), so unioning it into MA's outline made the allocator seed/size the Maine lobe
+arbitrarily. Instead `main()` uses `MAINE_IN_MA` (per-Congress `(maine_total_districts,
+me_labeled_districts)`): it splits MA's delegation into MA-proper (allocated in MA's outline)
+and a Maine block (allocated in Maine's *own* modern outline, sized to the historical Maine
+district count), then **relabels** the Maine tiles back to Massachusetts at render time
+(Maine was not yet a state). C16 is the admission-year wrinkle — 7 Maine-territory seats were
+still MA plus Maine's 1 at-large (8 tiles: 7→MA, 1 kept ME); the full 7-seat reassignment to
+Maine lands in C17, where Maine becomes an ordinary `seat_by_fips` state. This sizes the Maine
+lobe correctly with no allocator/partition changes — only seat injection + a render relabel.
 
 **Area is unchanged.** The union supplies only *shape* — each state is still scaled to its
 own `seats×5×hex_area`, so an early composite parent is a larger-silhouette but
@@ -292,10 +303,29 @@ Algorithm (in order):
   reach ~2.8×. This is correct — do not treat >1.0 ratios as bugs.
 - CD properties include `is_boundary_tile` and `tile_area_ratio` (≈1.0 after option-3;
   a few geographic outliers like the Long Island tip reach ~2.7×).
+- **Sliver tiles (`tile_area_ratio < 0.4`) are a pre-existing option-3 artifact, not a
+  regression.** A clean baseline already has ~9 in C68 (min ~0.02) — boundary tiles whose
+  hexes mostly fall in clipped-away overshoot. Before treating slivers as a bug introduced by
+  a change, compare counts against a `git stash` baseline; small per-Congress deltas are noise.
 - **`write_geojson_with_retry`** exists because Windows intermittently throws
   `OSError 22 (EINVAL)` when the tiler writes 357 files in a tight loop (AV/indexer race).
   It writes a temp sibling + `os.replace` + escalating retry (12 attempts). Don't replace
   with a plain `write_text`.
+
+## Iterating on the tiler (run time & fast loop)
+
+- **A full regen is ~20–35 min**, dominated by `compute_scaled_layout` (~10s per late
+  Congress — the overlap resolver, *not* the tiling). Don't assume a long-running tiler has
+  hung; the "fast regen" note above is relative to the full web build, not wall-clock-short.
+- **Long runs exceed the agent's ~10-min foreground command cap**, so run the tiler
+  **detached** (PowerShell `Start-Process python -ArgumentList 'scripts/tile_state_pentahexes.py'
+  -RedirectStandardOutput tiler_run.log -PassThru`) and watch completion by polling
+  `data_processed/tiling_warnings.json`'s mtime **> the run's start time** (a stale-file age
+  check both false-triggers and misses the finish). Final line of the log = `… warnings: 0`.
+- **Iterate in-memory before paying for a full run:** import the module and call
+  `compute_scaled_layout` / `place_pentahex_tiles` / `render_state_tiles` for a handful of
+  representative Congresses (e.g. C1, C8, C13, C16, C68, C119) to check statuses and geometry.
+  Early Congresses are fast. Use `git stash` to A/B against the committed baseline.
 
 ## Environment
 
