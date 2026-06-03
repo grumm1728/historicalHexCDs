@@ -74,8 +74,8 @@ backtracks the seed choice if not.
 `grow_one` prefers the cell touching the most current-tile cells, so pentahexes round into
 blobs instead of long sticks (fixes the elongated interior districts like PA-34). This
 tiebreak can occasionally dead-end the greedy heuristic on a *tileable* shape, so the caller
-in `place_pentahex_tiles` retries `partition_into_pentahexes(..., use_compact=False)` â€” the
-original anti-stranding-only growth â€” whenever the compact pass fails to fully tile a state.
+in `place_pentahex_tiles` retries `partition_into_pentahexes(..., use_compact=False)` — the
+original anti-stranding-only growth — whenever the compact pass fails to fully tile a state.
 The fallback is byte-for-byte the proven heuristic, so the `warnings: 0` invariant holds.
 A separate interior-only swap pass (`refine_tiles_compactness`) then trades cells between
 adjacent tiles to reduce sticks further; it never moves a *territory-edge* cell, so the
@@ -171,6 +171,31 @@ lakes with hexes — districts floating in open water.
   width: the two parts' cells become adjacent and MI allocates as a single connected blob
   (still land-only — no lake fill). When the gap stays open, the multi-component path gives
   each peninsula its own whole number of pentahexes. Both outcomes are warning-free.
+
+## Historical composite outlines (parent absorbs not-yet-seated children)
+
+**The problem:** The pipeline uses **modern** outlines for all 119 Congresses, so a parent
+state is drawn at its modern extent even before its children separated — early Virginia
+appears without Kentucky/West Virginia, Massachusetts without Maine, etc.
+
+**The fix:** `build_effective_outlines(outlines, seated_fips)` builds a per-Congress outline
+view in which each parent's geometry is `unary_union(parent + every not-yet-seated child)`.
+`main()` calls it right after `seat_by_fips` is built and uses the result (`eff_outlines`)
+for `compute_scaled_layout`, the centroid/anchor fallback, and per-state rendering/clipping.
+It overrides only affected parents and never mutates the module-level `outlines` cache.
+
+**Lineage is curated, timing is data-driven.** `PREDECESSOR_PARENT` (child FIPS → parent
+FIPS) is the one hand-maintained piece — `formed_from` metadata routes through territories,
+not parent states, so it can't be auto-derived. The **cutover Congress is NOT hardcoded**: a
+child detaches the first Congress it has `house_seats > 0` (i.e. appears in `seat_by_fips`).
+Per the current seat table that yields KY→C3, TN→C8, ME→C18, AL/MS→C18, WV→C43. These follow
+apportionment timing in the seat data and can lag real admission dates; correcting them is a
+**seat-table** concern (`build_seat_table.py`), not this feature.
+
+**Area is unchanged.** The union supplies only *shape* — each state is still scaled to its
+own `seats×5×hex_area`, so an early composite parent is a larger-silhouette but
+seat-correctly-sized blob. As with any layout change, a bigger early VA/MA/GA silhouette can
+crowd a neighbour, so re-sweep all 119 Congresses for `warnings: 0` after touching this.
 
 ## NE de-jam and the density/geography tradeoff
 

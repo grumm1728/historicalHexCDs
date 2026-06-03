@@ -64,6 +64,21 @@ NE_EXPAND = 1.25
 # multi-component path never perturbs island states (NY/MA/HI/AK/...) that tile fine today.
 MULTI_COMPONENT_FIPS = frozenset({"26"})
 
+# Historical composite outlines: curated child FIPS -> parent FIPS lineage. Before a child
+# is first seated (house_seats > 0), its modern outline is unioned into the parent's so the
+# parent is drawn at the extent it actually governed (e.g. early Virginia includes Kentucky
+# and West Virginia). The CUTOVER TIMING is data-driven — a child detaches the first Congress
+# it holds seats — so no Congress numbers are hardcoded. Only the lineage is curated, because
+# `formed_from` metadata routes through territories (Southwest Territory, etc.), not parents.
+PREDECESSOR_PARENT = {
+    "21": "51",  # Kentucky      -> Virginia        (admitted 1792, first seated C3)
+    "54": "51",  # West Virginia -> Virginia        (admitted 1863, first seated C38)
+    "23": "25",  # Maine         -> Massachusetts   (admitted 1820, first seated C17)
+    "47": "37",  # Tennessee     -> North Carolina  (admitted 1796, first seated C4)
+    "01": "13",  # Alabama       -> Georgia         (admitted 1819)
+    "28": "13",  # Mississippi   -> Georgia         (admitted 1817)
+}
+
 
 def congress_start_date(congress_number: int) -> date:
     year = 1789 + (congress_number - 1) * 2
@@ -98,6 +113,40 @@ def load_outlines(path: Path) -> dict[str, dict]:
         f["_centroid"] = (rep.x, rep.y)
         out[fips] = f
     return out
+
+
+def build_effective_outlines(outlines: dict[str, dict], seated_fips: set[str]) -> dict[str, dict]:
+    """Per-Congress outline view: each parent absorbs the modern outline of every
+    `PREDECESSOR_PARENT` child that is not yet seated this Congress, so the parent is drawn
+    at its historical silhouette (early VA = VA∪KY∪WV, MA = MA∪ME, NC = NC∪TN, GA = GA∪AL∪MS).
+
+    Returns a dict that overrides only the affected parents; every other state passes through
+    unchanged. Does NOT mutate `outlines` (the module-level cache reused across Congresses).
+    Area is still normalized to the parent's own seat count downstream — the union supplies
+    only *shape*, not extra hexes.
+    """
+    additions: dict[str, list[str]] = defaultdict(list)
+    for child, parent in PREDECESSOR_PARENT.items():
+        if child in seated_fips:
+            continue  # child stands on its own this Congress
+        if child in outlines and parent in outlines:
+            additions[parent].append(child)
+    if not additions:
+        return outlines
+    eff = dict(outlines)
+    for parent, children in additions.items():
+        merged = unary_union([outlines[parent]["_geom"], *(outlines[c]["_geom"] for c in children)])
+        if not merged.is_valid:
+            merged = merged.buffer(0)
+        rep = merged.representative_point()
+        eff[parent] = {
+            **outlines[parent],
+            "_geom": merged,
+            "_centroid": (rep.x, rep.y),
+            "geometry": mapping(merged),
+            "_composite_children": sorted(children),
+        }
+    return eff
 
 
 def load_hex_grid(geojson_path: Path, meta_path: Path) -> tuple[dict, dict, dict]:
@@ -1028,11 +1077,18 @@ def main() -> None:
             seat_by_fips[fips] = seats
             meta_by_fips[fips] = row
 
+        # Historical composite outlines: before a child state is first seated, fold its
+        # modern outline into its parent so the parent is drawn at its true historical
+        # extent (early VA includes KY+WV, MA includes ME, etc.). `eff_outlines` overrides
+        # only those parents; everything else is the modern outline. Used for layout,
+        # anchors and clipping in this Congress.
+        eff_outlines = build_effective_outlines(outlines, set(seat_by_fips))
+
         # HexCDv31-style scaled outlines: scale each state to its delegation-size
         # area around its real centroid, then iteratively push overlapping pairs
         # apart so the layout is non-overlapping. The pre-allocator then sees a
         # set of outlines that already have ~the right cell count inside.
-        layout = compute_scaled_layout(seat_by_fips, outlines, hex_area, R)
+        layout = compute_scaled_layout(seat_by_fips, eff_outlines, hex_area, R)
 
         # Expand the hex grid (in place) if the scaled+displaced layout reaches
         # past the current grid bbox; keeps tile size constant across Congresses.
@@ -1049,8 +1105,8 @@ def main() -> None:
         centroid_by_fips = {fips: rec["centroid"] for fips, rec in layout.items()}
         # States with no layout entry (missing/invalid outline) get no chance to tile.
         for f in seat_by_fips:
-            if f not in centroid_by_fips and f in outlines:
-                centroid_by_fips[f] = outlines[f]["_centroid"]
+            if f not in centroid_by_fips and f in eff_outlines:
+                centroid_by_fips[f] = eff_outlines[f]["_centroid"]
 
         tiles_by_state, statuses = place_pentahex_tiles(seat_by_fips, centroid_by_fips, cell_outline_fips, hex_by_qr)
 
@@ -1060,7 +1116,7 @@ def main() -> None:
         cells_used_total = 0
 
         for fips, seats in seat_by_fips.items():
-            outline_feat = outlines[fips]
+            outline_feat = eff_outlines[fips]
             outline_geom = outline_feat["_geom"]
             layout_rec = layout.get(fips)
             # Scaled+displaced outline this state's border tiles get clipped to.
