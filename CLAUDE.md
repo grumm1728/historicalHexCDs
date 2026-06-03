@@ -188,9 +188,20 @@ It overrides only affected parents and never mutates the module-level `outlines`
 FIPS) is the one hand-maintained piece — `formed_from` metadata routes through territories,
 not parent states, so it can't be auto-derived. The **cutover Congress is NOT hardcoded**: a
 child detaches the first Congress it has `house_seats > 0` (i.e. appears in `seat_by_fips`).
-Per the current seat table that yields KY→C3, TN→C8, ME→C18, AL/MS→C18, WV→C43. These follow
-apportionment timing in the seat data and can lag real admission dates; correcting them is a
-**seat-table** concern (`build_seat_table.py`), not this feature.
+Per the corrected seat table that yields KY→C2, TN→C4, MS→C15, AL→C16, WV→C38 (admission-
+year apportionments, fixed in `data_raw/seats/congress_exact_seats.csv`).
+
+**Maine is the exception — it is NOT in `PREDECESSOR_PARENT`.** Maine is the one child
+geographically *separated* from its parent (New Hampshire lies between Maine and
+Massachusetts), so unioning it into MA's outline made the allocator seed/size the Maine lobe
+arbitrarily. Instead `main()` uses `MAINE_IN_MA` (per-Congress `(maine_total_districts,
+me_labeled_districts)`): it splits MA's delegation into MA-proper (allocated in MA's outline)
+and a Maine block (allocated in Maine's *own* modern outline, sized to the historical Maine
+district count), then **relabels** the Maine tiles back to Massachusetts at render time
+(Maine was not yet a state). C16 is the admission-year wrinkle — 7 Maine-territory seats were
+still MA plus Maine's 1 at-large (8 tiles: 7→MA, 1 kept ME); the full 7-seat reassignment to
+Maine lands in C17, where Maine becomes an ordinary `seat_by_fips` state. This sizes the Maine
+lobe correctly with no allocator/partition changes — only seat injection + a render relabel.
 
 **Area is unchanged.** The union supplies only *shape* — each state is still scaled to its
 own `seats×5×hex_area`, so an early composite parent is a larger-silhouette but
