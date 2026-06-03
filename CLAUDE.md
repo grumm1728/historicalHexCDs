@@ -70,6 +70,17 @@ stranding cells. After each tile is placed, calls `is_partition_feasible()` to v
 remaining cells can still be fully tiled (each connected component must be a multiple of 5);
 backtracks the seed choice if not.
 
+**Compactness tiebreak + fallback (`use_compact`):** Among equal-lowest-degree candidates,
+`grow_one` prefers the cell touching the most current-tile cells, so pentahexes round into
+blobs instead of long sticks (fixes the elongated interior districts like PA-34). This
+tiebreak can occasionally dead-end the greedy heuristic on a *tileable* shape, so the caller
+in `place_pentahex_tiles` retries `partition_into_pentahexes(..., use_compact=False)` â€” the
+original anti-stranding-only growth â€” whenever the compact pass fails to fully tile a state.
+The fallback is byte-for-byte the proven heuristic, so the `warnings: 0` invariant holds.
+A separate interior-only swap pass (`refine_tiles_compactness`) then trades cells between
+adjacent tiles to reduce sticks further; it never moves a *territory-edge* cell, so the
+state's clipped silhouette (and thus the option-3 snap) is unchanged and no slivers appear.
+
 **Limitations:** The greedy heuristic can reach dead ends on pathological shapes (long
 tendrils, narrow necks). For this project those are handled upstream by the allocator's
 shape-guidance rather than by backtracking in the partitioner. If extracting this as a

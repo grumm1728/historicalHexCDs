@@ -518,7 +518,12 @@ def place_pentahex_tiles(
             if not cells:
                 continue
             boundary = {c for c in cells if any(nb not in cells for nb in neighbors(c))}
-            tiles_by_state[fips] = partition_into_pentahexes(cells, boundary)
+            tiles = partition_into_pentahexes(cells, boundary, use_compact=True)
+            if len(tiles) * 5 != len(cells):
+                # Compact growth dead-ended on a tileable shape; retry with the proven
+                # original heuristic so this state still tiles (keeps warnings at 0).
+                tiles = partition_into_pentahexes(cells, boundary, use_compact=False)
+            tiles_by_state[fips] = tiles
 
         # A state "fails" when its assigned cells were not fully tiled (and it isn't
         # already exempt). Exempt those and re-run; a state boxed in below `need`
@@ -533,6 +538,12 @@ def place_pentahex_tiles(
         if not newly_failing:
             break
         steal_exempt = steal_exempt | newly_failing
+
+    # Cosmetic post-pass: de-stick non-compact pentahexes via border-cell swaps. Safe by
+    # construction (preserves the size-5/connected partition), so it never affects status.
+    for fips in need:
+        if len(tiles_by_state[fips]) > 1:
+            tiles_by_state[fips] = refine_tiles_compactness(tiles_by_state[fips])
 
     for fips, seats in seat_by_fips.items():
         if seats <= 0:
@@ -573,8 +584,15 @@ def is_partition_feasible(avail: set[tuple[int, int]]) -> bool:
 def partition_into_pentahexes(
     cells: set[tuple[int, int]],
     boundary_cells: set[tuple[int, int]],
+    use_compact: bool = True,
 ) -> list[list[tuple[int, int]]]:
-    """Partition `cells` into connected groups of 5. Returns [] on failure."""
+    """Partition `cells` into connected groups of 5. Returns [] on failure.
+
+    With `use_compact`, the greedy growth prefers candidates that touch more of the current
+    tile (rounder pentahexes). That heuristic occasionally dead-ends on a tileable shape;
+    callers retry with `use_compact=False` (the original anti-stranding-only growth, which
+    is the proven, more permissive heuristic) before treating a state as un-tileable.
+    """
     if not cells or len(cells) % 5 != 0:
         return []
 
@@ -585,16 +603,32 @@ def partition_into_pentahexes(
         tile = [seed]
         used = {seed}
         while len(tile) < 5:
-            cands: list[tuple[int, tuple[int, int]]] = []
-            for c in tile:
-                for nb in neighbors(c):
-                    if nb in avail and nb not in used:
-                        deg = sum(1 for n2 in neighbors(nb) if n2 in avail and n2 not in used)
-                        cands.append((deg, nb))
-            if not cands:
-                return None
-            cands.sort(key=lambda t: t[0])
-            chosen = cands[0][1]
+            if not use_compact:
+                # Original, proven growth: lowest available-degree neighbour (ties broken by
+                # iteration order via stable sort). This is the warning-free fallback.
+                cands: list[tuple[int, tuple[int, int]]] = []
+                for c in tile:
+                    for nb in neighbors(c):
+                        if nb in avail and nb not in used:
+                            deg = sum(1 for n2 in neighbors(nb) if n2 in avail and n2 not in used)
+                            cands.append((deg, nb))
+                if not cands:
+                    return None
+                cands.sort(key=lambda t: t[0])
+                chosen = cands[0][1]
+            else:
+                # Compact growth: among equal-degree candidates, prefer the one touching the
+                # most current-tile cells, pulling the tile into a blob instead of a stick.
+                cand_deg: dict[tuple[int, int], int] = {}
+                cand_internal: dict[tuple[int, int], int] = {}
+                for c in tile:
+                    for nb in neighbors(c):
+                        if nb in avail and nb not in used and nb not in cand_deg:
+                            cand_deg[nb] = sum(1 for n2 in neighbors(nb) if n2 in avail and n2 not in used)
+                            cand_internal[nb] = sum(1 for n2 in neighbors(nb) if n2 in used)
+                if not cand_deg:
+                    return None
+                chosen = min(cand_deg, key=lambda nb: (cand_deg[nb], -cand_internal[nb], nb))
             tile.append(chosen)
             used.add(chosen)
         return tile
@@ -622,6 +656,93 @@ def partition_into_pentahexes(
         tiles.append(chosen_tile)
         avail -= set(chosen_tile)
     return tiles
+
+
+def _tile_internal_edges(tile: set[tuple[int, int]]) -> int:
+    """Number of shared hex edges among the cells of one tile (compactness score).
+
+    A straight line of 5 has 4 internal edges; a compact blob has 6-7. Higher = rounder.
+    """
+    edges = 0
+    for c in tile:
+        for nb in neighbors(c):
+            if nb in tile:
+                edges += 1
+    return edges // 2
+
+
+def _cells_connected(cells: set[tuple[int, int]]) -> bool:
+    if not cells:
+        return True
+    start = next(iter(cells))
+    seen = {start}
+    queue = deque([start])
+    while queue:
+        cur = queue.popleft()
+        for nb in neighbors(cur):
+            if nb in cells and nb not in seen:
+                seen.add(nb)
+                queue.append(nb)
+    return len(seen) == len(cells)
+
+
+def refine_tiles_compactness(
+    tiles: list[list[tuple[int, int]]],
+    max_rounds: int = 8,
+) -> list[list[tuple[int, int]]]:
+    """Improve tile compactness by swapping border cells between adjacent tiles.
+
+    Starts from a valid partition and only performs A<->B single-cell exchanges that keep
+    BOTH tiles size-5 and connected while raising total internal-adjacency. Because every
+    move preserves "size-5 + connected" for both tiles, the result is always still a valid
+    pentahex partition: this pass can never make a state un-tileable (warnings stay 0).
+    """
+    if len(tiles) < 2:
+        return tiles
+    tile_sets = [set(t) for t in tiles]
+    # Territory-edge cells are clipped to the state outline at render time, so moving them
+    # between tiles can shove a tile's hexes into clipped-away overshoot and leave a sliver
+    # district. Only swap interior cells: the state's outer silhouette (the clipped union)
+    # is then identical, so no slivers, while interior sticks still get rounded out.
+    all_cells = set().union(*tile_sets)
+    edge_cells = {c for c in all_cells if any(nb not in all_cells for nb in neighbors(c))}
+    for _ in range(max_rounds):
+        # Owner map -> only the tile pairs that actually touch are worth examining
+        # (all-pairs is O(tiles^2) and dominates runtime; adjacent pairs are ~linear).
+        owner: dict[tuple[int, int], int] = {}
+        for idx, ts in enumerate(tile_sets):
+            for c in ts:
+                owner[c] = idx
+        adjacent_pairs: set[tuple[int, int]] = set()
+        for c, idx in owner.items():
+            for nb in neighbors(c):
+                j = owner.get(nb)
+                if j is not None and j != idx:
+                    adjacent_pairs.add((idx, j) if idx < j else (j, idx))
+
+        improved = False
+        for i, j in adjacent_pairs:
+            a_set, b_set = tile_sets[i], tile_sets[j]
+            a_cands = [a for a in a_set if a not in edge_cells and any(nb in b_set for nb in neighbors(a))]
+            b_cands = [b for b in b_set if b not in edge_cells and any(nb in a_set for nb in neighbors(b))]
+            base = _tile_internal_edges(a_set) + _tile_internal_edges(b_set)
+            best = None
+            for a in a_cands:
+                for b in b_cands:
+                    new_a = (a_set - {a}) | {b}
+                    new_b = (b_set - {b}) | {a}
+                    if not _cells_connected(new_a) or not _cells_connected(new_b):
+                        continue
+                    score = _tile_internal_edges(new_a) + _tile_internal_edges(new_b)
+                    if score > base and (best is None or score > best[0]):
+                        best = (score, new_a, new_b)
+            if best is not None:
+                tile_sets[i] = best[1]
+                tile_sets[j] = best[2]
+                improved = True
+        if not improved:
+            break
+    return [list(s) for s in tile_sets]
 
 
 def _as_multipolygon(geom):
