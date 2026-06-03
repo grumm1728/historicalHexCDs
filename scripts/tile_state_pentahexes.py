@@ -58,6 +58,27 @@ NE_FIPS = frozenset({"09", "10", "11", "23", "24", "25", "33", "34", "36", "42",
 # Congresses; 1.3 reshapes early Massachusetts (14 seats) into an un-tileable blob.
 NE_EXPAND = 1.25
 
+# States whose land is split across open water by the Great Lakes clip and so must be
+# allocated as multiple connected components (each a multiple of 5 hexes) rather than one
+# blob. Scope today: Michigan ("26") = Upper + Lower Peninsula. Gated to this set so the
+# multi-component path never perturbs island states (NY/MA/HI/AK/...) that tile fine today.
+MULTI_COMPONENT_FIPS = frozenset({"26"})
+
+# Historical composite outlines: curated child FIPS -> parent FIPS lineage. Before a child
+# is first seated (house_seats > 0), its modern outline is unioned into the parent's so the
+# parent is drawn at the extent it actually governed (e.g. early Virginia includes Kentucky
+# and West Virginia). The CUTOVER TIMING is data-driven — a child detaches the first Congress
+# it holds seats — so no Congress numbers are hardcoded. Only the lineage is curated, because
+# `formed_from` metadata routes through territories (Southwest Territory, etc.), not parents.
+PREDECESSOR_PARENT = {
+    "21": "51",  # Kentucky      -> Virginia        (admitted 1792, first seated C3)
+    "54": "51",  # West Virginia -> Virginia        (admitted 1863, first seated C38)
+    "23": "25",  # Maine         -> Massachusetts   (admitted 1820, first seated C17)
+    "47": "37",  # Tennessee     -> North Carolina  (admitted 1796, first seated C4)
+    "01": "13",  # Alabama       -> Georgia         (admitted 1819)
+    "28": "13",  # Mississippi   -> Georgia         (admitted 1817)
+}
+
 
 def congress_start_date(congress_number: int) -> date:
     year = 1789 + (congress_number - 1) * 2
@@ -92,6 +113,40 @@ def load_outlines(path: Path) -> dict[str, dict]:
         f["_centroid"] = (rep.x, rep.y)
         out[fips] = f
     return out
+
+
+def build_effective_outlines(outlines: dict[str, dict], seated_fips: set[str]) -> dict[str, dict]:
+    """Per-Congress outline view: each parent absorbs the modern outline of every
+    `PREDECESSOR_PARENT` child that is not yet seated this Congress, so the parent is drawn
+    at its historical silhouette (early VA = VA∪KY∪WV, MA = MA∪ME, NC = NC∪TN, GA = GA∪AL∪MS).
+
+    Returns a dict that overrides only the affected parents; every other state passes through
+    unchanged. Does NOT mutate `outlines` (the module-level cache reused across Congresses).
+    Area is still normalized to the parent's own seat count downstream — the union supplies
+    only *shape*, not extra hexes.
+    """
+    additions: dict[str, list[str]] = defaultdict(list)
+    for child, parent in PREDECESSOR_PARENT.items():
+        if child in seated_fips:
+            continue  # child stands on its own this Congress
+        if child in outlines and parent in outlines:
+            additions[parent].append(child)
+    if not additions:
+        return outlines
+    eff = dict(outlines)
+    for parent, children in additions.items():
+        merged = unary_union([outlines[parent]["_geom"], *(outlines[c]["_geom"] for c in children)])
+        if not merged.is_valid:
+            merged = merged.buffer(0)
+        rep = merged.representative_point()
+        eff[parent] = {
+            **outlines[parent],
+            "_geom": merged,
+            "_centroid": (rep.x, rep.y),
+            "geometry": mapping(merged),
+            "_composite_children": sorted(children),
+        }
+    return eff
 
 
 def load_hex_grid(geojson_path: Path, meta_path: Path) -> tuple[dict, dict, dict]:
@@ -385,6 +440,49 @@ def build_cell_outline_map(
     return out
 
 
+def _connected_components(cells: set[tuple[int, int]]) -> list[set[tuple[int, int]]]:
+    """Split a cell set into connected components (hex adjacency)."""
+    remaining = set(cells)
+    comps: list[set[tuple[int, int]]] = []
+    while remaining:
+        start = next(iter(remaining))
+        comp = {start}
+        queue = deque([start])
+        remaining.discard(start)
+        while queue:
+            cur = queue.popleft()
+            for nb in neighbors(cur):
+                if nb in remaining:
+                    remaining.discard(nb)
+                    comp.add(nb)
+                    queue.append(nb)
+        comps.append(comp)
+    return comps
+
+
+def _split_targets_multiple_of_5(sizes: list[int], total: int) -> list[int]:
+    """Distribute `total` cells (a multiple of 5) across components as multiples of 5,
+    proportional to each component's own-cell count. Used for states whose land splits
+    across water (e.g. Michigan's Upper/Lower Peninsula) so each side gets a whole number
+    of pentahexes and no tile straddles the gap."""
+    units = total // 5
+    span = sum(sizes) or 1
+    base = [int(round(s / span * units)) for s in sizes]
+    diff = units - sum(base)
+    order = sorted(range(len(sizes)), key=lambda i: sizes[i], reverse=True)
+    k = 0
+    while diff != 0 and order:
+        i = order[k % len(order)]
+        if diff > 0:
+            base[i] += 1
+            diff -= 1
+        elif base[i] > 0:
+            base[i] -= 1
+            diff += 1
+        k += 1
+    return [b * 5 for b in base]
+
+
 def allocate_territories(
     need: dict[str, int],
     centroid_by_fips: dict[str, tuple[float, float]],
@@ -448,36 +546,62 @@ def allocate_territories(
                 return 1  # free to take (or this state is exempt from the anti-steal rule)
             return 2  # inside another admitted state's outline — last resort
 
-        # Seed: nearest unclaimed own-outline cell; else nearest free cell; else
-        # the globally nearest unclaimed cell (same tier order as growth).
-        own_unclaimed = [qr for qr in own_inside if qr in unclaimed]
-        if own_unclaimed:
-            pool = own_unclaimed
-        else:
-            free_unclaimed = [qr for qr in unclaimed if qr not in cell_outline_fips]
-            pool = free_unclaimed if free_unclaimed else list(unclaimed)
-        seed = min(pool, key=lambda qr: squared_dist(hex_by_qr[qr]["_xy"], center))
-        cells.add(seed)
-        unclaimed.discard(seed)
+        def grow_region(count: int, seed_pool: list[tuple[int, int]]) -> None:
+            """Seed at the nearest cell in `seed_pool`, then add `count` connected cells
+            via frontier expansion (tiered preference). Growth is confined to the region
+            grown from this seed, so a later call for a separate component never re-grows
+            an earlier one."""
+            if not seed_pool or count <= 0:
+                return
+            seed = min(seed_pool, key=lambda qr: squared_dist(hex_by_qr[qr]["_xy"], center))
+            region = {seed}
+            cells.add(seed)
+            unclaimed.discard(seed)
+            while len(region) < count:
+                frontier: set[tuple[int, int]] = set()
+                for c in region:
+                    for nb in neighbors(c):
+                        if nb in unclaimed:
+                            frontier.add(nb)
+                if not frontier:
+                    break  # boxed in; leave a smaller connected territory
+                chosen = min(
+                    frontier,
+                    key=lambda qr: (cell_tier(qr), squared_dist(hex_by_qr[qr]["_xy"], center)),
+                )
+                region.add(chosen)
+                cells.add(chosen)
+                unclaimed.discard(chosen)
 
-        # Grow to full need via connected frontier expansion.
-        while len(cells) < need[fips]:
-            frontier: set[tuple[int, int]] = set()
-            for c in cells:
-                for nb in neighbors(c):
-                    if nb in unclaimed:
-                        frontier.add(nb)
-            if not frontier:
-                break  # boxed in; leave a smaller connected territory
-            chosen = min(
-                frontier,
-                key=lambda qr: (
-                    cell_tier(qr),
-                    squared_dist(hex_by_qr[qr]["_xy"], center),
-                ),
-            )
-            cells.add(chosen)
-            unclaimed.discard(chosen)
+        # States whose land splits across water (Michigan's Upper/Lower Peninsula, once
+        # the Great Lakes are clipped out of the outline) have own-outline cells in two+
+        # disconnected components. A single connected growth can only fill one; worse, it
+        # would spill into the lake gap (tier-1 water) to reach `need`. Instead, give each
+        # component a multiple-of-5 share and grow it independently. Because the components
+        # are not hex-adjacent, no pentahex can straddle the gap and each side tiles cleanly.
+        own_components = (
+            _connected_components(set(own_inside))
+            if own_inside and fips in MULTI_COMPONENT_FIPS
+            else []
+        )
+        if len(own_components) > 1:
+            own_components.sort(key=len, reverse=True)
+            targets = _split_targets_multiple_of_5([len(c) for c in own_components], need[fips])
+            for comp, target in zip(own_components, targets):
+                if target <= 0:
+                    continue
+                comp_unclaimed = [qr for qr in comp if qr in unclaimed]
+                grow_region(target, comp_unclaimed)
+        else:
+            # Single-component (the common case): nearest own cell, else nearest free
+            # cell, else the globally nearest unclaimed cell; grow to full need.
+            own_unclaimed = [qr for qr in own_inside if qr in unclaimed]
+            if own_unclaimed:
+                pool = own_unclaimed
+            else:
+                free_unclaimed = [qr for qr in unclaimed if qr not in cell_outline_fips]
+                pool = free_unclaimed if free_unclaimed else list(unclaimed)
+            grow_region(need[fips], pool)
 
     return cells_by_state
 
@@ -518,7 +642,12 @@ def place_pentahex_tiles(
             if not cells:
                 continue
             boundary = {c for c in cells if any(nb not in cells for nb in neighbors(c))}
-            tiles_by_state[fips] = partition_into_pentahexes(cells, boundary)
+            tiles = partition_into_pentahexes(cells, boundary, use_compact=True)
+            if len(tiles) * 5 != len(cells):
+                # Compact growth dead-ended on a tileable shape; retry with the proven
+                # original heuristic so this state still tiles (keeps warnings at 0).
+                tiles = partition_into_pentahexes(cells, boundary, use_compact=False)
+            tiles_by_state[fips] = tiles
 
         # A state "fails" when its assigned cells were not fully tiled (and it isn't
         # already exempt). Exempt those and re-run; a state boxed in below `need`
@@ -533,6 +662,12 @@ def place_pentahex_tiles(
         if not newly_failing:
             break
         steal_exempt = steal_exempt | newly_failing
+
+    # Cosmetic post-pass: de-stick non-compact pentahexes via border-cell swaps. Safe by
+    # construction (preserves the size-5/connected partition), so it never affects status.
+    for fips in need:
+        if len(tiles_by_state[fips]) > 1:
+            tiles_by_state[fips] = refine_tiles_compactness(tiles_by_state[fips])
 
     for fips, seats in seat_by_fips.items():
         if seats <= 0:
@@ -573,8 +708,15 @@ def is_partition_feasible(avail: set[tuple[int, int]]) -> bool:
 def partition_into_pentahexes(
     cells: set[tuple[int, int]],
     boundary_cells: set[tuple[int, int]],
+    use_compact: bool = True,
 ) -> list[list[tuple[int, int]]]:
-    """Partition `cells` into connected groups of 5. Returns [] on failure."""
+    """Partition `cells` into connected groups of 5. Returns [] on failure.
+
+    With `use_compact`, the greedy growth prefers candidates that touch more of the current
+    tile (rounder pentahexes). That heuristic occasionally dead-ends on a tileable shape;
+    callers retry with `use_compact=False` (the original anti-stranding-only growth, which
+    is the proven, more permissive heuristic) before treating a state as un-tileable.
+    """
     if not cells or len(cells) % 5 != 0:
         return []
 
@@ -585,16 +727,32 @@ def partition_into_pentahexes(
         tile = [seed]
         used = {seed}
         while len(tile) < 5:
-            cands: list[tuple[int, tuple[int, int]]] = []
-            for c in tile:
-                for nb in neighbors(c):
-                    if nb in avail and nb not in used:
-                        deg = sum(1 for n2 in neighbors(nb) if n2 in avail and n2 not in used)
-                        cands.append((deg, nb))
-            if not cands:
-                return None
-            cands.sort(key=lambda t: t[0])
-            chosen = cands[0][1]
+            if not use_compact:
+                # Original, proven growth: lowest available-degree neighbour (ties broken by
+                # iteration order via stable sort). This is the warning-free fallback.
+                cands: list[tuple[int, tuple[int, int]]] = []
+                for c in tile:
+                    for nb in neighbors(c):
+                        if nb in avail and nb not in used:
+                            deg = sum(1 for n2 in neighbors(nb) if n2 in avail and n2 not in used)
+                            cands.append((deg, nb))
+                if not cands:
+                    return None
+                cands.sort(key=lambda t: t[0])
+                chosen = cands[0][1]
+            else:
+                # Compact growth: among equal-degree candidates, prefer the one touching the
+                # most current-tile cells, pulling the tile into a blob instead of a stick.
+                cand_deg: dict[tuple[int, int], int] = {}
+                cand_internal: dict[tuple[int, int], int] = {}
+                for c in tile:
+                    for nb in neighbors(c):
+                        if nb in avail and nb not in used and nb not in cand_deg:
+                            cand_deg[nb] = sum(1 for n2 in neighbors(nb) if n2 in avail and n2 not in used)
+                            cand_internal[nb] = sum(1 for n2 in neighbors(nb) if n2 in used)
+                if not cand_deg:
+                    return None
+                chosen = min(cand_deg, key=lambda nb: (cand_deg[nb], -cand_internal[nb], nb))
             tile.append(chosen)
             used.add(chosen)
         return tile
@@ -622,6 +780,93 @@ def partition_into_pentahexes(
         tiles.append(chosen_tile)
         avail -= set(chosen_tile)
     return tiles
+
+
+def _tile_internal_edges(tile: set[tuple[int, int]]) -> int:
+    """Number of shared hex edges among the cells of one tile (compactness score).
+
+    A straight line of 5 has 4 internal edges; a compact blob has 6-7. Higher = rounder.
+    """
+    edges = 0
+    for c in tile:
+        for nb in neighbors(c):
+            if nb in tile:
+                edges += 1
+    return edges // 2
+
+
+def _cells_connected(cells: set[tuple[int, int]]) -> bool:
+    if not cells:
+        return True
+    start = next(iter(cells))
+    seen = {start}
+    queue = deque([start])
+    while queue:
+        cur = queue.popleft()
+        for nb in neighbors(cur):
+            if nb in cells and nb not in seen:
+                seen.add(nb)
+                queue.append(nb)
+    return len(seen) == len(cells)
+
+
+def refine_tiles_compactness(
+    tiles: list[list[tuple[int, int]]],
+    max_rounds: int = 8,
+) -> list[list[tuple[int, int]]]:
+    """Improve tile compactness by swapping border cells between adjacent tiles.
+
+    Starts from a valid partition and only performs A<->B single-cell exchanges that keep
+    BOTH tiles size-5 and connected while raising total internal-adjacency. Because every
+    move preserves "size-5 + connected" for both tiles, the result is always still a valid
+    pentahex partition: this pass can never make a state un-tileable (warnings stay 0).
+    """
+    if len(tiles) < 2:
+        return tiles
+    tile_sets = [set(t) for t in tiles]
+    # Territory-edge cells are clipped to the state outline at render time, so moving them
+    # between tiles can shove a tile's hexes into clipped-away overshoot and leave a sliver
+    # district. Only swap interior cells: the state's outer silhouette (the clipped union)
+    # is then identical, so no slivers, while interior sticks still get rounded out.
+    all_cells = set().union(*tile_sets)
+    edge_cells = {c for c in all_cells if any(nb not in all_cells for nb in neighbors(c))}
+    for _ in range(max_rounds):
+        # Owner map -> only the tile pairs that actually touch are worth examining
+        # (all-pairs is O(tiles^2) and dominates runtime; adjacent pairs are ~linear).
+        owner: dict[tuple[int, int], int] = {}
+        for idx, ts in enumerate(tile_sets):
+            for c in ts:
+                owner[c] = idx
+        adjacent_pairs: set[tuple[int, int]] = set()
+        for c, idx in owner.items():
+            for nb in neighbors(c):
+                j = owner.get(nb)
+                if j is not None and j != idx:
+                    adjacent_pairs.add((idx, j) if idx < j else (j, idx))
+
+        improved = False
+        for i, j in adjacent_pairs:
+            a_set, b_set = tile_sets[i], tile_sets[j]
+            a_cands = [a for a in a_set if a not in edge_cells and any(nb in b_set for nb in neighbors(a))]
+            b_cands = [b for b in b_set if b not in edge_cells and any(nb in a_set for nb in neighbors(b))]
+            base = _tile_internal_edges(a_set) + _tile_internal_edges(b_set)
+            best = None
+            for a in a_cands:
+                for b in b_cands:
+                    new_a = (a_set - {a}) | {b}
+                    new_b = (b_set - {b}) | {a}
+                    if not _cells_connected(new_a) or not _cells_connected(new_b):
+                        continue
+                    score = _tile_internal_edges(new_a) + _tile_internal_edges(new_b)
+                    if score > base and (best is None or score > best[0]):
+                        best = (score, new_a, new_b)
+            if best is not None:
+                tile_sets[i] = best[1]
+                tile_sets[j] = best[2]
+                improved = True
+        if not improved:
+            break
+    return [list(s) for s in tile_sets]
 
 
 def _as_multipolygon(geom):
@@ -832,11 +1077,18 @@ def main() -> None:
             seat_by_fips[fips] = seats
             meta_by_fips[fips] = row
 
+        # Historical composite outlines: before a child state is first seated, fold its
+        # modern outline into its parent so the parent is drawn at its true historical
+        # extent (early VA includes KY+WV, MA includes ME, etc.). `eff_outlines` overrides
+        # only those parents; everything else is the modern outline. Used for layout,
+        # anchors and clipping in this Congress.
+        eff_outlines = build_effective_outlines(outlines, set(seat_by_fips))
+
         # HexCDv31-style scaled outlines: scale each state to its delegation-size
         # area around its real centroid, then iteratively push overlapping pairs
         # apart so the layout is non-overlapping. The pre-allocator then sees a
         # set of outlines that already have ~the right cell count inside.
-        layout = compute_scaled_layout(seat_by_fips, outlines, hex_area, R)
+        layout = compute_scaled_layout(seat_by_fips, eff_outlines, hex_area, R)
 
         # Expand the hex grid (in place) if the scaled+displaced layout reaches
         # past the current grid bbox; keeps tile size constant across Congresses.
@@ -853,8 +1105,8 @@ def main() -> None:
         centroid_by_fips = {fips: rec["centroid"] for fips, rec in layout.items()}
         # States with no layout entry (missing/invalid outline) get no chance to tile.
         for f in seat_by_fips:
-            if f not in centroid_by_fips and f in outlines:
-                centroid_by_fips[f] = outlines[f]["_centroid"]
+            if f not in centroid_by_fips and f in eff_outlines:
+                centroid_by_fips[f] = eff_outlines[f]["_centroid"]
 
         tiles_by_state, statuses = place_pentahex_tiles(seat_by_fips, centroid_by_fips, cell_outline_fips, hex_by_qr)
 
@@ -864,7 +1116,7 @@ def main() -> None:
         cells_used_total = 0
 
         for fips, seats in seat_by_fips.items():
-            outline_feat = outlines[fips]
+            outline_feat = eff_outlines[fips]
             outline_geom = outline_feat["_geom"]
             layout_rec = layout.get(fips)
             # Scaled+displaced outline this state's border tiles get clipped to.

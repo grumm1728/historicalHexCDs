@@ -70,6 +70,17 @@ stranding cells. After each tile is placed, calls `is_partition_feasible()` to v
 remaining cells can still be fully tiled (each connected component must be a multiple of 5);
 backtracks the seed choice if not.
 
+**Compactness tiebreak + fallback (`use_compact`):** Among equal-lowest-degree candidates,
+`grow_one` prefers the cell touching the most current-tile cells, so pentahexes round into
+blobs instead of long sticks (fixes the elongated interior districts like PA-34). This
+tiebreak can occasionally dead-end the greedy heuristic on a *tileable* shape, so the caller
+in `place_pentahex_tiles` retries `partition_into_pentahexes(..., use_compact=False)` — the
+original anti-stranding-only growth — whenever the compact pass fails to fully tile a state.
+The fallback is byte-for-byte the proven heuristic, so the `warnings: 0` invariant holds.
+A separate interior-only swap pass (`refine_tiles_compactness`) then trades cells between
+adjacent tiles to reduce sticks further; it never moves a *territory-edge* cell, so the
+state's clipped silhouette (and thus the option-3 snap) is unchanged and no slivers appear.
+
 **Limitations:** The greedy heuristic can reach dead ends on pathological shapes (long
 tendrils, narrow necks). For this project those are handled upstream by the allocator's
 shape-guidance rather than by backtracking in the partitioner. If extracting this as a
@@ -127,6 +138,64 @@ in early Congresses). Handled by a **self-correcting meta-loop** in `place_penta
 failing states are added to `steal_exempt` and the whole allocation is redone with theft
 allowed for them. Converges within a few passes; worst case = the original theft-allowed
 allocation with 0 warnings.
+
+## Great Lakes clip & multi-component states (Michigan)
+
+**The problem:** Cells are allocated center-in-polygon against each state's outline. A
+state whose administrative outline runs out over open lake water (Michigan, whose outline
+spans Lakes Michigan/Huron/Superior between the Upper and Lower Peninsulas) would fill the
+lakes with hexes — districts floating in open water.
+
+**The fix (two parts):**
+1. **`fetch_modern_state_outlines.py` land-clips the outline.** It downloads Natural Earth
+   `ne_10m_lakes`, unions the named Great Lakes, and subtracts them from each state in
+   `GREAT_LAKES_CLIP_ABBRS` (today just `MI`), dropping tiny islands (`clip_to_land`,
+   `min_part_frac`). Michigan becomes a 2-part MultiPolygon (UP + LP). Only the pipeline
+   outputs (`*_modern.geojson` deg + `*_modern_wm.geojson`) are clipped; the raw NE export
+   (`state_outlines_natural_earth.geojson`) stays the full admin outline. Provenance is
+   tagged `natural-earth-10m-lakeclip-*`.
+2. **`allocate_territories` allocates split land as components.** For FIPS in
+   `MULTI_COMPONENT_FIPS` (today `{"26"}`), a state's own-outline cells are split into
+   connected components; `_split_targets_multiple_of_5` gives each component a multiple-of-5
+   share of `need` proportional to its size, and each is seeded + grown independently
+   (`grow_region`). **No bridge or partition change is needed:** because the components are
+   never hex-adjacent, `partition_into_pentahexes` (which only grows through adjacent cells,
+   and whose feasibility check already requires each component to be a multiple of 5) tiles
+   each peninsula cleanly and no pentahex straddles the water gap.
+
+**Gotchas:**
+- The branch is **gated to `MULTI_COMPONENT_FIPS`** so it never perturbs island states
+  (NY/MA/HI/AK/...) that already tile fine as one blob. Re-sweep all 119 Congresses before
+  adding a FIPS here.
+- When MI's delegation is small, the scaled outline shrinks the UP/LP gap below one hex
+  width: the two parts' cells become adjacent and MI allocates as a single connected blob
+  (still land-only — no lake fill). When the gap stays open, the multi-component path gives
+  each peninsula its own whole number of pentahexes. Both outcomes are warning-free.
+
+## Historical composite outlines (parent absorbs not-yet-seated children)
+
+**The problem:** The pipeline uses **modern** outlines for all 119 Congresses, so a parent
+state is drawn at its modern extent even before its children separated — early Virginia
+appears without Kentucky/West Virginia, Massachusetts without Maine, etc.
+
+**The fix:** `build_effective_outlines(outlines, seated_fips)` builds a per-Congress outline
+view in which each parent's geometry is `unary_union(parent + every not-yet-seated child)`.
+`main()` calls it right after `seat_by_fips` is built and uses the result (`eff_outlines`)
+for `compute_scaled_layout`, the centroid/anchor fallback, and per-state rendering/clipping.
+It overrides only affected parents and never mutates the module-level `outlines` cache.
+
+**Lineage is curated, timing is data-driven.** `PREDECESSOR_PARENT` (child FIPS → parent
+FIPS) is the one hand-maintained piece — `formed_from` metadata routes through territories,
+not parent states, so it can't be auto-derived. The **cutover Congress is NOT hardcoded**: a
+child detaches the first Congress it has `house_seats > 0` (i.e. appears in `seat_by_fips`).
+Per the current seat table that yields KY→C3, TN→C8, ME→C18, AL/MS→C18, WV→C43. These follow
+apportionment timing in the seat data and can lag real admission dates; correcting them is a
+**seat-table** concern (`build_seat_table.py`), not this feature.
+
+**Area is unchanged.** The union supplies only *shape* — each state is still scaled to its
+own `seats×5×hex_area`, so an early composite parent is a larger-silhouette but
+seat-correctly-sized blob. As with any layout change, a bigger early VA/MA/GA silhouette can
+crowd a neighbour, so re-sweep all 119 Congresses for `warnings: 0` after touching this.
 
 ## NE de-jam and the density/geography tradeoff
 

@@ -27,6 +27,19 @@ from shapely.ops import unary_union
 ROOT = Path(__file__).resolve().parent.parent
 
 NE_URL = "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_1_states_provinces.zip"
+NE_LAKES_URL = "https://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes.zip"
+
+# States whose administrative outline runs through open Great Lakes water, so a
+# center-in-polygon hex allocation would fill the lakes. We subtract the Great Lakes
+# from these states' outlines to leave land only. Scope today: Michigan (splits into
+# Upper + Lower Peninsula). Add WI/MN/OH/PA/NY here later if desired.
+GREAT_LAKES_CLIP_ABBRS = {"MI"}
+
+# ne_10m_lakes `name` values for the Great Lakes (matched case-insensitively, substring).
+GREAT_LAKE_NAMES = (
+    "Lake Superior", "Lake Michigan", "Lake Huron",
+    "Lake Erie", "Lake Ontario", "Lake Saint Clair", "Lake St. Clair",
+)
 
 STATE_FIPS_BY_ABBR = {
     "AL": "01", "AK": "02", "AZ": "04", "AR": "05", "CA": "06", "CO": "08", "CT": "09", "DE": "10",
@@ -67,6 +80,57 @@ def download_natural_earth(cache_dir: Path) -> Path:
     if not shp_path.exists():
         raise SystemExit(f"Natural Earth extract did not produce {shp_path}")
     return shp_path
+
+
+def download_natural_earth_lakes(cache_dir: Path) -> Path:
+    """Download and unzip Natural Earth 10m lakes shapefile (idempotent)."""
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    shp_path = cache_dir / "ne_10m_lakes.shp"
+    if shp_path.exists():
+        return shp_path
+    print(f"Downloading {NE_LAKES_URL} ...")
+    with urllib.request.urlopen(NE_LAKES_URL) as resp:
+        data = resp.read()
+    with zipfile.ZipFile(io.BytesIO(data)) as zf:
+        zf.extractall(cache_dir)
+    if not shp_path.exists():
+        raise SystemExit(f"Natural Earth lakes extract did not produce {shp_path}")
+    return shp_path
+
+
+def load_great_lakes(cache_dir: Path):
+    """Union of the Great Lakes polygons (WGS84) for land-clipping lake-bordering states."""
+    shp_path = download_natural_earth_lakes(cache_dir)
+    reader = shapefile.Reader(str(shp_path))
+    fields = [f[0] for f in reader.fields if f[0] != "DeletionFlag"]
+    name_idx = fields.index("name") if "name" in fields else None
+    wanted = tuple(n.lower() for n in GREAT_LAKE_NAMES)
+    polys = []
+    for sr in reader.iterShapeRecords():
+        name = str(sr.record[name_idx]).lower() if name_idx is not None else ""
+        if any(w in name for w in wanted):
+            polys.append(shape(shape_to_geometry(sr.shape)))
+    if not polys:
+        raise SystemExit("No Great Lakes polygons matched in ne_10m_lakes")
+    merged = unary_union(polys)
+    if not merged.is_valid:
+        merged = merged.buffer(0)
+    return merged
+
+
+def clip_to_land(geom, lakes, min_part_frac: float = 0.02):
+    """Subtract `lakes` from `geom`, then drop parts smaller than `min_part_frac` of the
+    largest remaining part (removes tiny islands, keeps the major peninsulas)."""
+    clipped = geom.difference(lakes)
+    if not clipped.is_valid:
+        clipped = clipped.buffer(0)
+    parts = list(clipped.geoms) if isinstance(clipped, MultiPolygon) else [clipped]
+    parts = [p for p in parts if isinstance(p, Polygon) and p.area > 0]
+    if not parts:
+        return geom  # clip wiped everything; fall back to original
+    max_area = max(p.area for p in parts)
+    kept = [p for p in parts if p.area >= max_area * min_part_frac]
+    return MultiPolygon(kept) if len(kept) > 1 else kept[0]
 
 
 def shape_to_geometry(s: shapefile.Shape) -> dict:
@@ -130,6 +194,8 @@ def main() -> None:
     name_idx = fields.index("name")
     admin_idx = fields.index("admin")
 
+    great_lakes = load_great_lakes(Path(args.cache_dir)) if GREAT_LAKES_CLIP_ABBRS else None
+
     by_state: dict[str, list] = {}
     for sr in reader.iterShapeRecords():
         if sr.record[admin_idx] != "United States of America":
@@ -153,7 +219,7 @@ def main() -> None:
             merged = merged.buffer(0)
         merged = to_multipolygon(merged)
 
-        # Raw NE export (unmodified)
+        # Raw NE export (unmodified — keeps the full administrative outline incl. lakes)
         ne_features.append({
             "type": "Feature",
             "properties": {
@@ -165,6 +231,15 @@ def main() -> None:
             "geometry": mapping(merged),
         })
 
+        # Land-clip Great-Lakes states (Michigan -> UP + LP) for the pipeline outputs only.
+        clip_id = "natural-earth-10m"
+        if great_lakes is not None and abbr in GREAT_LAKES_CLIP_ABBRS:
+            merged = clip_to_land(merged, great_lakes)
+            if not merged.is_valid:
+                merged = merged.buffer(0)
+            merged = to_multipolygon(merged)
+            clip_id = "natural-earth-10m-lakeclip"
+
         # Inset-applied degrees version
         positioned = apply_alaska_hawaii_inset(abbr, merged)
         deg_features.append({
@@ -173,7 +248,7 @@ def main() -> None:
                 "state_fips": fips,
                 "state_abbr": abbr,
                 "state_name": next(n for n, a in US_STATE_NAMES.items() if a == abbr),
-                "source_outline_id": "natural-earth-10m-inset",
+                "source_outline_id": f"{clip_id}-inset",
                 "inset_applied": abbr in {"AK", "HI"},
             },
             "geometry": mapping(positioned),
@@ -188,7 +263,7 @@ def main() -> None:
                 "state_fips": fips,
                 "state_abbr": abbr,
                 "state_name": next(n for n, a in US_STATE_NAMES.items() if a == abbr),
-                "source_outline_id": "natural-earth-10m-inset-wm",
+                "source_outline_id": f"{clip_id}-inset-wm",
                 "inset_applied": abbr in {"AK", "HI"},
             },
             "geometry": mapping(wm),
