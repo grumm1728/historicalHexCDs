@@ -36,6 +36,8 @@ import heapq
 import json
 import math
 from collections import defaultdict, deque
+
+import numpy as np
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -49,14 +51,51 @@ GENERATOR_VERSION = "v6-pentahex-scaled-outlines"
 
 NEIGHBOR_OFFSETS = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1)]
 
-# Northeast cluster: small, seat-dense states that jam together once scaled to
-# delegation size. compute_scaled_layout gives this cluster a local radial
-# expansion so the crammed states get room to breathe, without warping the rest
-# of the (geographic) layout. FIPS: CT DE DC ME MD MA NH NJ NY PA RI VT.
-NE_FIPS = frozenset({"09", "10", "11", "23", "24", "25", "33", "34", "36", "42", "44", "50"})
-# 1.25 is the strongest local expansion that stays warning-free across all 119
-# Congresses; 1.3 reshapes early Massachusetts (14 seats) into an un-tileable blob.
-NE_EXPAND = 1.25
+# Gentle global compaction: each state's first-appearance ("home") position is pulled
+# this fraction of the way toward a fixed national center (computed once in main() from
+# the union of all modern outlines). Because the web viewer fits one projection to the
+# largest (C119) frame and reuses it for every Congress, pulling toward a FIXED center
+# translates sparse/early clusters toward frame-center — using the empty western space to
+# give the early eastern states a more central, legible footprint — while being ~invisible
+# for the full modern map (a uniform scale-about-center that fitSize re-normalizes). The
+# overlap resolver still restores min-gap spacing, so the dense core is not re-jammed. This
+# replaces the old NE_EXPAND radial hack. 1.0 = no compaction; lower = stronger pull.
+COMPACTION = 0.9
+
+# Failure-recovery escalation ladder of (retention, spring_scale). Normally a Congress uses
+# pure carried positions with full adjacency springs (retention 0.0, spring 1.0) — max temporal
+# stability, stationary states have zero drift. Two failure modes are recovered by retrying the
+# Congress down this ladder, adopting the first rung that reduces warnings:
+#   - retention pulls carried seeds toward each state's fixed compacted "home" (fixes a state
+#     that temporal drift boxed in: NY C53-57, MI C83-87);
+#   - spring_scale weakens/disables the adjacency springs (fixes a many-neighbour hub the
+#     springs over-constrain into an un-tileable shape: IL C63-72).
+# The ladder ends at (1.0, 0.0) == fresh placement with no springs, i.e. the proven warning-free
+# baseline, so recovery is guaranteed. Retention is applied only to carried states, never to
+# split pop-off seeds.
+ESCALATION_LADDER = ((0.0, 0.5), (0.0, 0.0), (0.3, 0.0), (0.6, 0.0), (1.0, 0.0))
+
+# Directional adjacency springs. Before the exact polygon overlap resolver, a fast circle
+# model positions states topologically: each pair of states whose REAL outlines share a
+# border is pulled toward sitting just-adjacent (separation r_i + r_j + gap) in their REAL
+# relative direction, while non-adjacent pairs only repel. This keeps neighbours nestled
+# (Delaware in Maryland's corner) and stops a non-neighbour from wedging between two states
+# that really border each other (Missouri between KY/TN). Adjacency-first: springs are strong
+# relative to repulsion so the neighbour graph wins when area-proportional sizing conflicts.
+# ADJ_TOL: max real gap (m) between outlines still counted as a shared border.
+ADJ_TOL = 3000.0
+SPRING_K = 0.5          # adjacency spring stiffness (fraction of position error per step)
+SPRING_REPULSE = 0.5    # non-adjacent circle repulsion stiffness
+SPRING_STEP = 0.08      # global damping per circle-model iteration (small => converges to a
+                        # static equilibrium instead of oscillating, which keeps it idempotent)
+SPRING_ITERS = 2000     # max circle-model iterations (stops early on the move threshold)
+SPRING_MOVE_EPS = 0.01  # stop when the largest per-iteration move (in R) falls below this
+# Deadband (in R): a spring exerts no force while its pair is within this distance of the
+# ideal relative offset. Crucial for BOTH temporal stability and geometry: once settled the
+# circle model is a true fixed point (re-seeding it produces zero movement, so stable
+# Congresses keep zero drift), and the slack absorbs the mismatch between the circle estimate
+# and exact polygon spacing so the spring and the polygon overlap resolver don't fight.
+SPRING_DEADBAND = 0.75
 
 # States whose land is split across open water by the Great Lakes clip and so must be
 # allocated as multiple connected components (each a multiple of 5 hexes) rather than one
@@ -247,31 +286,66 @@ def squared_dist(a: tuple[float, float], b: tuple[float, float]) -> float:
     return dx * dx + dy * dy
 
 
+def build_adjacency(
+    outlines: dict[str, dict], tol: float = ADJ_TOL
+) -> list[tuple[str, str, float, float]]:
+    """Real-geography adjacency graph: one edge per pair of states whose outlines share a
+    border (within `tol` metres). Each edge carries the unit direction from a's real centroid
+    to b's, so the spring can preserve not just *that* they touch but their real relative
+    orientation (DE north-east of MD, TN south of KY, MO west of both). Computed once from the
+    modern outlines; per-Congress callers use the subset whose endpoints are both seated.
+    """
+    items = [(f, feat["_geom"], feat["_centroid"]) for f, feat in outlines.items()]
+    geoms = [g for _, g, _ in items]
+    tree = STRtree(geoms)
+    buffered = [g.buffer(tol) for g in geoms]
+    edges: list[tuple[str, str, float, float]] = []
+    for i, (fa, _, ca) in enumerate(items):
+        for j in tree.query(buffered[i]):
+            if j <= i:
+                continue
+            fb, gb, cb = items[j]
+            if not buffered[i].intersects(gb):
+                continue
+            dx, dy = cb[0] - ca[0], cb[1] - ca[1]
+            d = math.hypot(dx, dy) or 1.0
+            edges.append((fa, fb, dx / d, dy / d))
+    return edges
+
+
 def compute_scaled_layout(
     seat_by_fips: dict[str, int],
     outlines: dict[str, dict],
     hex_area: float,
     R: float,
     max_iter: int = 1000,
-    ne_expand: float = NE_EXPAND,
+    seed_centroids: dict[str, tuple[float, float]] | None = None,
+    compaction_center: tuple[float, float] | None = None,
+    compaction: float = COMPACTION,
+    adjacency: list[tuple[str, str, float, float]] | None = None,
+    spring_scale: float = 1.0,
 ) -> dict[str, dict]:
-    """Scale each state's outline to delegation size, then resolve overlaps.
+    """Scale each state's outline to delegation size, place it, then resolve overlaps.
 
     For each admitted state:
       - target_area = seats * 5 * hex_area
       - area_scale  = sqrt(target_area / real_area)
       - geom is scaled around the state's real centroid
 
-    The Northeast cluster (NE_FIPS) is then given a local radial expansion by
-    `ne_expand` (positions pushed out from the seat-weighted NE centroid) so those
-    crammed small states get maneuvering room. This is a placement-only nudge local
-    to the NE; the rest of the map stays geographic and the overlap-resolver below
-    absorbs the push where the cluster meets its inland neighbours.
+    Initial placement (the state's starting centroid):
+      - If `seed_centroids[fips]` is given (the previous Congress's resolved position,
+        or a split child's pop-off seed), the state starts there. This carries position
+        forward across Congresses so states move only gradually (temporal stability).
+      - Otherwise the state starts at its "home" anchor: its real centroid pulled
+        `compaction` of the way toward `compaction_center` (a fixed national center).
+        This gently translates sparse/early clusters toward frame-center to use empty
+        space, and is ~invisible for the full modern map. Replaces the old NE_EXPAND.
 
-    Then iteratively pick the most-overlapping pair of states and push both
-    halfway apart along their centroid-to-centroid vector until separation
-    reaches `target_gap = 0.5 * R`. Iterative pairwise displacement: simple,
-    deterministic, and converges fast for these dozens of polygons.
+    Then a fast circle-model phase positions states topologically (directional adjacency
+    springs + non-adjacent repulsion, see `adjacency` / `build_adjacency`), so neighbours sit
+    nestled in their real relative direction. Finally the exact polygon resolver iteratively
+    pushes the most-overlapping pair apart along their centroid vector until separation reaches
+    `target_gap = 0.5 * R`, guaranteeing a non-overlapping layout.
 
     Returns fips -> dict with:
       geom (Shapely scaled+displaced),
@@ -281,6 +355,7 @@ def compute_scaled_layout(
       displacement (dx, dy applied after scaling).
     """
     target_gap = 0.5 * R
+    seed_centroids = seed_centroids or {}
     layout: dict[str, dict] = {}
     for fips, seats in seat_by_fips.items():
         outline_feat = outlines.get(fips)
@@ -296,12 +371,26 @@ def compute_scaled_layout(
         scaled = shapely_scale(real_geom, xfact=scale, yfact=scale, origin=(cx, cy))
         if not scaled.is_valid:
             scaled = scaled.buffer(0)
+        # Initial centroid: carry forward the previous position if we have one, else
+        # the compacted "home" anchor. The scaled geom is centered on the real centroid,
+        # so translate it onto the chosen start position.
+        if fips in seed_centroids:
+            tx, ty = seed_centroids[fips]
+        elif compaction_center is not None and compaction != 1.0:
+            ccx, ccy = compaction_center
+            tx = ccx + compaction * (cx - ccx)
+            ty = ccy + compaction * (cy - ccy)
+        else:
+            tx, ty = cx, cy
+        dx0, dy0 = tx - cx, ty - cy
+        if dx0 or dy0:
+            scaled = shapely_translate(scaled, xoff=dx0, yoff=dy0)
         layout[fips] = {
             "geom": scaled,
-            "centroid": (cx, cy),
+            "centroid": (tx, ty),
             "anchor": (cx, cy),
             "scale": scale,
-            "displacement": (0.0, 0.0),
+            "displacement": (dx0, dy0),
         }
 
     fips_list = list(layout)
@@ -314,17 +403,67 @@ def compute_scaled_layout(
         ddx, ddy = rec["displacement"]
         rec["displacement"] = (ddx + dx, ddy + dy)
 
-    # Targeted Northeast de-jam: spread the NE cluster outward from its seat-weighted
-    # centroid before overlap resolution, so its small dense states (RI, CT, DE, NJ…)
-    # start with room instead of being relaxed into a tight jam.
-    ne_members = [f for f in fips_list if f in NE_FIPS]
-    if ne_expand != 1.0 and ne_members:
-        sw = sum(seat_by_fips[f] for f in ne_members)
-        ncx = sum(layout[f]["centroid"][0] * seat_by_fips[f] for f in ne_members) / sw
-        ncy = sum(layout[f]["centroid"][1] * seat_by_fips[f] for f in ne_members) / sw
-        for f in ne_members:
-            cx, cy = layout[f]["centroid"]
-            displace(f, (ne_expand - 1.0) * (cx - ncx), (ne_expand - 1.0) * (cy - ncy))
+    # ---- Adjacency relaxation: directional springs + repulsion to a joint fixed point ----
+    # A lightweight circle model (radius sqrt(area/pi)) positions states topologically: an
+    # adjacent pair is sprung toward separation r_a+r_b+gap in its REAL relative direction
+    # (but only beyond a deadband), and non-adjacent pairs repel when closer than that. With
+    # the deadband the converged configuration is a true fixed point, so re-seeding it next
+    # Congress produces no movement (temporal stability). The converged circle centroids are
+    # stored as `seed_centroid` and carried forward by main(); the polygon overlap resolver
+    # below still runs on the geometry for exact non-overlap in the rendered output.
+    cap = 0.5 * target_gap
+    present = set(fips_list)
+    edges = [(a, b, ux, uy) for (a, b, ux, uy) in (adjacency or []) if a in present and b in present]
+    if edges and len(fips_list) > 1 and spring_scale > 0.0:
+        # Vectorized circle-model relaxation (springs + repulsion) to a static, idempotent
+        # equilibrium. State count is small (~50) so the full N*N repulsion is cheap in numpy.
+        idx = {f: i for i, f in enumerate(fips_list)}
+        N = len(fips_list)
+        P = np.array([layout[f]["centroid"] for f in fips_list], dtype=float)
+        rad = np.array([math.sqrt(max(seat_by_fips.get(f, 1), 1) * 5 * hex_area / math.pi) for f in fips_list])
+        ea = np.array([idx[a] for a, b, _, _ in edges], dtype=int)
+        eb = np.array([idx[b] for a, b, _, _ in edges], dtype=int)
+        edir = np.array([(ux, uy) for _, _, ux, uy in edges], dtype=float)
+        eL = rad[ea] + rad[eb] + target_gap
+        adjM = np.zeros((N, N), dtype=bool)
+        adjM[ea, eb] = True
+        adjM[eb, ea] = True
+        trigger = (rad[:, None] + rad[None, :] + target_gap) - SPRING_DEADBAND * R  # repel threshold
+        deadband = SPRING_DEADBAND * R
+        move_eps = SPRING_MOVE_EPS * R
+        for _ in range(SPRING_ITERS):
+            disp = np.zeros((N, 2))
+            # Directional adjacency springs: pull b toward a + dir*(r_a+r_b+gap), silent inside
+            # the deadband (that silence is what makes the equilibrium a true fixed point).
+            evec = (P[ea] + edir * eL[:, None]) - P[eb]
+            errn = np.hypot(evec[:, 0], evec[:, 1])
+            smask = errn > deadband
+            if smask.any():
+                k = (SPRING_K * 0.5 * spring_scale) * np.where(smask, (errn - deadband) / np.maximum(errn, 1e-9), 0.0)
+                f = evec * k[:, None]
+                np.add.at(disp, eb, f)
+                np.add.at(disp, ea, -f)
+            # Non-adjacent repulsion: push apart only the overlap beyond the deadband.
+            diff = P[:, None, :] - P[None, :, :]
+            dist = np.hypot(diff[:, :, 0], diff[:, :, 1])
+            np.fill_diagonal(dist, np.inf)
+            rmask = (dist < trigger) & (~adjM)
+            if rmask.any():
+                unit = diff / np.maximum(dist, 1e-9)[:, :, None]
+                mag = np.where(rmask, SPRING_REPULSE * 0.5 * (trigger - dist), 0.0)
+                disp += (mag[:, :, None] * unit).sum(axis=1)
+            step = np.clip(disp * SPRING_STEP, -cap, cap)
+            P += step
+            if np.abs(step).max() < move_eps:
+                break
+        for f in fips_list:
+            cx0, cy0 = layout[f]["centroid"]
+            nx, ny = float(P[idx[f]][0]), float(P[idx[f]][1])
+            layout[f]["seed_centroid"] = (nx, ny)
+            displace(f, nx - cx0, ny - cy0)
+    else:
+        for f in fips_list:
+            layout[f]["seed_centroid"] = layout[f]["centroid"]
 
     for _ in range(max_iter):
         # Find the most-overlapping pair (largest intersection area).
@@ -1076,6 +1215,21 @@ def main() -> None:
     warnings: list[dict] = []
     summary = {"generator_version": GENERATOR_VERSION, "timeline": []}
 
+    # Fixed national center for gentle compaction (computed once from all modern
+    # outlines, including the AK/HI insets so it matches the drawn frame). The same
+    # center every Congress keeps framing stable as western states fill in.
+    _center_geom = unary_union([o["_geom"] for o in outlines.values()]).centroid
+    compaction_center = (_center_geom.x, _center_geom.y)
+
+    # Real-geography adjacency graph (computed once from modern outlines). Each Congress uses
+    # the subset whose endpoints are both seated, to spring neighbouring states into their real
+    # relative positions during layout. See build_adjacency / the circle-model phase.
+    adjacency = build_adjacency(outlines)
+
+    # Resolved state centroids carried across Congresses for temporal stability. Persisted
+    # (not reset per Congress) so a state that briefly drops out keeps its position on return.
+    prev_centroids: dict[str, tuple[float, float]] = {}
+
     for congress_number in sorted(seats_by_congress):
         seat_rows = seats_by_congress[congress_number]
         seat_by_fips: dict[str, int] = {}
@@ -1115,31 +1269,87 @@ def main() -> None:
         # anchors and clipping in this Congress.
         eff_outlines = build_effective_outlines(outlines, set(seat_by_fips))
 
-        # HexCDv31-style scaled outlines: scale each state to its delegation-size
-        # area around its real centroid, then iteratively push overlapping pairs
-        # apart so the layout is non-overlapping. The pre-allocator then sees a
-        # set of outlines that already have ~the right cell count inside.
-        layout = compute_scaled_layout(seat_by_fips, eff_outlines, hex_area, R)
+        # Temporal seeding: carry each state's resolved position from the previous Congress
+        # so the layout moves only gradually. `retention` optionally pulls each carried state
+        # toward its fixed compacted "home" (used only by the failure-recovery ladder below;
+        # 0.0 = pure carry). A split child first appearing (KY/WV from VA, TN from NC, AL/MS
+        # from GA) has no prior position, so it is always seeded adjacent to its parent's
+        # current position — offset by the real centroid gap — so it "pops off" the parent
+        # rather than teleporting to its own raw centroid (retention never applies to it).
+        ccx0, ccy0 = compaction_center
 
-        # Expand the hex grid (in place) if the scaled+displaced layout reaches
-        # past the current grid bbox; keeps tile size constant across Congresses.
-        if layout:
-            xs_min = min(rec["geom"].bounds[0] for rec in layout.values())
-            ys_min = min(rec["geom"].bounds[1] for rec in layout.values())
-            xs_max = max(rec["geom"].bounds[2] for rec in layout.values())
-            ys_max = max(rec["geom"].bounds[3] for rec in layout.values())
-            expand_grid_if_needed(hex_by_qr, R, origin, (xs_min, ys_min, xs_max, ys_max), margin=2 * R)
+        def build_seeds(retention: float) -> dict[str, tuple[float, float]]:
+            seeds: dict[str, tuple[float, float]] = {}
+            for fips in seat_by_fips:
+                if fips in prev_centroids:
+                    sx, sy = prev_centroids[fips]
+                    feat = eff_outlines.get(fips) or outlines.get(fips)
+                    if feat is not None and retention:
+                        rx, ry = feat["_centroid"]
+                        hx = ccx0 + COMPACTION * (rx - ccx0)
+                        hy = ccy0 + COMPACTION * (ry - ccy0)
+                        sx += retention * (hx - sx)
+                        sy += retention * (hy - sy)
+                    seeds[fips] = (sx, sy)
+                    continue
+                parent = PREDECESSOR_PARENT.get(fips)
+                if parent and parent in prev_centroids and parent in outlines and fips in outlines:
+                    pcx, pcy = outlines[parent]["_centroid"]
+                    ccx, ccy = outlines[fips]["_centroid"]
+                    ppx, ppy = prev_centroids[parent]
+                    seeds[fips] = (ppx + (ccx - pcx), ppy + (ccy - pcy))
+            return seeds
 
-        # Build cell -> fips from scaled outlines, and use displaced centroids
-        # as each state's pull-anchor inside the allocator.
-        cell_outline_fips = build_cell_outline_map(hex_by_qr, layout, geom_key="geom")
-        centroid_by_fips = {fips: rec["centroid"] for fips, rec in layout.items()}
-        # States with no layout entry (missing/invalid outline) get no chance to tile.
-        for f in seat_by_fips:
-            if f not in centroid_by_fips and f in eff_outlines:
-                centroid_by_fips[f] = eff_outlines[f]["_centroid"]
+        def _layout_and_tile(seeds: dict[str, tuple[float, float]] | None, spring_scale: float = 1.0):
+            # HexCDv31-style scaled outlines: scale each state to its delegation-size area
+            # around its real centroid, place it at its carried/seeded/compacted-home
+            # position, run the adjacency springs, then push overlapping pairs apart to a
+            # non-overlapping layout. The pre-allocator then sees outlines that already have
+            # ~the right cell count inside.
+            lay = compute_scaled_layout(
+                seat_by_fips, eff_outlines, hex_area, R,
+                seed_centroids=seeds, compaction_center=compaction_center,
+                adjacency=adjacency, spring_scale=spring_scale,
+            )
+            # Expand the hex grid (in place) if the layout reaches past the current bbox;
+            # keeps tile size constant across Congresses. Additive, so safe to call twice.
+            if lay:
+                xs_min = min(rec["geom"].bounds[0] for rec in lay.values())
+                ys_min = min(rec["geom"].bounds[1] for rec in lay.values())
+                xs_max = max(rec["geom"].bounds[2] for rec in lay.values())
+                ys_max = max(rec["geom"].bounds[3] for rec in lay.values())
+                expand_grid_if_needed(hex_by_qr, R, origin, (xs_min, ys_min, xs_max, ys_max), margin=2 * R)
+            # Build cell -> fips from scaled outlines; displaced centroids are pull-anchors.
+            cof = build_cell_outline_map(hex_by_qr, lay, geom_key="geom")
+            cby = {fips: rec["centroid"] for fips, rec in lay.items()}
+            for f in seat_by_fips:  # states with no layout entry still get a pull-anchor
+                if f not in cby and f in eff_outlines:
+                    cby[f] = eff_outlines[f]["_centroid"]
+            tbs, st = place_pentahex_tiles(seat_by_fips, cby, cof, hex_by_qr)
+            return lay, cof, cby, tbs, st
 
-        tiles_by_state, statuses = place_pentahex_tiles(seat_by_fips, centroid_by_fips, cell_outline_fips, hex_by_qr)
+        # Pure carry first (retention 0.0) — stationary states stay exactly put.
+        layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = _layout_and_tile(build_seeds(0.0))
+
+        # Failure recovery: a Congress can be left un-tileable either by temporal drift boxing
+        # a growing state in, or by the springs over-constraining a many-neighbour hub. Retry
+        # down ESCALATION_LADDER (relax toward home and/or weaken springs), adopting the first
+        # rung that reduces warnings. The ladder ends at the proven no-spring baseline, so this
+        # localizes any disruption to the few failing Congresses while guaranteeing recovery.
+        best_bad = sum(1 for s in statuses.values() if s != "ok")
+        if best_bad:
+            for retention, spring_scale in ESCALATION_LADDER:
+                cand = _layout_and_tile(build_seeds(retention), spring_scale)
+                cand_bad = sum(1 for s in cand[4].values() if s != "ok")
+                if cand_bad < best_bad:
+                    layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = cand
+                    best_bad = cand_bad
+                    if best_bad == 0:
+                        break
+
+        # Carry forward the adopted layout's circle-equilibrium positions (idempotent, so a
+        # stable Congress re-seeds to itself with zero drift). Merge to keep history.
+        prev_centroids.update({f: rec.get("seed_centroid", rec["centroid"]) for f, rec in layout.items()})
 
         cd_features: list[dict] = []
         state_features: list[dict] = []
