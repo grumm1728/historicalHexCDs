@@ -1196,6 +1196,13 @@ def main() -> None:
     parser.add_argument("--states-out-root", default=str(ROOT / "data_processed" / "polyhex_states_by_congress"))
     parser.add_argument("--outlines-out-root", default=str(ROOT / "data_processed" / "state_outlines_by_congress"))
     parser.add_argument("--warnings-out", default=str(ROOT / "data_processed" / "tiling_warnings.json"))
+    parser.add_argument(
+        "--allow-warnings",
+        action="store_true",
+        help="Exit 0 even if some states failed to tile. By default a clean regen MUST end "
+        "with warnings: 0 (the project invariant), so any warning makes the run exit non-zero "
+        "to make a layout regression loud. Use this only for debugging/partial runs.",
+    )
     args = parser.parse_args()
 
     seats_by_congress = load_seats(Path(args.seats))
@@ -1579,6 +1586,20 @@ def main() -> None:
     (states_root / "_index.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     Path(args.warnings_out).write_text(json.dumps({"warnings": warnings}, indent=2), encoding="utf-8")
     print(f"Done. Wrote tiling outputs for {len(summary['timeline'])} Congresses; warnings: {len(warnings)}")
+
+    # Enforce the project invariant in code, not just in the sweep: a clean regen MUST end with
+    # warnings: 0. The escalation ladder is only empirically guaranteed to reach 0 (its final
+    # rung is the proven baseline), so a future seat-table / outline / layout change could
+    # silently ship a partial Congress. Exit non-zero so that regression is loud and fails CI
+    # / the web build pipeline instead of producing a quietly-broken map. (--allow-warnings opts
+    # out for debugging/partial runs.)
+    if warnings and not args.allow_warnings:
+        congresses = sorted({w["congress"] for w in warnings if "congress" in w})
+        raise SystemExit(
+            f"FAILED: {len(warnings)} tiling warning(s) across Congress(es) {congresses}. "
+            f"A clean regen must end with warnings: 0; see {args.warnings_out}. "
+            f"Pass --allow-warnings to override for debugging."
+        )
 
 
 if __name__ == "__main__":
