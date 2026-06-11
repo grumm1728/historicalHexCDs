@@ -272,6 +272,17 @@ space to give the early eastern states a more central, legible footprint — whi
 Because compaction sets only the *home* (not carried positions, so it never compounds) and the
 overlap resolver still restores `target_gap = 0.5R`, the dense core is not re-jammed: the net
 effect is closing western gaps, not shrinking the east. `COMPACTION = 1.0` disables it.
+Since the viewer gained per-Congress **auto-zoom** (an animated camera transform fitted to
+each Congress's footprint, default on in `web/app.js`), early-era legibility no longer
+depends on compaction alone — don't strengthen `COMPACTION` to fix framing; that's the
+camera's job now.
+
+**The "condensed West" is cartogram-correct — measured, do not "fix" it.** Normalized to
+each map's own CONUS bbox, our C119 matches the hand-authored HexCDv31wm reference almost
+exactly (West centroid x-spread 24.0% vs 23.2%; E–W gap 52% vs 58%). The historical era's
+tighter West (11–13% in C53–C68) reflects its genuinely small delegations (~25 seats in
+1893 vs ~100 today); the apparent "empty western band" under the old fixed viewport was a
+framing artifact that auto-zoom resolves.
 
 **4. Directional adjacency springs (`build_adjacency` + the circle-model phase).** Scaling +
 overlap-resolution alone only *repels*; it never preserves which states border which, so a
