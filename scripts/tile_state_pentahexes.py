@@ -91,6 +91,35 @@ ESCALATION_LADDER = ((0.0, 0.5), (0.0, 0.0), (0.3, 0.0), (0.6, 0.0), (1.0, 0.0))
 REFERENCE_ANCHORS_PATH = ROOT / "data_raw" / "reference" / "hexcdv31_anchors.json"
 ANCHOR_SPREAD_LADDER = (1.04, 1.08, 1.15, 1.3)
 
+# ---- Seam alignment (runs on top of the anchors) ---------------------------------------
+# Anchors place states where the reference put them, but the reference itself breaks some
+# real-border relationships (it raises KY/TN ~4.3R above the VA-NC line, losing the 36°30'
+# continuation). Seam alignment restores them with two kinds of least-squares terms over
+# state positions, solved before overlap resolution against an anchor term (weight 1 per
+# state) that keeps the global reference arrangement:
+#   - COLLINEARITY (the active term): seams lying on the same real straight line (VA-NC,
+#     TN-VA and KY-TN all on 36°30'; UT-AZ, CO-NM and KS-OK on 37°) are auto-detected and
+#     their DRAWN lines are pulled onto one shared line — exactly the "border line carries
+#     across the gutter" feeling. Measured on C119: dy(KY-TN vs VA-NC) -4.7R -> -1.3R for a
+#     reference-IoU cost of 0.76 -> 0.66 at SEAM_LINE_BETA = 2.
+#   - TANGENTIAL (off by default): no relative slide ALONG a shared border; the gap ACROSS
+#     it stays free. Measured too expensive: the footprint-fitted anchors already deliver
+#     the puzzle-slide quality at C119, so this term mostly fights the reference's own
+#     hand-drawn quirks (IoU 0.76 -> 0.54 at beta 0.5 for little line gain). A full-zip
+#     variant (both components + gutter target) is even worse — it globally contracts the
+#     map (IoU 0.45 at beta 0.5); don't reintroduce it.
+# Terms are weighted by real border length, so long straight borders dominate and short
+# seams defer to the anchors. The solve is one small SPD system (~100x100): deterministic
+# and stateless per Congress, preserving every stability property of the anchor mode.
+SEAM_BETA = 0.0        # tangential term weight (off — see above)
+SEAM_LINE_BETA = 2.0   # collinearity term weight; 0 disables
+SEAM_MIN_LEN = 20000.0      # m of real shared border below which a seam is ignored (4-corner touches)
+SEAM_LINE_ANGLE_TOL = 0.17  # rad (~10 deg): max direction difference for two seams to share a line
+SEAM_LINE_DIST_TOL = 40000.0  # m: max offset of one seam's midpoint from the other's line
+SEAM_LINE_MAX_GAP = 1_000_000.0  # m between seam midpoints: the "line carries across the gutter"
+                                 # feeling is local; CA-OR and IN-MI share ~42°N but yoking their
+                                 # drawn lines across the continent only distorts the map
+
 # Directional adjacency springs. Before the exact polygon overlap resolver, a fast circle
 # model positions states topologically: each pair of states whose REAL outlines share a
 # border is pulled toward sitting just-adjacent (separation r_i + r_j + gap) in their REAL
@@ -327,6 +356,167 @@ def build_adjacency(
             d = math.hypot(dx, dy) or 1.0
             edges.append((fa, fb, dx / d, dy / d))
     return edges
+
+
+def build_seams(outlines: dict[str, dict], tol: float = ADJ_TOL) -> list[dict]:
+    """Extract real shared-border seams between neighbouring states.
+
+    For each pair of outlines within `tol`, returns the shared border's midpoint (real
+    coords), its length, and its unit normal oriented from b toward a. The layout uses these
+    to align each pair's scaled copies of the seam (see the SEAM_BETA comment).
+    """
+    items = [(f, feat["_geom"], feat["_centroid"]) for f, feat in outlines.items()]
+    geoms = [g for _, g, _ in items]
+    tree = STRtree(geoms)
+    seams: list[dict] = []
+    for i, (fa, ga, ca) in enumerate(items):
+        boundary_buf = ga.boundary.buffer(tol)
+        for j in tree.query(boundary_buf):
+            if j <= i:
+                continue
+            fb, gb, cb = items[j]
+            shared = boundary_buf.intersection(gb.boundary)
+            if shared.is_empty or shared.length < SEAM_MIN_LEN:
+                continue
+            m = shared.centroid
+            # Principal direction of the shared border via SVD; normal = perpendicular,
+            # oriented toward a so the gutter offset pushes the right way.
+            pts: list[tuple[float, float]] = []
+            parts = shared.geoms if hasattr(shared, "geoms") else [shared]
+            for part in parts:
+                pts.extend(part.coords)
+            arr = np.asarray(pts, dtype=float)
+            arr -= arr.mean(axis=0)
+            sv, vt = np.linalg.svd(arr, full_matrices=False)[1:]
+            tx, ty = vt[0]
+            nx, ny = -ty, tx
+            if nx * (ca[0] - m.x) + ny * (ca[1] - m.y) < 0:
+                nx, ny = -nx, -ny
+            # straightness: how dominant the principal direction is (1.0 = perfectly straight)
+            straight = float(sv[0] / (sv[0] + sv[1])) if (sv[0] + sv[1]) > 0 else 0.0
+            seams.append({
+                "a": fa, "b": fb, "m": (m.x, m.y), "length": shared.length,
+                "t": (float(tx), float(ty)), "n": (nx, ny), "straight": straight,
+            })
+    return seams
+
+
+def find_collinear_seam_pairs(seams: list[dict]) -> list[tuple[int, int]]:
+    """Pairs of seams lying on the same real straight line (e.g. VA-NC / TN-VA / KY-TN on
+    36°30'): near-parallel directions, each midpoint near the other seam's line, and both
+    seams reasonably straight. These drive the collinearity term in seam_align_positions."""
+    pairs: list[tuple[int, int]] = []
+    sin_tol = math.sin(SEAM_LINE_ANGLE_TOL)
+    for i in range(len(seams)):
+        si = seams[i]
+        if si["straight"] < 0.95:
+            continue
+        for j in range(i + 1, len(seams)):
+            sj = seams[j]
+            if sj["straight"] < 0.95:
+                continue
+            cross = abs(si["t"][0] * sj["t"][1] - si["t"][1] * sj["t"][0])
+            if cross > sin_tol:
+                continue
+            dx = sj["m"][0] - si["m"][0]
+            dy = sj["m"][1] - si["m"][1]
+            if math.hypot(dx, dy) > SEAM_LINE_MAX_GAP:
+                continue
+            off_i = abs(dx * si["n"][0] + dy * si["n"][1])
+            off_j = abs(dx * sj["n"][0] + dy * sj["n"][1])
+            if off_i < SEAM_LINE_DIST_TOL and off_j < SEAM_LINE_DIST_TOL:
+                pairs.append((i, j))
+    return pairs
+
+
+def seam_align_positions(
+    seeds: dict[str, tuple[float, float]],
+    seat_by_fips: dict[str, int],
+    outlines: dict[str, dict],
+    seams: list[dict],
+    line_pairs: list[tuple[int, int]],
+    hex_area: float,
+    R: float,
+    beta: float = SEAM_BETA,
+    line_beta: float | None = None,
+) -> dict[str, tuple[float, float]]:
+    """Adjust anchor seeds with the two seam terms (see the SEAM_BETA comment): tangential
+    (no relative slide along a shared real border; the gap across it stays free) and
+    collinearity (seams on the same real straight line keep their drawn lines collinear).
+    One least-squares solve over all positions, anchored to the seeds with weight 1."""
+    if line_beta is None:
+        line_beta = SEAM_LINE_BETA
+    if (beta <= 0.0 and line_beta <= 0.0) or not seams:
+        return seeds
+    present = [f for f in seeds if f in outlines and seat_by_fips.get(f, 0) > 0]
+    if len(present) < 2:
+        return seeds
+    idx = {f: i for i, f in enumerate(present)}
+    rep: dict[str, tuple[float, float]] = {}
+    scl: dict[str, float] = {}
+    for f in present:
+        geom = outlines[f]["_geom"]
+        rep[f] = outlines[f]["_centroid"]
+        scl[f] = math.sqrt(seat_by_fips[f] * 5 * hex_area / geom.area) if geom.area > 0 else 1.0
+    usable = [s for s in seams if s["a"] in idx and s["b"] in idx]
+    if not usable:
+        return seeds
+    mean_len = sum(s["length"] for s in usable) / len(usable)
+    n2 = 2 * len(present)
+    mat = np.eye(n2)  # anchor terms: weight 1 per state, pulling to the (spread) anchor seed
+    rhs = np.empty(n2)
+    for f in present:
+        rhs[2 * idx[f]] = seeds[f][0]
+        rhs[2 * idx[f] + 1] = seeds[f][1]
+
+    def copy_off(s: dict, f: str) -> tuple[float, float]:
+        # Where this state's scaled copy of the seam midpoint sits relative to its position.
+        return (scl[f] * (s["m"][0] - rep[f][0]), scl[f] * (s["m"][1] - rep[f][1]))
+
+    def add(coefs: list[tuple[int, float]], target: float, w: float) -> None:
+        # Least-squares term w * (sum_c coef*p[c] - target)^2, accumulated into the normal
+        # equations (terms are few and tiny, so the dense accumulation is fine).
+        for c1, v1 in coefs:
+            rhs[c1] += w * v1 * target
+            for c2, v2 in coefs:
+                mat[c1, c2] += w * v1 * v2
+
+    if beta > 0.0:
+        for s in usable:
+            a, b = idx[s["a"]], idx[s["b"]]
+            tx, ty = s["t"]
+            oa = copy_off(s, s["a"])
+            ob = copy_off(s, s["b"])
+            # Tangential residual: t . ((p_a + oa) - (p_b + ob))
+            target = tx * (ob[0] - oa[0]) + ty * (ob[1] - oa[1])
+            add(
+                [(2 * a, tx), (2 * a + 1, ty), (2 * b, -tx), (2 * b + 1, -ty)],
+                target,
+                beta * s["length"] / mean_len,
+            )
+
+    w_line = line_beta
+    for i, j in line_pairs if w_line > 0.0 else []:
+        si, sj = seams[i], seams[j]
+        if not all(f in idx for f in (si["a"], si["b"], sj["a"], sj["b"])):
+            continue
+        nx, ny = (si if si["length"] >= sj["length"] else sj)["n"]
+        ki = tuple(0.5 * (u + v) for u, v in zip(copy_off(si, si["a"]), copy_off(si, si["b"])))
+        kj = tuple(0.5 * (u + v) for u, v in zip(copy_off(sj, sj["a"]), copy_off(sj, sj["b"])))
+        # Collinearity residual: n . (drawn_mid_i - drawn_mid_j), where each seam's drawn
+        # midline is the average of its two states' copies of the seam midpoint.
+        target = nx * (kj[0] - ki[0]) + ny * (kj[1] - ki[1])
+        coefs: dict[int, float] = defaultdict(float)
+        for f, sgn in ((si["a"], 0.5), (si["b"], 0.5), (sj["a"], -0.5), (sj["b"], -0.5)):
+            coefs[2 * idx[f]] += sgn * nx
+            coefs[2 * idx[f] + 1] += sgn * ny
+        add(list(coefs.items()), target, w_line * min(si["length"], sj["length"]) / mean_len)
+
+    sol = np.linalg.solve(mat, rhs)
+    out = dict(seeds)
+    for f in present:
+        out[f] = (float(sol[2 * idx[f]]), float(sol[2 * idx[f] + 1]))
+    return out
 
 
 def compute_scaled_layout(
@@ -1395,6 +1585,20 @@ def main() -> None:
         help="Path to the HexCDv31wm anchor JSON (scripts/extract_reference_anchors.py). "
         "Pass an empty string or a missing path to fall back to the legacy carried-seed layout.",
     )
+    parser.add_argument(
+        "--seam-beta",
+        type=float,
+        default=SEAM_BETA,
+        help="Weight of the tangential seam term vs the anchor term (see SEAM_BETA comment; "
+        "default off — measured too costly against the footprint-fitted anchors).",
+    )
+    parser.add_argument(
+        "--seam-line-beta",
+        type=float,
+        default=SEAM_LINE_BETA,
+        help="Weight of the collinear-border-line term ('the VA-NC line carries into the "
+        "KY-TN line'). 0 disables; see SEAM_LINE_BETA comment.",
+    )
     args = parser.parse_args()
 
     seats_by_congress = load_seats(Path(args.seats))
@@ -1430,6 +1634,8 @@ def main() -> None:
     # transformed into our hex space (uniform scale matching hex sizes, recentred on the fixed
     # national centre so the map stays where the grid already is). See the constant's comment.
     anchor_pos: dict[str, tuple[float, float]] = {}
+    seams: list[dict] = []
+    seam_line_pairs: list[tuple[int, int]] = []
     anchors_path = Path(args.reference_anchors) if args.reference_anchors else None
     if anchors_path is not None and anchors_path.exists():
         ref = json.loads(anchors_path.read_text(encoding="utf-8"))
@@ -1447,6 +1653,12 @@ def main() -> None:
             )
         print(f"Reference-anchored layout: {len(anchor_pos)} state anchors from {anchors_path.name} "
               f"(scale {s_ref:.4f})")
+        seams = build_seams(outlines) if (args.seam_beta > 0 or args.seam_line_beta > 0) else []
+        seam_line_pairs = find_collinear_seam_pairs(seams)
+        if seams:
+            print(f"Seam alignment: {len(seams)} real-border seams, "
+                  f"{len(seam_line_pairs)} collinear pairs "
+                  f"(tangential beta={args.seam_beta}, line beta={args.seam_line_beta})")
     else:
         print(
             "Reference anchors disabled or not found "
@@ -1557,13 +1769,18 @@ def main() -> None:
             # spread > 1 scales the whole configuration radially about the fixed national
             # centre (failure recovery: relieves crowding when a mid-era giant outgrows its
             # reference hole and boxes a neighbour in). A state without an anchor falls
-            # through to compute_scaled_layout's compacted-home placement.
+            # through to compute_scaled_layout's compacted-home placement. Seam alignment
+            # then restores real-border relationships the reference itself breaks (KY/TN vs
+            # the VA-NC line) — see seam_align_positions.
             seeds: dict[str, tuple[float, float]] = {}
             for fips in seat_by_fips:
                 a = anchor_pos.get(fips)
                 if a is not None:
                     seeds[fips] = (ccx0 + spread * (a[0] - ccx0), ccy0 + spread * (a[1] - ccy0))
-            return seeds
+            return seam_align_positions(
+                seeds, seat_by_fips, eff_outlines, seams, seam_line_pairs, hex_area, R,
+                beta=args.seam_beta, line_beta=args.seam_line_beta,
+            )
 
         def _layout_and_tile(seeds: dict[str, tuple[float, float]] | None, spring_scale: float = 1.0):
             # HexCDv31-style scaled outlines: scale each state to its delegation-size area

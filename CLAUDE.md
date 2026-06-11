@@ -242,8 +242,21 @@ remaining worst fits are inherent (HI's island chain vs a compact blob, the crow
 Northeast). Re-run `scripts/extract_reference_anchors.py` if the modern outlines or `R`
 change; measure with `scripts/diag_reference_fit.py` (IoU is the headline C119 metric).
 
+**Seam alignment (on top of the anchors).** The reference itself breaks some real-border
+relationships (it draws KY/TN ~4.3R above the VA–NC line, losing the 36°30' continuation).
+`build_seams` extracts every real shared-border segment; `find_collinear_seam_pairs`
+detects seams on the same real straight line (36°30': KY-TN/TN-VA/NC-VA; 37°:
+CO-NM/KS-OK/AZ-UT; the northern-plains parallels), gated to ≤1000 km so same-latitude
+borders across the continent (CA-OR vs IN-MI, both ~42°N) are never yoked; and
+`seam_align_positions` solves one small least-squares system pulling each group's *drawn*
+lines collinear against a weight-1 anchor term. Result: gutter offset dy(KY-TN vs VA-NC)
+improves from −4.3R (the reference's own value) to −1.0..−1.7R in every era, for a C119
+reference-IoU cost of 0.76→0.66. Two stronger variants were measured and rejected — see
+the `SEAM_BETA` comment (tangential alignment too costly; full seam-zipping contracts the
+whole map). Stateless and deterministic like the anchors themselves.
+
 **Failure recovery:** retry at progressively spread anchors (`ANCHOR_SPREAD_LADDER`, radial
-about the fixed national centre — relieves crowding-induced un-tileable shapes; C83 needs
+about the fixed national centre — relieves crowding-induced un-tileable shapes; C98 needs
 1.04), ending at the legacy compacted-home fresh placement as the guaranteed final rung.
 `--reference-anchors ""` (or a missing JSON) falls back to the legacy carried-seed +
 adjacency-spring layout documented below. Measure fit with `scripts/diag_reference_fit.py`
