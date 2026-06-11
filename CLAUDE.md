@@ -224,14 +224,23 @@ local, bounded, and always decays back toward the canonical arrangement).
 
 **Why anchors, not springs:** the reference packing is deliberately *loose* — real-neighbour
 gutters range 0.6–7.7 `R_ref` — so springing neighbours to touching would distort it. Pinning
-to measured positions preserves the reference look exactly, and because C119's seat counts
-match the reference apportionment, generated C119 lands on the reference arrangement
-(measured: mean 1.16R / median 0.85R centroid deviation; the worst few are shape artifacts —
-HI's island chain / MI's two peninsulas shift the rendered centroid vs the reference's compact
-blob). Earlier Congresses are the same arrangement with era-sized states; the earliest
-Congresses trade tighter puzzle-fit for positional fidelity (small states sit in modern-sized
-holes). Movement profile: 90/118 transitions frozen, only C16→C17 (Maine statehood handover)
-exceeds 5R, C52→C53 is mean 0.5R despite 6 new states.
+to measured positions preserves the reference look exactly. Earlier Congresses are the same
+arrangement with era-sized states; the earliest Congresses trade tighter puzzle-fit for
+positional fidelity (small states sit in modern-sized holes). Movement profile: 90/118
+transitions frozen, only C16→C17 (Maine statehood handover) exceeds 5R.
+
+**Anchors are footprint-fitted, not centroid-pinned.** Centroid equality is the wrong
+registration when shapes differ (our states are real silhouettes, the reference's are
+hand-drawn blobs): centroids can match while *edges* land wrong — WA/OR drifted east off
+CA's coast diagonal, the GA–SC–NC–VA seaboard broke. The extractor therefore grid-searches,
+per state, the translation minimizing the symmetric difference between our C119-scaled
+silhouette and the reference blob (areas are equal by construction) and stores that
+`fitted_anchor` (the outline *representative point*'s position — the tiler's scale origin —
+in reference coords). This aligns coastlines and gutter lines with the reference: C119
+rendered-vs-blob IoU mean 0.759 / median 0.795 (vs 0.676/0.705 centroid-pinned); the
+remaining worst fits are inherent (HI's island chain vs a compact blob, the crowded small
+Northeast). Re-run `scripts/extract_reference_anchors.py` if the modern outlines or `R`
+change; measure with `scripts/diag_reference_fit.py` (IoU is the headline C119 metric).
 
 **Failure recovery:** retry at progressively spread anchors (`ANCHOR_SPREAD_LADDER`, radial
 about the fixed national centre — relieves crowding-induced un-tileable shapes; C83 needs

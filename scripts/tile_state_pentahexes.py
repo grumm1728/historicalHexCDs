@@ -1435,13 +1435,16 @@ def main() -> None:
         ref = json.loads(anchors_path.read_text(encoding="utf-8"))
         s_ref = math.sqrt(hex_area / ref["hex_area_ref"])
         rcx, rcy = ref["map_centroid"]
-        anchor_pos = {
-            f: (
-                compaction_center[0] + s_ref * (st["centroid"][0] - rcx),
-                compaction_center[1] + s_ref * (st["centroid"][1] - rcy),
+        # Prefer the footprint-fitted anchor (where the outline's representative point sits
+        # when our scaled silhouette best covers the reference blob — aligns EDGES, so the
+        # reference's coastlines and gutter lines carry over); blob centroid is the fallback.
+        anchor_pos = {}
+        for f, st in ref["states"].items():
+            ax, ay = st.get("fitted_anchor", st["centroid"])
+            anchor_pos[f] = (
+                compaction_center[0] + s_ref * (ax - rcx),
+                compaction_center[1] + s_ref * (ay - rcy),
             )
-            for f, st in ref["states"].items()
-        }
         print(f"Reference-anchored layout: {len(anchor_pos)} state anchors from {anchors_path.name} "
               f"(scale {s_ref:.4f})")
     else:
