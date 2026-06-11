@@ -208,9 +208,43 @@ own `seats×5×hex_area`, so an early composite parent is a larger-silhouette bu
 seat-correctly-sized blob. As with any layout change, a bigger early VA/MA/GA silhouette can
 crowd a neighbour, so re-sweep all 119 Congresses for `warnings: 0` after touching this.
 
-## Temporal stability, split pop-off, and gentle compaction
+## Reference-anchored layout (primary mode)
 
-The layout is no longer computed independently per Congress. `compute_scaled_layout`
+The layout aims directly at the hand-authored HexCDv31wm reference.
+`scripts/extract_reference_anchors.py` distills the reference shapefile into
+`data_raw/reference/hexcdv31_anchors.json` (checked in: per-state blob centroid + CD count,
+`R_ref` ≈ 40 km, map centroid; one reference record has a FIPS in its STATEAB column, so
+states key off GEOID). The tiler similarity-transforms those centroids into hex space
+(uniform scale `sqrt(hex_area/hex_area_ref)`, recentred on `compaction_center`) and seeds
+**every state at its anchor every Congress** with springs off — stateless: no temporal
+carry, no path dependence; identical seat tables give identical layouts. The polygon
+overlap resolver alone absorbs eras where a delegation outgrows its reference hole (1930s
+NY at 45 seats pushes NJ/CT a few R; they return to anchor as it shrinks — displacement is
+local, bounded, and always decays back toward the canonical arrangement).
+
+**Why anchors, not springs:** the reference packing is deliberately *loose* — real-neighbour
+gutters range 0.6–7.7 `R_ref` — so springing neighbours to touching would distort it. Pinning
+to measured positions preserves the reference look exactly, and because C119's seat counts
+match the reference apportionment, generated C119 lands on the reference arrangement
+(measured: mean 1.16R / median 0.85R centroid deviation; the worst few are shape artifacts —
+HI's island chain / MI's two peninsulas shift the rendered centroid vs the reference's compact
+blob). Earlier Congresses are the same arrangement with era-sized states; the earliest
+Congresses trade tighter puzzle-fit for positional fidelity (small states sit in modern-sized
+holes). Movement profile: 90/118 transitions frozen, only C16→C17 (Maine statehood handover)
+exceeds 5R, C52→C53 is mean 0.5R despite 6 new states.
+
+**Failure recovery:** retry at progressively spread anchors (`ANCHOR_SPREAD_LADDER`, radial
+about the fixed national centre — relieves crowding-induced un-tileable shapes; C83 needs
+1.04), ending at the legacy compacted-home fresh placement as the guaranteed final rung.
+`--reference-anchors ""` (or a missing JSON) falls back to the legacy carried-seed +
+adjacency-spring layout documented below. Measure fit with `scripts/diag_reference_fit.py`
+and movement with `scripts/diag_movement.py`.
+
+## Temporal stability, split pop-off, and gentle compaction (legacy fallback)
+
+**This entire machinery is now the fallback when the reference anchors JSON is absent** —
+the primary mode above supersedes it. Kept because it's proven (`warnings: 0`) and
+anchor-independent. `compute_scaled_layout`
 takes two inputs that tie the timeline together (both threaded from `main()`):
 
 **1. Temporal seeding (`seed_centroids`).** `main()` keeps a persistent `prev_centroids`
@@ -350,13 +384,11 @@ cells, `GENERATOR_VERSION = "v6-pentahex-scaled-outlines"`.
 Algorithm (in order):
 
 1. **`compute_scaled_layout`** — scale each state's real outline to `seats·5·hex_area`
-   around its real centroid; place it at its **carried position** (previous Congress's
-   resolved centroid via `seed_centroids`), or for a first appearance at its **compacted
-   home** (real centroid pulled `COMPACTION` toward the fixed `compaction_center`, with
-   split children seeded off their parent); run the **directional adjacency-spring circle
-   model** (`build_adjacency` edges + repulsion, deadband → idempotent `seed_centroid`); then
-   iterative pairwise overlap-resolution to a non-overlapping layout (`target_gap = 0.5R`).
-   See "Temporal stability / adjacency springs" section above.
+   around its real centroid; place it at its **reference anchor** (see "Reference-anchored
+   layout" above — the primary, stateless mode), then iterative pairwise overlap-resolution
+   to a non-overlapping layout (`target_gap = 0.5R`). The legacy fallback (no anchors JSON)
+   instead uses carried positions / compacted homes / split pop-off seeds plus the
+   directional adjacency-spring circle model — see the legacy section above.
 2. **`expand_grid_if_needed`** — grow the hex grid in-memory to cover the layout bbox.
 3. **`build_cell_outline_map`** — cell → state FIPS by point-in-polygon vs scaled outlines.
 4. **`allocate_territories`** — grow exactly `need` cells/state from seeds, smallest-need
@@ -383,10 +415,11 @@ Algorithm (in order):
 - **`COMPACTION = 0.9` (lower = stronger pull toward `compaction_center`).** Replaces the
   old `NE_EXPAND` radial hack. Too-strong compaction re-jams the dense east into un-tileable
   shapes; re-sweep all 119 Congresses before lowering it. `1.0` disables compaction.
-- **Layout changes are fragile.** Any change to seeding/compaction/scaling can push some
+- **Layout changes are fragile.** Any change to seeding/anchoring/scaling can push some
   state into an un-tileable or boxed-in shape in *some* Congress; always re-check the full
-  119-Congress warning count, not just one Congress. Because layout is now temporally seeded
-  (each Congress depends on the previous), always sweep from C1 in order.
+  119-Congress warning count, not just one Congress. (The reference-anchored mode is
+  stateless per Congress, so sweep order no longer matters — but the legacy fallback is
+  temporally seeded and must sweep from C1 in order.)
 - **Area ratio outliers are expected.** `tile_area_ratio ≈ 1.0` for interior tiles and
   most boundary tiles after option-3. Geographic outliers (Long Island tip, Cape Cod)
   reach ~2.8×. This is correct — do not treat >1.0 ratios as bugs.

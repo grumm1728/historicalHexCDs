@@ -75,6 +75,22 @@ COMPACTION = 0.9
 # split pop-off seeds.
 ESCALATION_LADDER = ((0.0, 0.5), (0.0, 0.0), (0.3, 0.0), (0.6, 0.0), (1.0, 0.0))
 
+# ---- Reference-anchored layout (primary mode) ------------------------------------------
+# The hand-authored HexCDv31wm reference is the spacing target: every state is seeded at its
+# reference-blob centroid (similarity-transformed into our hex space) EVERY Congress, and the
+# polygon overlap resolver handles the eras where a state outgrows its reference hole (e.g.
+# 1930s NY at 45 seats pushes NJ/CT a few R; they return to anchor as it shrinks). This is
+# stateless: no temporal carry, no springs, no path dependence — identical seat tables give
+# byte-identical layouts, C119 lands ~exactly on the reference arrangement (its seat counts
+# match the reference apportionment), and earlier Congresses are the same arrangement with
+# era-sized states. The carry+springs machinery below remains as the fallback when the
+# anchors JSON is absent.
+# Failure recovery: retry with all anchors spread radially about the reference map centre
+# (relieves crowding-induced un-tileable shapes), ending with the legacy compacted-home fresh
+# placement as the guaranteed final rung.
+REFERENCE_ANCHORS_PATH = ROOT / "data_raw" / "reference" / "hexcdv31_anchors.json"
+ANCHOR_SPREAD_LADDER = (1.04, 1.08, 1.15, 1.3)
+
 # Directional adjacency springs. Before the exact polygon overlap resolver, a fast circle
 # model positions states topologically: each pair of states whose REAL outlines share a
 # border is pulled toward sitting just-adjacent (separation r_i + r_j + gap) in their REAL
@@ -1373,6 +1389,12 @@ def main() -> None:
         "committed 119.geojson regardless.",
     )
     parser.add_argument("--diagnose-out", default=None, help="Optional path to also write the --diagnose report as JSON.")
+    parser.add_argument(
+        "--reference-anchors",
+        default=str(REFERENCE_ANCHORS_PATH),
+        help="Path to the HexCDv31wm anchor JSON (scripts/extract_reference_anchors.py). "
+        "Pass an empty string or a missing path to fall back to the legacy carried-seed layout.",
+    )
     args = parser.parse_args()
 
     seats_by_congress = load_seats(Path(args.seats))
@@ -1401,7 +1423,32 @@ def main() -> None:
     # Real-geography adjacency graph (computed once from modern outlines). Each Congress uses
     # the subset whose endpoints are both seated, to spring neighbouring states into their real
     # relative positions during layout. See build_adjacency / the circle-model phase.
+    # (Unused in the reference-anchored mode below, where springs are off.)
     adjacency = build_adjacency(outlines)
+
+    # Reference anchors: each state's blob centroid in the HexCDv31wm reference, similarity-
+    # transformed into our hex space (uniform scale matching hex sizes, recentred on the fixed
+    # national centre so the map stays where the grid already is). See the constant's comment.
+    anchor_pos: dict[str, tuple[float, float]] = {}
+    anchors_path = Path(args.reference_anchors) if args.reference_anchors else None
+    if anchors_path is not None and anchors_path.exists():
+        ref = json.loads(anchors_path.read_text(encoding="utf-8"))
+        s_ref = math.sqrt(hex_area / ref["hex_area_ref"])
+        rcx, rcy = ref["map_centroid"]
+        anchor_pos = {
+            f: (
+                compaction_center[0] + s_ref * (st["centroid"][0] - rcx),
+                compaction_center[1] + s_ref * (st["centroid"][1] - rcy),
+            )
+            for f, st in ref["states"].items()
+        }
+        print(f"Reference-anchored layout: {len(anchor_pos)} state anchors from {anchors_path.name} "
+              f"(scale {s_ref:.4f})")
+    else:
+        print(
+            "Reference anchors disabled or not found "
+            f"({anchors_path}); using legacy carried-seed + adjacency-spring layout"
+        )
 
     # Resolved state centroids carried across Congresses for temporal stability. Persisted
     # (not reset per Congress) so a state that briefly drops out keeps its position on return.
@@ -1502,6 +1549,19 @@ def main() -> None:
                     seeds[fips] = (ppx + (ccx - pcx), ppy + (ccy - pcy))
             return seeds
 
+        def build_anchor_seeds(spread: float) -> dict[str, tuple[float, float]]:
+            # Reference-anchored seeds: every state at its HexCDv31wm anchor, every Congress.
+            # spread > 1 scales the whole configuration radially about the fixed national
+            # centre (failure recovery: relieves crowding when a mid-era giant outgrows its
+            # reference hole and boxes a neighbour in). A state without an anchor falls
+            # through to compute_scaled_layout's compacted-home placement.
+            seeds: dict[str, tuple[float, float]] = {}
+            for fips in seat_by_fips:
+                a = anchor_pos.get(fips)
+                if a is not None:
+                    seeds[fips] = (ccx0 + spread * (a[0] - ccx0), ccy0 + spread * (a[1] - ccy0))
+            return seeds
+
         def _layout_and_tile(seeds: dict[str, tuple[float, float]] | None, spring_scale: float = 1.0):
             # HexCDv31-style scaled outlines: scale each state to its delegation-size area
             # around its real centroid, place it at its carried/seeded/compacted-home
@@ -1543,8 +1603,34 @@ def main() -> None:
         ):
             layout, tiles_by_state, statuses = reuse_state
             reused_count += 1
+        elif anchor_pos:
+            # Reference-anchored layout (stateless, springs off): seed at the anchors and let
+            # the polygon overlap resolver absorb eras whose delegations outgrow their
+            # reference holes. Failure recovery = retry at progressively spread-out anchors,
+            # then the legacy compacted-home fresh placement as the guaranteed final rung.
+            layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = _layout_and_tile(
+                build_anchor_seeds(1.0), spring_scale=0.0
+            )
+            best_bad = sum(1 for s in statuses.values() if s != "ok")
+            if best_bad:
+                for spread in (*ANCHOR_SPREAD_LADDER, None):
+                    seeds = build_anchor_seeds(spread) if spread is not None else build_seeds(1.0)
+                    cand = _layout_and_tile(seeds, spring_scale=0.0)
+                    cand_bad = sum(1 for s in cand[4].values() if s != "ok")
+                    if cand_bad < best_bad:
+                        rung = f"anchor spread={spread}" if spread is not None else "legacy fresh placement"
+                        print(
+                            f"C{congress_number}: escalation adopted {rung}; "
+                            f"non-ok states {best_bad} -> {cand_bad}",
+                            flush=True,
+                        )
+                        layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = cand
+                        best_bad = cand_bad
+                        if best_bad == 0:
+                            break
         else:
-            # Pure carry first (retention 0.0) — stationary states stay exactly put.
+            # Legacy fallback (no anchors JSON): pure carry first (retention 0.0) —
+            # stationary states stay exactly put.
             layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = _layout_and_tile(build_seeds(0.0))
 
             # Failure recovery: a Congress can be left un-tileable either by temporal drift boxing
