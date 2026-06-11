@@ -222,6 +222,20 @@ the resolver re-packs). This is the intended "gradual growth, no congress-to-con
 `prev_centroids` is *merged* (never reset) so a state that briefly drops out keeps its place
 on return.
 
+**Identical-input fast path (makes "nothing changed ⇒ nothing moves" exact).** Re-seeding a
+carried equilibrium is only *approximately* a fixed point: the polygon overlap resolver
+re-runs from the circle equilibrium every Congress and lands sub-hex differently, so before
+this fast path 90 of 118 transitions had byte-identical seat tables but only 1 rendered
+frozen (Maryland, squeezed between PA/VA/DE, wobbled >1R in many quiet transitions). Now
+`main()` computes a per-Congress signature (post-Maine-adjustment seat table +
+`MAINE_IN_MA` entry); when it matches the previous Congress's, the previous
+layout/tiles/statuses are reused verbatim and only rendering (deterministic on identical
+inputs) re-runs for correct dates/metadata. This freezes all seat-identical transitions
+exactly — including C118→C119, which previously echoed an escalation with a mean 6.4R /
+max 19R move despite zero seat changes — and skips the dominant layout/allocation cost for
+~90 of 119 Congresses. The fast path is gated on the previous Congress having tiled fully
+`ok`, so a failing Congress is never frozen in (recomputation keeps its self-healing chance).
+
 **Home-retention escalation (keeps `warnings: 0` with minimal disruption).** Carrying a
 cramped arrangement forward can, over many Congresses, drift a *growing* state into a
 boxed-in packing that won't tile (observed: NY C53–57, MI C83–87 — both `partial`, the

@@ -1186,6 +1186,160 @@ def render_state_tiles(
     return out
 
 
+# ---- Read-only layout diagnostic (--diagnose) ------------------------------------------
+# Coarse regional buckets (continental FIPS) for measuring east-west spread of the layout.
+# AK(02)/HI(15)/DC(11) are excluded everywhere in the diagnostic (insets / non-state). EAST
+# is computed as "every laid-out state not in WEST/MIDWEST/excluded", so it auto-covers the
+# original 13, the South, and the south-central states without an explicit list.
+DIAG_WEST_FIPS = frozenset({"04", "06", "08", "16", "30", "32", "35", "41", "49", "53", "56"})
+DIAG_MIDWEST_FIPS = frozenset({"17", "18", "19", "20", "26", "27", "29", "31", "38", "39", "46", "55"})
+DIAG_EXCLUDE_FIPS = frozenset({"02", "15", "11"})
+
+
+def _region_stats(layout: dict, fips_set: frozenset[str]) -> dict | None:
+    """Mean centroid + east-west spread of the laid-out members of a region. Uses each
+    record's resolved (post-overlap) `centroid`. Returns None if no member is present."""
+    xs: list[float] = []
+    ys: list[float] = []
+    for f in fips_set:
+        rec = layout.get(f)
+        if rec is None:
+            continue
+        cx, cy = rec["centroid"]
+        xs.append(cx)
+        ys.append(cy)
+    if not xs:
+        return None
+    return {
+        "n": len(xs),
+        "mean": (sum(xs) / len(xs), sum(ys) / len(ys)),
+        "xspread": max(xs) - min(xs),
+        "x_min": min(xs),
+        "x_max": max(xs),
+    }
+
+
+def _collect_layout_metrics(congress_number: int, layout: dict) -> dict:
+    """Capture raw (frame-independent) layout numbers for one Congress. Frame-relative
+    fractions are derived later in _diagnose_format once the C119 frame is known."""
+    geoms = [rec["geom"] for rec in layout.values() if rec.get("geom") is not None]
+    union = unary_union(geoms) if geoms else None
+    bbox = union.bounds if (union is not None and not union.is_empty) else None
+    east_fips = frozenset(
+        f for f in layout
+        if f not in DIAG_WEST_FIPS and f not in DIAG_MIDWEST_FIPS and f not in DIAG_EXCLUDE_FIPS
+    )
+    ca = layout.get("06")
+    return {
+        "congress": congress_number,
+        "n_states": len(layout),
+        "bbox": bbox,
+        "union_area": (union.area if union is not None else 0.0),
+        "ca_xmin": (ca["geom"].bounds[0] if ca is not None else None),
+        "ca_centroid_x": (ca["centroid"][0] if ca is not None else None),
+        "regions": {
+            "EAST": _region_stats(layout, east_fips),
+            "MIDWEST": _region_stats(layout, DIAG_MIDWEST_FIPS),
+            "WEST": _region_stats(layout, DIAG_WEST_FIPS),
+        },
+    }
+
+
+def _diagnose_frame(cds_root: Path, records: list[dict], pad_frac: float = 0.02) -> tuple[float, float, float, float]:
+    """The fixed viewer frame = bounds of the committed C119 CD output (what web/app.js fits
+    its single projection to), padded `pad_frac` per axis. Falls back to the union bbox of the
+    collected records if 119.geojson is absent (e.g. a partial diagnose walk before any regen)."""
+    bbox = None
+    f119 = cds_root / "119.geojson"
+    if f119.exists():
+        try:
+            fc = json.loads(f119.read_text(encoding="utf-8"))
+            u = unary_union([shape(ft["geometry"]) for ft in fc.get("features", [])])
+            if not u.is_empty:
+                bbox = u.bounds
+        except Exception:
+            bbox = None
+    if bbox is None:
+        bxs = [r["bbox"] for r in records if r["bbox"] is not None]
+        if not bxs:
+            return (0.0, 0.0, 1.0, 1.0)
+        bbox = (min(b[0] for b in bxs), min(b[1] for b in bxs),
+                max(b[2] for b in bxs), max(b[3] for b in bxs))
+    minx, miny, maxx, maxy = bbox
+    w, h = (maxx - minx) or 1.0, (maxy - miny) or 1.0
+    return (minx - pad_frac * w, miny - pad_frac * h, maxx + pad_frac * w, maxy + pad_frac * h)
+
+
+def _diagnose_format(
+    records: list[dict],
+    frame: tuple[float, float, float, float],
+    compaction_center: tuple[float, float],
+    conus_center: tuple[float, float],
+) -> tuple[str, dict]:
+    """Render the per-Congress table (frame-relative %) + a JSON payload. All `*_frac` values
+    are fractions of frame width (x) so 0%=west edge, 100%=east edge."""
+    fminx, fminy, fmaxx, fmaxy = frame
+    fw = (fmaxx - fminx) or 1.0
+    fh = (fmaxy - fminy) or 1.0
+    farea = fw * fh
+
+    def xf(v: float | None) -> float | None:
+        return None if v is None else (v - fminx) / fw
+
+    lines: list[str] = []
+    lines.append(
+        f"Layout diagnostic - frame bbox=({fminx:.0f},{fminy:.0f},{fmaxx:.0f},{fmaxy:.0f}) "
+        f"w={fw:.0f} h={fh:.0f}"
+    )
+    lines.append(
+        f"compaction_center x-frac={xf(compaction_center[0]):.3f} (incl AK/HI insets)   "
+        f"CONUS-center x-frac={xf(conus_center[0]):.3f}   "
+        f"skew dx={compaction_center[0]-conus_center[0]:+.0f}m dy={compaction_center[1]-conus_center[1]:+.0f}m"
+    )
+    lines.append("(x-fracs: 0%=west frame edge, 100%=east frame edge)")
+    lines.append("")
+    lines.append(
+        f"{'C':>4} {'states':>6} {'cover%':>7} {'bboxW%':>7} {'CAxmin%':>8} "
+        f"{'EASTx%':>7} {'WESTx%':>7} {'E-Wgap%':>8} {'WESTspr%':>8}"
+    )
+
+    def pct(v: float | None, width: int = 7) -> str:
+        return (f"{v*100:.1f}".rjust(width)) if v is not None else "n/a".rjust(width)
+
+    payload: dict = {
+        "frame": list(frame),
+        "compaction_center": list(compaction_center),
+        "conus_center": list(conus_center),
+        "congresses": [],
+    }
+    for r in records:
+        cover = r["union_area"] / farea if farea else 0.0
+        bboxw = ((r["bbox"][2] - r["bbox"][0]) / fw) if r["bbox"] else None
+        ca = xf(r["ca_xmin"])
+        east = r["regions"]["EAST"]
+        west = r["regions"]["WEST"]
+        eastx = xf(east["mean"][0]) if east else None
+        westx = xf(west["mean"][0]) if west else None
+        ewgap = (eastx - westx) if (eastx is not None and westx is not None) else None
+        westspr = (west["xspread"] / fw) if west else None
+        lines.append(
+            f"{r['congress']:>4} {r['n_states']:>6} {pct(cover)} {pct(bboxw)} {pct(ca, 8)} "
+            f"{pct(eastx)} {pct(westx)} {pct(ewgap, 8)} {pct(westspr, 8)}"
+        )
+        payload["congresses"].append({
+            "congress": r["congress"],
+            "n_states": r["n_states"],
+            "cover_frac": cover,
+            "bbox_w_frac": bboxw,
+            "ca_xmin_frac": ca,
+            "east_x_frac": eastx,
+            "west_x_frac": westx,
+            "ew_gap_frac": ewgap,
+            "west_xspread_frac": westspr,
+        })
+    return "\n".join(lines), payload
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Allocate hex cells to states and tile each as pentahexes")
     parser.add_argument("--seats", default=str(ROOT / "data_processed" / "seats" / "state_seats_by_congress.csv"))
@@ -1203,6 +1357,22 @@ def main() -> None:
         "with warnings: 0 (the project invariant), so any warning makes the run exit non-zero "
         "to make a layout regression loud. Use this only for debugging/partial runs.",
     )
+    parser.add_argument(
+        "--diagnose",
+        action="store_true",
+        help="Read-only layout diagnostic: walk the per-Congress layout (honest carried "
+        "history) and print east-west spread / frame-coverage metrics for the requested "
+        "Congresses, then exit WITHOUT writing any GeoJSON / index / warnings. Used to ground "
+        "layout tuning (e.g. the 'condensed West') in real numbers before changing anything.",
+    )
+    parser.add_argument(
+        "--diagnose-congresses",
+        default="1,53,54,55,56,57,58,59,60,61,62,63,68,119",
+        help="Comma-separated Congress numbers to report under --diagnose. The walk stops "
+        "after the largest one (so a small set is fast). The fixed C119 frame is read from the "
+        "committed 119.geojson regardless.",
+    )
+    parser.add_argument("--diagnose-out", default=None, help="Optional path to also write the --diagnose report as JSON.")
     args = parser.parse_args()
 
     seats_by_congress = load_seats(Path(args.seats))
@@ -1236,6 +1406,31 @@ def main() -> None:
     # Resolved state centroids carried across Congresses for temporal stability. Persisted
     # (not reset per Congress) so a state that briefly drops out keeps its position on return.
     prev_centroids: dict[str, tuple[float, float]] = {}
+
+    # Identical-input fast path: when a Congress's effective inputs (post-Maine seat table +
+    # MAINE_IN_MA entry) match the previous Congress's exactly, reuse the previous layout/
+    # tiles/statuses verbatim instead of recomputing. Recomputing from carried seeds is only
+    # *approximately* a fixed point — the polygon overlap resolver re-runs from the circle
+    # equilibrium and lands sub-hex differently each Congress — so without reuse even
+    # seat-identical transitions wobble (measured: 90/118 transitions are seat-identical but
+    # only 1 rendered frozen). Reuse makes "nothing changed => nothing moves" exact and skips
+    # the dominant layout/allocation/tiling cost (~most Congresses within a decade). Gated on
+    # the previous Congress having tiled fully ok so a failing Congress is never frozen in —
+    # recomputation keeps its self-healing chance. Rendering still runs per Congress (it is
+    # deterministic on identical inputs) so dates/metadata stay correct.
+    reuse_sig: tuple | None = None
+    reuse_state: tuple | None = None  # (layout, tiles_by_state, statuses)
+    reused_count = 0
+
+    # --diagnose: collect layout metrics for the requested Congresses, then exit before any
+    # writes. The walk still runs from C1 so carried history is honest, but stops after the
+    # largest requested Congress and skips per-state rendering.
+    diag_set: set[int] = set()
+    diag_max: int | None = None
+    diag_records: list[dict] = []
+    if args.diagnose:
+        diag_set = {int(x) for x in args.diagnose_congresses.split(",") if x.strip()}
+        diag_max = max(diag_set) if diag_set else None
 
     for congress_number in sorted(seats_by_congress):
         seat_rows = seats_by_congress[congress_number]
@@ -1335,28 +1530,58 @@ def main() -> None:
             tbs, st = place_pentahex_tiles(seat_by_fips, cby, cof, hex_by_qr)
             return lay, cof, cby, tbs, st
 
-        # Pure carry first (retention 0.0) — stationary states stay exactly put.
-        layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = _layout_and_tile(build_seeds(0.0))
+        # Identical-input fast path (see the reuse_sig comment above the loop): the signature
+        # is the post-Maine-adjustment seat table plus the MAINE_IN_MA entry (which also
+        # drives the render-time relabel). Same signature => same eff_outlines (a function of
+        # the seated set) and same carried seeds (the previous Congress's no-op update), so
+        # the previous layout/tiles are reused verbatim and this transition is exactly frozen.
+        input_sig = (tuple(sorted(seat_by_fips.items())), MAINE_IN_MA.get(congress_number))
+        if (
+            input_sig == reuse_sig
+            and reuse_state is not None
+            and all(s == "ok" for s in reuse_state[2].values())
+        ):
+            layout, tiles_by_state, statuses = reuse_state
+            reused_count += 1
+        else:
+            # Pure carry first (retention 0.0) — stationary states stay exactly put.
+            layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = _layout_and_tile(build_seeds(0.0))
 
-        # Failure recovery: a Congress can be left un-tileable either by temporal drift boxing
-        # a growing state in, or by the springs over-constraining a many-neighbour hub. Retry
-        # down ESCALATION_LADDER (relax toward home and/or weaken springs), adopting the first
-        # rung that reduces warnings. The ladder ends at the proven no-spring baseline, so this
-        # localizes any disruption to the few failing Congresses while guaranteeing recovery.
-        best_bad = sum(1 for s in statuses.values() if s != "ok")
-        if best_bad:
-            for retention, spring_scale in ESCALATION_LADDER:
-                cand = _layout_and_tile(build_seeds(retention), spring_scale)
-                cand_bad = sum(1 for s in cand[4].values() if s != "ok")
-                if cand_bad < best_bad:
-                    layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = cand
-                    best_bad = cand_bad
-                    if best_bad == 0:
-                        break
+            # Failure recovery: a Congress can be left un-tileable either by temporal drift boxing
+            # a growing state in, or by the springs over-constraining a many-neighbour hub. Retry
+            # down ESCALATION_LADDER (relax toward home and/or weaken springs), adopting the first
+            # rung that reduces warnings. The ladder ends at the proven no-spring baseline, so this
+            # localizes any disruption to the few failing Congresses while guaranteeing recovery.
+            best_bad = sum(1 for s in statuses.values() if s != "ok")
+            if best_bad:
+                for retention, spring_scale in ESCALATION_LADDER:
+                    cand = _layout_and_tile(build_seeds(retention), spring_scale)
+                    cand_bad = sum(1 for s in cand[4].values() if s != "ok")
+                    if cand_bad < best_bad:
+                        print(
+                            f"C{congress_number}: escalation adopted rung (retention={retention}, "
+                            f"spring_scale={spring_scale}); non-ok states {best_bad} -> {cand_bad}",
+                            flush=True,
+                        )
+                        layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = cand
+                        best_bad = cand_bad
+                        if best_bad == 0:
+                            break
+        reuse_sig = input_sig
+        reuse_state = (layout, tiles_by_state, statuses)
 
         # Carry forward the adopted layout's circle-equilibrium positions (idempotent, so a
         # stable Congress re-seeds to itself with zero drift). Merge to keep history.
         prev_centroids.update({f: rec.get("seed_centroid", rec["centroid"]) for f, rec in layout.items()})
+
+        # --diagnose: capture metrics for requested Congresses and skip rendering. Carry is
+        # already updated above, so the walk stays honest; stop once past the largest request.
+        if args.diagnose:
+            if congress_number in diag_set:
+                diag_records.append(_collect_layout_metrics(congress_number, layout))
+            if diag_max is not None and congress_number >= diag_max:
+                break
+            continue
 
         cd_features: list[dict] = []
         state_features: list[dict] = []
@@ -1583,9 +1808,23 @@ def main() -> None:
             }
         )
 
+    if args.diagnose:
+        # CONUS centroid (AK/HI insets + DC excluded) — the un-skewed reference Part B will use.
+        _conus = unary_union([o["_geom"] for f, o in outlines.items() if f not in DIAG_EXCLUDE_FIPS]).centroid
+        conus_center = (_conus.x, _conus.y)
+        frame = _diagnose_frame(cds_root, diag_records)
+        text, payload = _diagnose_format(diag_records, frame, compaction_center, conus_center)
+        print(text)
+        if args.diagnose_out:
+            Path(args.diagnose_out).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        return
+
     (states_root / "_index.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     Path(args.warnings_out).write_text(json.dumps({"warnings": warnings}, indent=2), encoding="utf-8")
-    print(f"Done. Wrote tiling outputs for {len(summary['timeline'])} Congresses; warnings: {len(warnings)}")
+    print(
+        f"Done. Wrote tiling outputs for {len(summary['timeline'])} Congresses; "
+        f"warnings: {len(warnings)} (layout reused for {reused_count} identical-input Congresses)"
+    )
 
     # Enforce the project invariant in code, not just in the sweep: a clean regen MUST end with
     # warnings: 0. The escalation ladder is only empirically guaranteed to reach 0 (its final
