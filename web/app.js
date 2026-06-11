@@ -591,13 +591,15 @@ function setupControls() {
 async function main() {
   setControlsEnabled(false);
 
-  if (!window.d3) {
-    setStatus("D3 failed to load. Ensure web/vendor/d3.min.js exists.");
+  // Check file:// FIRST: under file:// the d3 <script> usually fails to load too, so
+  // checking d3 first masks this far more actionable message.
+  if (window.location.protocol === "file:") {
+    setStatus("This app cannot run from file:// because browsers block local fetch. Start a local server: python -m http.server 8000 --directory web and open http://localhost:8000");
     return;
   }
 
-  if (window.location.protocol === "file:") {
-    setStatus("This app cannot run from file:// because browsers block local fetch. Start a local server: python -m http.server 8000 --directory web and open http://localhost:8000");
+  if (!window.d3) {
+    setStatus("D3 failed to load. Ensure web/vendor/d3.min.js exists.");
     return;
   }
 
