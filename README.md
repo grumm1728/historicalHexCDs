@@ -92,3 +92,11 @@ Set `Settings -> Pages -> Source` to `GitHub Actions`.
 ## Data spec
 
 See `docs/data_spec.md`.
+
+## License
+
+[![CC BY-SA 4.0](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-sa/4.0/)
+
+This project is licensed under [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).
+
+Inspired by the [Downballot](https://www.the-downballot.com/) (formerly Donnermaps) [Hexmap](https://docs.google.com/spreadsheets/d/13XkF59JKzvw4SeSq5mbgIFrJfYjK4amg9JoQE5e9grQ/edit?gid=0#gid=0), which is also CC BY-SA 4.0.

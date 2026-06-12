@@ -3,7 +3,6 @@ const playBtn = document.getElementById("playBtn");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 const range = document.getElementById("congressRange");
-const label = document.getElementById("congressLabel");
 const tooltip = document.getElementById("tooltip");
 const outlineOnlyToggle = document.getElementById("outlineOnlyToggle");
 const showDistrictsToggle = document.getElementById("showDistrictsToggle");
@@ -539,7 +538,6 @@ async function setFrame(i) {
   frameIndex = i;
   range.value = String(i);
   const entry = timeline[i];
-  label.textContent = `${ordinal(Number(entry.congress_number))} Congress (${entry.start_date} to ${entry.end_date})`;
   await drawFrame(entry);
 }
 

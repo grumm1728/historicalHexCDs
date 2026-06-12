@@ -10,8 +10,7 @@
   <main class="layout">
     <header class="header">
       <h1>Historical U.S. Polyhex Timeline</h1>
-      <p class="subtitle">Single composite map: clipped polyhex cells inside state silhouettes</p>
-      <p class="fineprint">MVP note: if historical state boundaries are unavailable, modern state outlines are reused across Congresses. Seat counts come from apportionment-era allocations; Civil War-era unrepresented delegations are not yet modeled separately.</p>
+      <p class="subtitle">Each congressional district is one polyhex tile. States are sized proportionally to their House delegation in each Congress, balancing recognizable U.S. geography with population scaling based on apportionment. Districts within a state are not placed in any meaningful geographic order.</p>
     </header>
 
     <section class="controls">
@@ -23,7 +22,6 @@
       <label><input id="autoZoomToggle" type="checkbox" checked /> Auto-zoom</label>
       <label for="congressRange">Congress</label>
       <input id="congressRange" type="range" min="0" max="0" value="0" step="1" />
-      <span id="congressLabel">-</span>
     </section>
 
     <section class="readout" aria-live="polite">
@@ -56,6 +54,12 @@
       <svg id="mapSvg" viewBox="0 0 960 600" role="img" aria-label="U.S. polyhex map"></svg>
       <aside id="tooltip" class="tooltip" hidden></aside>
     </section>
+
+    <footer class="credit">
+      Inspired by <a href="https://www.the-downballot.com/" target="_blank" rel="noopener">Downballot</a> (formerly Donnermaps)
+      <a href="https://docs.google.com/spreadsheets/d/13XkF59JKzvw4SeSq5mbgIFrJfYjK4amg9JoQE5e9grQ/edit?gid=0#gid=0" target="_blank" rel="noopener">Hexmap</a>.
+      Licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.
+    </footer>
   </main>
 
   <script src="./vendor/d3.min.js"></script>
