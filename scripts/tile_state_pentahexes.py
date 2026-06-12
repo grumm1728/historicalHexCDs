@@ -111,8 +111,40 @@ ANCHOR_SPREAD_LADDER = (1.04, 1.08, 1.15, 1.3)
 # Terms are weighted by real border length, so long straight borders dominate and short
 # seams defer to the anchors. The solve is one small SPD system (~100x100): deterministic
 # and stateless per Congress, preserving every stability property of the anchor mode.
-SEAM_BETA = 0.0        # tangential term weight (off — see above)
-SEAM_LINE_BETA = 2.0   # collinearity term weight; 0 disables
+#   - OUTLINE JUNCTIONS: where two neighbours' shared border meets the NATIONAL outline
+#     (CA/OR and OR/WA on the Pacific, AZ/NM on the Mexico line, GA/FL on the Atlantic...),
+#     both states' copies of the junction point are aligned ALONG the local outline
+#     direction — "the coast carries across the gutter". The reference's author makes
+#     exactly this trade (OR/WA snapped to the coast over centroid fidelity; AZ-NM keeps
+#     the Mexico line at the cost of four-corners), so this term outranks interior lines.
+SEAM_BETA = 0.0          # tangential term weight (off — see above)
+SEAM_LINE_BETA = 4.0     # interior collinearity term weight; 0 disables
+SEAM_CORNER_BETA = 6.0   # national-outline junction term weight; 0 disables
+# Outer outline beats interior lines: a state this small cannot span both an interior
+# collinear line and a parallel national-outline line (the four-corners conflict — 3-seat NM
+# cannot reach from the 37° line down to the Mexico border, so the reference's author drops
+# NM from the 37° alignment and keeps the Mexico line). A collinear pair is skipped when
+# either seam endpoint is at most this many seats AND has an outline junction parallel to
+# the group's line.
+SEAM_LINE_SMALL_SEATS = 5
+# "Continue the outline" only means something where the national outline locally IS a long
+# line, and no automatic straightness measure separates those (CA-OR scores 0.93 at every
+# PCA radius while bending-coast junctions overlap everything else; un-gated, the jagged
+# New England junction web dragged MA off its blob and squeezed NH/RI out entirely, and the
+# Canada junctions flung 2-seat ID because the reference blob deliberately stops short of
+# the 49° line). So, like PREDECESSOR_PARENT, the junction set is CURATED: the Pacific
+# coast diagonal, the Mexico border line, and the clean Canada segments whose reference
+# blobs sit on the line. Expand only with a measured probe (IoU + the region's own metric).
+SEAM_JUNCTION_PAIRS = frozenset({
+    frozenset({"06", "41"}),  # CA-OR  (Pacific coast)
+    frozenset({"41", "53"}),  # OR-WA  (Pacific coast)
+    frozenset({"04", "06"}),  # AZ-CA  (lower Colorado / border corner)
+    frozenset({"04", "35"}),  # AZ-NM  (Mexico line)
+    frozenset({"35", "48"}),  # NM-TX  (Mexico line)
+    frozenset({"30", "38"}),  # MT-ND  (Canada 49°)
+    frozenset({"27", "38"}),  # MN-ND  (Canada / lakes line)
+})
+SEAM_CORNER_NEIGHBORHOOD = 150000.0  # m of national outline around a junction used for its tangent
 SEAM_MIN_LEN = 20000.0      # m of real shared border below which a seam is ignored (4-corner touches)
 SEAM_LINE_ANGLE_TOL = 0.17  # rad (~10 deg): max direction difference for two seams to share a line
 SEAM_LINE_DIST_TOL = 40000.0  # m: max offset of one seam's midpoint from the other's line
@@ -358,17 +390,22 @@ def build_adjacency(
     return edges
 
 
-def build_seams(outlines: dict[str, dict], tol: float = ADJ_TOL) -> list[dict]:
-    """Extract real shared-border seams between neighbouring states.
+def build_seams(outlines: dict[str, dict], tol: float = ADJ_TOL) -> tuple[list[dict], list[dict]]:
+    """Extract real shared-border seams between neighbouring states, plus the junctions
+    where a seam meets the NATIONAL outline.
 
-    For each pair of outlines within `tol`, returns the shared border's midpoint (real
-    coords), its length, and its unit normal oriented from b toward a. The layout uses these
-    to align each pair's scaled copies of the seam (see the SEAM_BETA comment).
+    For each pair of outlines within `tol`, a seam carries the shared border's midpoint
+    (real coords), length, tangent/normal, and straightness. A seam endpoint lying on the
+    union's outer boundary (a coast or international border) becomes a junction `corner`
+    carrying the point and the local outline direction. The layout uses seams for the
+    tangential/collinearity terms and corners for outline continuation (SEAM_BETA comment).
     """
     items = [(f, feat["_geom"], feat["_centroid"]) for f, feat in outlines.items()]
     geoms = [g for _, g, _ in items]
     tree = STRtree(geoms)
+    national = unary_union(geoms).boundary
     seams: list[dict] = []
+    corners: list[dict] = []
     for i, (fa, ga, ca) in enumerate(items):
         boundary_buf = ga.boundary.buffer(tol)
         for j in tree.query(boundary_buf):
@@ -386,8 +423,9 @@ def build_seams(outlines: dict[str, dict], tol: float = ADJ_TOL) -> list[dict]:
             for part in parts:
                 pts.extend(part.coords)
             arr = np.asarray(pts, dtype=float)
-            arr -= arr.mean(axis=0)
-            sv, vt = np.linalg.svd(arr, full_matrices=False)[1:]
+            mean_pt = arr.mean(axis=0)
+            arr0 = arr - mean_pt
+            sv, vt = np.linalg.svd(arr0, full_matrices=False)[1:]
             tx, ty = vt[0]
             nx, ny = -ty, tx
             if nx * (ca[0] - m.x) + ny * (ca[1] - m.y) < 0:
@@ -398,7 +436,32 @@ def build_seams(outlines: dict[str, dict], tol: float = ADJ_TOL) -> list[dict]:
                 "a": fa, "b": fb, "m": (m.x, m.y), "length": shared.length,
                 "t": (float(tx), float(ty)), "n": (nx, ny), "straight": straight,
             })
-    return seams
+            # Junctions: the seam's extreme points along its tangent that lie on the
+            # national outline (coast / Canada / Mexico). Tangent of the outline there =
+            # PCA over the outline within SEAM_CORNER_NEIGHBORHOOD of the junction.
+            proj = arr0 @ np.array([tx, ty])
+            for end in (arr[int(np.argmin(proj))], arr[int(np.argmax(proj))]):
+                ep = Point(float(end[0]), float(end[1]))
+                if national.distance(ep) > 2 * tol:
+                    continue
+                local = national.intersection(ep.buffer(SEAM_CORNER_NEIGHBORHOOD))
+                lpts: list[tuple[float, float]] = []
+                lparts = local.geoms if hasattr(local, "geoms") else [local]
+                for part in lparts:
+                    if hasattr(part, "coords"):
+                        lpts.extend(part.coords)
+                if len(lpts) < 3:
+                    continue
+                larr = np.asarray(lpts, dtype=float)
+                larr -= larr.mean(axis=0)
+                lsv, lvt = np.linalg.svd(larr, full_matrices=False)[1:]
+                lstraight = float(lsv[0] / (lsv[0] + lsv[1])) if (lsv[0] + lsv[1]) > 0 else 0.0
+                corners.append({
+                    "a": fa, "b": fb, "c": (float(end[0]), float(end[1])),
+                    "t_out": (float(lvt[0][0]), float(lvt[0][1])),
+                    "straight": lstraight,
+                })
+    return seams, corners
 
 
 def find_collinear_seam_pairs(seams: list[dict]) -> list[tuple[int, int]]:
@@ -435,18 +498,23 @@ def seam_align_positions(
     outlines: dict[str, dict],
     seams: list[dict],
     line_pairs: list[tuple[int, int]],
+    corners: list[dict],
     hex_area: float,
     R: float,
     beta: float = SEAM_BETA,
     line_beta: float | None = None,
+    corner_beta: float | None = None,
 ) -> dict[str, tuple[float, float]]:
-    """Adjust anchor seeds with the two seam terms (see the SEAM_BETA comment): tangential
-    (no relative slide along a shared real border; the gap across it stays free) and
-    collinearity (seams on the same real straight line keep their drawn lines collinear).
-    One least-squares solve over all positions, anchored to the seeds with weight 1."""
+    """Adjust anchor seeds with the seam terms (see the SEAM_BETA comment): tangential (no
+    relative slide along a shared real border; the gap across it stays free), collinearity
+    (seams on the same real straight line keep their drawn lines collinear), and outline
+    junctions (the national outline carries across each gutter). One least-squares solve
+    over all positions, anchored to the seeds with weight 1."""
     if line_beta is None:
         line_beta = SEAM_LINE_BETA
-    if (beta <= 0.0 and line_beta <= 0.0) or not seams:
+    if corner_beta is None:
+        corner_beta = SEAM_CORNER_BETA
+    if (beta <= 0.0 and line_beta <= 0.0 and corner_beta <= 0.0) or not seams:
         return seeds
     present = [f for f in seeds if f in outlines and seat_by_fips.get(f, 0) > 0]
     if len(present) < 2:
@@ -495,12 +563,38 @@ def seam_align_positions(
                 beta * s["length"] / mean_len,
             )
 
+    # Outer-outline-beats-interior-lines gate (see SEAM_LINE_SMALL_SEATS): collect each
+    # state's outline-junction perpendiculars so a collinear pair can be skipped when a
+    # small member also sits on a parallel national-outline line it cannot span to.
+    usable_corners = [
+        c for c in corners
+        if frozenset({c["a"], c["b"]}) in SEAM_JUNCTION_PAIRS and c["a"] in idx and c["b"] in idx
+    ]
+    jn_normals: dict[str, list[tuple[float, float]]] = defaultdict(list)
+    if corner_beta > 0.0:
+        for c in usable_corners:
+            ctx, cty = c["t_out"]
+            for f in (c["a"], c["b"]):
+                jn_normals[f].append((-cty, ctx))
+
+    def line_conflicted(si: dict, sj: dict, nx: float, ny: float) -> bool:
+        for s in (si, sj):
+            for f in (s["a"], s["b"]):
+                if seat_by_fips.get(f, 0) > SEAM_LINE_SMALL_SEATS:
+                    continue
+                for jx, jy in jn_normals.get(f, ()):
+                    if abs(nx * jx + ny * jy) > 0.8:
+                        return True
+        return False
+
     w_line = line_beta
     for i, j in line_pairs if w_line > 0.0 else []:
         si, sj = seams[i], seams[j]
         if not all(f in idx for f in (si["a"], si["b"], sj["a"], sj["b"])):
             continue
         nx, ny = (si if si["length"] >= sj["length"] else sj)["n"]
+        if line_conflicted(si, sj, nx, ny):
+            continue
         ki = tuple(0.5 * (u + v) for u, v in zip(copy_off(si, si["a"]), copy_off(si, si["b"])))
         kj = tuple(0.5 * (u + v) for u, v in zip(copy_off(sj, sj["a"]), copy_off(sj, sj["b"])))
         # Collinearity residual: n . (drawn_mid_i - drawn_mid_j), where each seam's drawn
@@ -511,6 +605,26 @@ def seam_align_positions(
             coefs[2 * idx[f]] += sgn * nx
             coefs[2 * idx[f] + 1] += sgn * ny
         add(list(coefs.items()), target, w_line * min(si["length"], sj["length"]) / mean_len)
+
+    if corner_beta > 0.0:
+        for c in usable_corners:
+            a, b = idx[c["a"]], idx[c["b"]]
+            # Outline continuation: kill the offset PERPENDICULAR to the outline between the
+            # two states' copies of the junction point, so both corners sit on the same
+            # coast / border line. The slide ALONG the outline stays free — that's the
+            # gutter itself (constraining the tangential component instead fights the
+            # gutter and leaves the visible misalignment: measured, it made the coast
+            # stagger worse, not better).
+            tx, ty = c["t_out"]
+            nx, ny = -ty, tx
+            oa = (scl[c["a"]] * (c["c"][0] - rep[c["a"]][0]), scl[c["a"]] * (c["c"][1] - rep[c["a"]][1]))
+            ob = (scl[c["b"]] * (c["c"][0] - rep[c["b"]][0]), scl[c["b"]] * (c["c"][1] - rep[c["b"]][1]))
+            target = nx * (ob[0] - oa[0]) + ny * (ob[1] - oa[1])
+            add(
+                [(2 * a, nx), (2 * a + 1, ny), (2 * b, -nx), (2 * b + 1, -ny)],
+                target,
+                corner_beta,
+            )
 
     sol = np.linalg.solve(mat, rhs)
     out = dict(seeds)
@@ -1599,6 +1713,13 @@ def main() -> None:
         help="Weight of the collinear-border-line term ('the VA-NC line carries into the "
         "KY-TN line'). 0 disables; see SEAM_LINE_BETA comment.",
     )
+    parser.add_argument(
+        "--seam-corner-beta",
+        type=float,
+        default=SEAM_CORNER_BETA,
+        help="Weight of the national-outline junction term ('the coast / Mexico line "
+        "carries across the gutter'). 0 disables; see SEAM_CORNER_BETA comment.",
+    )
     args = parser.parse_args()
 
     seats_by_congress = load_seats(Path(args.seats))
@@ -1635,6 +1756,7 @@ def main() -> None:
     # national centre so the map stays where the grid already is). See the constant's comment.
     anchor_pos: dict[str, tuple[float, float]] = {}
     seams: list[dict] = []
+    seam_corners: list[dict] = []
     seam_line_pairs: list[tuple[int, int]] = []
     anchors_path = Path(args.reference_anchors) if args.reference_anchors else None
     if anchors_path is not None and anchors_path.exists():
@@ -1653,12 +1775,14 @@ def main() -> None:
             )
         print(f"Reference-anchored layout: {len(anchor_pos)} state anchors from {anchors_path.name} "
               f"(scale {s_ref:.4f})")
-        seams = build_seams(outlines) if (args.seam_beta > 0 or args.seam_line_beta > 0) else []
+        if args.seam_beta > 0 or args.seam_line_beta > 0 or args.seam_corner_beta > 0:
+            seams, seam_corners = build_seams(outlines)
         seam_line_pairs = find_collinear_seam_pairs(seams)
         if seams:
             print(f"Seam alignment: {len(seams)} real-border seams, "
-                  f"{len(seam_line_pairs)} collinear pairs "
-                  f"(tangential beta={args.seam_beta}, line beta={args.seam_line_beta})")
+                  f"{len(seam_line_pairs)} collinear pairs, {len(seam_corners)} outline junctions "
+                  f"(tangential beta={args.seam_beta}, line beta={args.seam_line_beta}, "
+                  f"corner beta={args.seam_corner_beta})")
     else:
         print(
             "Reference anchors disabled or not found "
@@ -1778,8 +1902,10 @@ def main() -> None:
                 if a is not None:
                     seeds[fips] = (ccx0 + spread * (a[0] - ccx0), ccy0 + spread * (a[1] - ccy0))
             return seam_align_positions(
-                seeds, seat_by_fips, eff_outlines, seams, seam_line_pairs, hex_area, R,
+                seeds, seat_by_fips, eff_outlines, seams, seam_line_pairs, seam_corners,
+                hex_area, R,
                 beta=args.seam_beta, line_beta=args.seam_line_beta,
+                corner_beta=args.seam_corner_beta,
             )
 
         def _layout_and_tile(seeds: dict[str, tuple[float, float]] | None, spring_scale: float = 1.0):

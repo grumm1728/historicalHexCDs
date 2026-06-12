@@ -250,10 +250,28 @@ CO-NM/KS-OK/AZ-UT; the northern-plains parallels), gated to ≤1000 km so same-l
 borders across the continent (CA-OR vs IN-MI, both ~42°N) are never yoked; and
 `seam_align_positions` solves one small least-squares system pulling each group's *drawn*
 lines collinear against a weight-1 anchor term. Result: gutter offset dy(KY-TN vs VA-NC)
-improves from −4.3R (the reference's own value) to −1.0..−1.7R in every era, for a C119
-reference-IoU cost of 0.76→0.66. Two stronger variants were measured and rejected — see
-the `SEAM_BETA` comment (tangential alignment too costly; full seam-zipping contracts the
-whole map). Stateless and deterministic like the anchors themselves.
+improves from −4.3R (the reference's own value) to −0.9..−1.5R in every era. Two stronger
+variants were measured and rejected — see the `SEAM_BETA` comment (tangential alignment
+too costly; full seam-zipping contracts the whole map). Stateless and deterministic like
+the anchors themselves.
+
+**Outline junctions (curated) + the small-state conflict gate.** Where two neighbours'
+shared border meets the national outline, `seam_align_positions` also aligns both states'
+copies of the junction point *perpendicular to the outline* — "the coast / Mexico line
+carries across the gutter" (constraining the tangential component instead fights the
+gutter itself; measured, it made the coast stagger worse). **The junction set is curated**
+(`SEAM_JUNCTION_PAIRS`: Pacific CA-OR-WA, Mexico AZ-CA/AZ-NM/NM-TX, Canada MT-ND/MN-ND)
+because no automatic straightness measure separates the great straight national lines from
+bending coasts (CA-OR scores 0.93 at every PCA radius while the New England junctions
+overlap everything else; un-gated they dragged MA off its blob and squeezed NH/RI to IoU
+0.0, and the Canada line flung 2-seat ID because the reference's ID blob deliberately stops
+short of 49°). Expand the set only with a measured probe. Related:
+`SEAM_LINE_SMALL_SEATS` drops an interior collinear pair when a ≤5-seat member also sits
+on a parallel national-outline line it cannot span to — the four-corners conflict (3-seat
+NM can't reach from the 37° line to the Mexico border; like the reference's author, NM
+keeps the Mexico line and gives up the 37° alignment). Net effect at C119: WA-OR west
+edges flush, OR on CA's coast diagonal, AZ-NM carrying the Mexico line, reference-IoU
+0.640 with min 0.244 (UT/AZ/OR worst — they sit on their lines instead of their blobs).
 
 **Failure recovery:** retry at progressively spread anchors (`ANCHOR_SPREAD_LADDER`, radial
 about the fixed national centre — relieves crowding-induced un-tileable shapes; C98 needs
