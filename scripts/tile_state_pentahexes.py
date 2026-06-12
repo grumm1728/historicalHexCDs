@@ -36,6 +36,8 @@ import heapq
 import json
 import math
 from collections import defaultdict, deque
+
+import numpy as np
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -49,14 +51,128 @@ GENERATOR_VERSION = "v6-pentahex-scaled-outlines"
 
 NEIGHBOR_OFFSETS = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1)]
 
-# Northeast cluster: small, seat-dense states that jam together once scaled to
-# delegation size. compute_scaled_layout gives this cluster a local radial
-# expansion so the crammed states get room to breathe, without warping the rest
-# of the (geographic) layout. FIPS: CT DE DC ME MD MA NH NJ NY PA RI VT.
-NE_FIPS = frozenset({"09", "10", "11", "23", "24", "25", "33", "34", "36", "42", "44", "50"})
-# 1.25 is the strongest local expansion that stays warning-free across all 119
-# Congresses; 1.3 reshapes early Massachusetts (14 seats) into an un-tileable blob.
-NE_EXPAND = 1.25
+# Gentle global compaction: each state's first-appearance ("home") position is pulled
+# this fraction of the way toward a fixed national center (computed once in main() from
+# the union of all modern outlines). Because the web viewer fits one projection to the
+# largest (C119) frame and reuses it for every Congress, pulling toward a FIXED center
+# translates sparse/early clusters toward frame-center — using the empty western space to
+# give the early eastern states a more central, legible footprint — while being ~invisible
+# for the full modern map (a uniform scale-about-center that fitSize re-normalizes). The
+# overlap resolver still restores min-gap spacing, so the dense core is not re-jammed. This
+# replaces the old NE_EXPAND radial hack. 1.0 = no compaction; lower = stronger pull.
+COMPACTION = 0.9
+
+# Failure-recovery escalation ladder of (retention, spring_scale). Normally a Congress uses
+# pure carried positions with full adjacency springs (retention 0.0, spring 1.0) — max temporal
+# stability, stationary states have zero drift. Two failure modes are recovered by retrying the
+# Congress down this ladder, adopting the first rung that reduces warnings:
+#   - retention pulls carried seeds toward each state's fixed compacted "home" (fixes a state
+#     that temporal drift boxed in: NY C53-57, MI C83-87);
+#   - spring_scale weakens/disables the adjacency springs (fixes a many-neighbour hub the
+#     springs over-constrain into an un-tileable shape: IL C63-72).
+# The ladder ends at (1.0, 0.0) == fresh placement with no springs, i.e. the proven warning-free
+# baseline, so recovery is guaranteed. Retention is applied only to carried states, never to
+# split pop-off seeds.
+ESCALATION_LADDER = ((0.0, 0.5), (0.0, 0.0), (0.3, 0.0), (0.6, 0.0), (1.0, 0.0))
+
+# ---- Reference-anchored layout (primary mode) ------------------------------------------
+# The hand-authored HexCDv31wm reference is the spacing target: every state is seeded at its
+# reference-blob centroid (similarity-transformed into our hex space) EVERY Congress, and the
+# polygon overlap resolver handles the eras where a state outgrows its reference hole (e.g.
+# 1930s NY at 45 seats pushes NJ/CT a few R; they return to anchor as it shrinks). This is
+# stateless: no temporal carry, no springs, no path dependence — identical seat tables give
+# byte-identical layouts, C119 lands ~exactly on the reference arrangement (its seat counts
+# match the reference apportionment), and earlier Congresses are the same arrangement with
+# era-sized states. The carry+springs machinery below remains as the fallback when the
+# anchors JSON is absent.
+# Failure recovery: retry with all anchors spread radially about the reference map centre
+# (relieves crowding-induced un-tileable shapes), ending with the legacy compacted-home fresh
+# placement as the guaranteed final rung.
+REFERENCE_ANCHORS_PATH = ROOT / "data_raw" / "reference" / "hexcdv31_anchors.json"
+ANCHOR_SPREAD_LADDER = (1.04, 1.08, 1.15, 1.3)
+
+# ---- Seam alignment (runs on top of the anchors) ---------------------------------------
+# Anchors place states where the reference put them, but the reference itself breaks some
+# real-border relationships (it raises KY/TN ~4.3R above the VA-NC line, losing the 36°30'
+# continuation). Seam alignment restores them with two kinds of least-squares terms over
+# state positions, solved before overlap resolution against an anchor term (weight 1 per
+# state) that keeps the global reference arrangement:
+#   - COLLINEARITY (the active term): seams lying on the same real straight line (VA-NC,
+#     TN-VA and KY-TN all on 36°30'; UT-AZ, CO-NM and KS-OK on 37°) are auto-detected and
+#     their DRAWN lines are pulled onto one shared line — exactly the "border line carries
+#     across the gutter" feeling. Measured on C119: dy(KY-TN vs VA-NC) -4.7R -> -1.3R for a
+#     reference-IoU cost of 0.76 -> 0.66 at SEAM_LINE_BETA = 2.
+#   - TANGENTIAL (off by default): no relative slide ALONG a shared border; the gap ACROSS
+#     it stays free. Measured too expensive: the footprint-fitted anchors already deliver
+#     the puzzle-slide quality at C119, so this term mostly fights the reference's own
+#     hand-drawn quirks (IoU 0.76 -> 0.54 at beta 0.5 for little line gain). A full-zip
+#     variant (both components + gutter target) is even worse — it globally contracts the
+#     map (IoU 0.45 at beta 0.5); don't reintroduce it.
+# Terms are weighted by real border length, so long straight borders dominate and short
+# seams defer to the anchors. The solve is one small SPD system (~100x100): deterministic
+# and stateless per Congress, preserving every stability property of the anchor mode.
+#   - OUTLINE JUNCTIONS: where two neighbours' shared border meets the NATIONAL outline
+#     (CA/OR and OR/WA on the Pacific, AZ/NM on the Mexico line, GA/FL on the Atlantic...),
+#     both states' copies of the junction point are aligned ALONG the local outline
+#     direction — "the coast carries across the gutter". The reference's author makes
+#     exactly this trade (OR/WA snapped to the coast over centroid fidelity; AZ-NM keeps
+#     the Mexico line at the cost of four-corners), so this term outranks interior lines.
+SEAM_BETA = 0.0          # tangential term weight (off — see above)
+SEAM_LINE_BETA = 4.0     # interior collinearity term weight; 0 disables
+SEAM_CORNER_BETA = 6.0   # national-outline junction term weight; 0 disables
+# Outer outline beats interior lines: a state this small cannot span both an interior
+# collinear line and a parallel national-outline line (the four-corners conflict — 3-seat NM
+# cannot reach from the 37° line down to the Mexico border, so the reference's author drops
+# NM from the 37° alignment and keeps the Mexico line). A collinear pair is skipped when
+# either seam endpoint is at most this many seats AND has an outline junction parallel to
+# the group's line.
+SEAM_LINE_SMALL_SEATS = 5
+# "Continue the outline" only means something where the national outline locally IS a long
+# line, and no automatic straightness measure separates those (CA-OR scores 0.93 at every
+# PCA radius while bending-coast junctions overlap everything else; un-gated, the jagged
+# New England junction web dragged MA off its blob and squeezed NH/RI out entirely, and the
+# Canada junctions flung 2-seat ID because the reference blob deliberately stops short of
+# the 49° line). So, like PREDECESSOR_PARENT, the junction set is CURATED: the Pacific
+# coast diagonal, the Mexico border line, and the clean Canada segments whose reference
+# blobs sit on the line. Expand only with a measured probe (IoU + the region's own metric).
+SEAM_JUNCTION_PAIRS = frozenset({
+    frozenset({"06", "41"}),  # CA-OR  (Pacific coast)
+    frozenset({"41", "53"}),  # OR-WA  (Pacific coast)
+    frozenset({"04", "06"}),  # AZ-CA  (lower Colorado / border corner)
+    frozenset({"04", "35"}),  # AZ-NM  (Mexico line)
+    frozenset({"35", "48"}),  # NM-TX  (Mexico line)
+    frozenset({"30", "38"}),  # MT-ND  (Canada 49°)
+    frozenset({"27", "38"}),  # MN-ND  (Canada / lakes line)
+})
+SEAM_CORNER_NEIGHBORHOOD = 150000.0  # m of national outline around a junction used for its tangent
+SEAM_MIN_LEN = 20000.0      # m of real shared border below which a seam is ignored (4-corner touches)
+SEAM_LINE_ANGLE_TOL = 0.17  # rad (~10 deg): max direction difference for two seams to share a line
+SEAM_LINE_DIST_TOL = 40000.0  # m: max offset of one seam's midpoint from the other's line
+SEAM_LINE_MAX_GAP = 1_000_000.0  # m between seam midpoints: the "line carries across the gutter"
+                                 # feeling is local; CA-OR and IN-MI share ~42°N but yoking their
+                                 # drawn lines across the continent only distorts the map
+
+# Directional adjacency springs. Before the exact polygon overlap resolver, a fast circle
+# model positions states topologically: each pair of states whose REAL outlines share a
+# border is pulled toward sitting just-adjacent (separation r_i + r_j + gap) in their REAL
+# relative direction, while non-adjacent pairs only repel. This keeps neighbours nestled
+# (Delaware in Maryland's corner) and stops a non-neighbour from wedging between two states
+# that really border each other (Missouri between KY/TN). Adjacency-first: springs are strong
+# relative to repulsion so the neighbour graph wins when area-proportional sizing conflicts.
+# ADJ_TOL: max real gap (m) between outlines still counted as a shared border.
+ADJ_TOL = 3000.0
+SPRING_K = 0.5          # adjacency spring stiffness (fraction of position error per step)
+SPRING_REPULSE = 0.5    # non-adjacent circle repulsion stiffness
+SPRING_STEP = 0.08      # global damping per circle-model iteration (small => converges to a
+                        # static equilibrium instead of oscillating, which keeps it idempotent)
+SPRING_ITERS = 2000     # max circle-model iterations (stops early on the move threshold)
+SPRING_MOVE_EPS = 0.01  # stop when the largest per-iteration move (in R) falls below this
+# Deadband (in R): a spring exerts no force while its pair is within this distance of the
+# ideal relative offset. Crucial for BOTH temporal stability and geometry: once settled the
+# circle model is a true fixed point (re-seeding it produces zero movement, so stable
+# Congresses keep zero drift), and the slack absorbs the mismatch between the circle estimate
+# and exact polygon spacing so the spring and the polygon overlap resolver don't fight.
+SPRING_DEADBAND = 0.75
 
 # States whose land is split across open water by the Great Lakes clip and so must be
 # allocated as multiple connected components (each a multiple of 5 hexes) rather than one
@@ -247,31 +363,309 @@ def squared_dist(a: tuple[float, float], b: tuple[float, float]) -> float:
     return dx * dx + dy * dy
 
 
+def build_adjacency(
+    outlines: dict[str, dict], tol: float = ADJ_TOL
+) -> list[tuple[str, str, float, float]]:
+    """Real-geography adjacency graph: one edge per pair of states whose outlines share a
+    border (within `tol` metres). Each edge carries the unit direction from a's real centroid
+    to b's, so the spring can preserve not just *that* they touch but their real relative
+    orientation (DE north-east of MD, TN south of KY, MO west of both). Computed once from the
+    modern outlines; per-Congress callers use the subset whose endpoints are both seated.
+    """
+    items = [(f, feat["_geom"], feat["_centroid"]) for f, feat in outlines.items()]
+    geoms = [g for _, g, _ in items]
+    tree = STRtree(geoms)
+    buffered = [g.buffer(tol) for g in geoms]
+    edges: list[tuple[str, str, float, float]] = []
+    for i, (fa, _, ca) in enumerate(items):
+        for j in tree.query(buffered[i]):
+            if j <= i:
+                continue
+            fb, gb, cb = items[j]
+            if not buffered[i].intersects(gb):
+                continue
+            dx, dy = cb[0] - ca[0], cb[1] - ca[1]
+            d = math.hypot(dx, dy) or 1.0
+            edges.append((fa, fb, dx / d, dy / d))
+    return edges
+
+
+def build_seams(outlines: dict[str, dict], tol: float = ADJ_TOL) -> tuple[list[dict], list[dict]]:
+    """Extract real shared-border seams between neighbouring states, plus the junctions
+    where a seam meets the NATIONAL outline.
+
+    For each pair of outlines within `tol`, a seam carries the shared border's midpoint
+    (real coords), length, tangent/normal, and straightness. A seam endpoint lying on the
+    union's outer boundary (a coast or international border) becomes a junction `corner`
+    carrying the point and the local outline direction. The layout uses seams for the
+    tangential/collinearity terms and corners for outline continuation (SEAM_BETA comment).
+    """
+    items = [(f, feat["_geom"], feat["_centroid"]) for f, feat in outlines.items()]
+    geoms = [g for _, g, _ in items]
+    tree = STRtree(geoms)
+    national = unary_union(geoms).boundary
+    seams: list[dict] = []
+    corners: list[dict] = []
+    for i, (fa, ga, ca) in enumerate(items):
+        boundary_buf = ga.boundary.buffer(tol)
+        for j in tree.query(boundary_buf):
+            if j <= i:
+                continue
+            fb, gb, cb = items[j]
+            shared = boundary_buf.intersection(gb.boundary)
+            if shared.is_empty or shared.length < SEAM_MIN_LEN:
+                continue
+            m = shared.centroid
+            # Principal direction of the shared border via SVD; normal = perpendicular,
+            # oriented toward a so the gutter offset pushes the right way.
+            pts: list[tuple[float, float]] = []
+            parts = shared.geoms if hasattr(shared, "geoms") else [shared]
+            for part in parts:
+                pts.extend(part.coords)
+            arr = np.asarray(pts, dtype=float)
+            mean_pt = arr.mean(axis=0)
+            arr0 = arr - mean_pt
+            sv, vt = np.linalg.svd(arr0, full_matrices=False)[1:]
+            tx, ty = vt[0]
+            nx, ny = -ty, tx
+            if nx * (ca[0] - m.x) + ny * (ca[1] - m.y) < 0:
+                nx, ny = -nx, -ny
+            # straightness: how dominant the principal direction is (1.0 = perfectly straight)
+            straight = float(sv[0] / (sv[0] + sv[1])) if (sv[0] + sv[1]) > 0 else 0.0
+            seams.append({
+                "a": fa, "b": fb, "m": (m.x, m.y), "length": shared.length,
+                "t": (float(tx), float(ty)), "n": (nx, ny), "straight": straight,
+            })
+            # Junctions: the seam's extreme points along its tangent that lie on the
+            # national outline (coast / Canada / Mexico). Tangent of the outline there =
+            # PCA over the outline within SEAM_CORNER_NEIGHBORHOOD of the junction.
+            proj = arr0 @ np.array([tx, ty])
+            for end in (arr[int(np.argmin(proj))], arr[int(np.argmax(proj))]):
+                ep = Point(float(end[0]), float(end[1]))
+                if national.distance(ep) > 2 * tol:
+                    continue
+                local = national.intersection(ep.buffer(SEAM_CORNER_NEIGHBORHOOD))
+                lpts: list[tuple[float, float]] = []
+                lparts = local.geoms if hasattr(local, "geoms") else [local]
+                for part in lparts:
+                    if hasattr(part, "coords"):
+                        lpts.extend(part.coords)
+                if len(lpts) < 3:
+                    continue
+                larr = np.asarray(lpts, dtype=float)
+                larr -= larr.mean(axis=0)
+                lsv, lvt = np.linalg.svd(larr, full_matrices=False)[1:]
+                lstraight = float(lsv[0] / (lsv[0] + lsv[1])) if (lsv[0] + lsv[1]) > 0 else 0.0
+                corners.append({
+                    "a": fa, "b": fb, "c": (float(end[0]), float(end[1])),
+                    "t_out": (float(lvt[0][0]), float(lvt[0][1])),
+                    "straight": lstraight,
+                })
+    return seams, corners
+
+
+def find_collinear_seam_pairs(seams: list[dict]) -> list[tuple[int, int]]:
+    """Pairs of seams lying on the same real straight line (e.g. VA-NC / TN-VA / KY-TN on
+    36°30'): near-parallel directions, each midpoint near the other seam's line, and both
+    seams reasonably straight. These drive the collinearity term in seam_align_positions."""
+    pairs: list[tuple[int, int]] = []
+    sin_tol = math.sin(SEAM_LINE_ANGLE_TOL)
+    for i in range(len(seams)):
+        si = seams[i]
+        if si["straight"] < 0.95:
+            continue
+        for j in range(i + 1, len(seams)):
+            sj = seams[j]
+            if sj["straight"] < 0.95:
+                continue
+            cross = abs(si["t"][0] * sj["t"][1] - si["t"][1] * sj["t"][0])
+            if cross > sin_tol:
+                continue
+            dx = sj["m"][0] - si["m"][0]
+            dy = sj["m"][1] - si["m"][1]
+            if math.hypot(dx, dy) > SEAM_LINE_MAX_GAP:
+                continue
+            off_i = abs(dx * si["n"][0] + dy * si["n"][1])
+            off_j = abs(dx * sj["n"][0] + dy * sj["n"][1])
+            if off_i < SEAM_LINE_DIST_TOL and off_j < SEAM_LINE_DIST_TOL:
+                pairs.append((i, j))
+    return pairs
+
+
+def seam_align_positions(
+    seeds: dict[str, tuple[float, float]],
+    seat_by_fips: dict[str, int],
+    outlines: dict[str, dict],
+    seams: list[dict],
+    line_pairs: list[tuple[int, int]],
+    corners: list[dict],
+    hex_area: float,
+    R: float,
+    beta: float = SEAM_BETA,
+    line_beta: float | None = None,
+    corner_beta: float | None = None,
+) -> dict[str, tuple[float, float]]:
+    """Adjust anchor seeds with the seam terms (see the SEAM_BETA comment): tangential (no
+    relative slide along a shared real border; the gap across it stays free), collinearity
+    (seams on the same real straight line keep their drawn lines collinear), and outline
+    junctions (the national outline carries across each gutter). One least-squares solve
+    over all positions, anchored to the seeds with weight 1."""
+    if line_beta is None:
+        line_beta = SEAM_LINE_BETA
+    if corner_beta is None:
+        corner_beta = SEAM_CORNER_BETA
+    if (beta <= 0.0 and line_beta <= 0.0 and corner_beta <= 0.0) or not seams:
+        return seeds
+    present = [f for f in seeds if f in outlines and seat_by_fips.get(f, 0) > 0]
+    if len(present) < 2:
+        return seeds
+    idx = {f: i for i, f in enumerate(present)}
+    rep: dict[str, tuple[float, float]] = {}
+    scl: dict[str, float] = {}
+    for f in present:
+        geom = outlines[f]["_geom"]
+        rep[f] = outlines[f]["_centroid"]
+        scl[f] = math.sqrt(seat_by_fips[f] * 5 * hex_area / geom.area) if geom.area > 0 else 1.0
+    usable = [s for s in seams if s["a"] in idx and s["b"] in idx]
+    if not usable:
+        return seeds
+    mean_len = sum(s["length"] for s in usable) / len(usable)
+    n2 = 2 * len(present)
+    mat = np.eye(n2)  # anchor terms: weight 1 per state, pulling to the (spread) anchor seed
+    rhs = np.empty(n2)
+    for f in present:
+        rhs[2 * idx[f]] = seeds[f][0]
+        rhs[2 * idx[f] + 1] = seeds[f][1]
+
+    def copy_off(s: dict, f: str) -> tuple[float, float]:
+        # Where this state's scaled copy of the seam midpoint sits relative to its position.
+        return (scl[f] * (s["m"][0] - rep[f][0]), scl[f] * (s["m"][1] - rep[f][1]))
+
+    def add(coefs: list[tuple[int, float]], target: float, w: float) -> None:
+        # Least-squares term w * (sum_c coef*p[c] - target)^2, accumulated into the normal
+        # equations (terms are few and tiny, so the dense accumulation is fine).
+        for c1, v1 in coefs:
+            rhs[c1] += w * v1 * target
+            for c2, v2 in coefs:
+                mat[c1, c2] += w * v1 * v2
+
+    if beta > 0.0:
+        for s in usable:
+            a, b = idx[s["a"]], idx[s["b"]]
+            tx, ty = s["t"]
+            oa = copy_off(s, s["a"])
+            ob = copy_off(s, s["b"])
+            # Tangential residual: t . ((p_a + oa) - (p_b + ob))
+            target = tx * (ob[0] - oa[0]) + ty * (ob[1] - oa[1])
+            add(
+                [(2 * a, tx), (2 * a + 1, ty), (2 * b, -tx), (2 * b + 1, -ty)],
+                target,
+                beta * s["length"] / mean_len,
+            )
+
+    # Outer-outline-beats-interior-lines gate (see SEAM_LINE_SMALL_SEATS): collect each
+    # state's outline-junction perpendiculars so a collinear pair can be skipped when a
+    # small member also sits on a parallel national-outline line it cannot span to.
+    usable_corners = [
+        c for c in corners
+        if frozenset({c["a"], c["b"]}) in SEAM_JUNCTION_PAIRS and c["a"] in idx and c["b"] in idx
+    ]
+    jn_normals: dict[str, list[tuple[float, float]]] = defaultdict(list)
+    if corner_beta > 0.0:
+        for c in usable_corners:
+            ctx, cty = c["t_out"]
+            for f in (c["a"], c["b"]):
+                jn_normals[f].append((-cty, ctx))
+
+    def line_conflicted(si: dict, sj: dict, nx: float, ny: float) -> bool:
+        for s in (si, sj):
+            for f in (s["a"], s["b"]):
+                if seat_by_fips.get(f, 0) > SEAM_LINE_SMALL_SEATS:
+                    continue
+                for jx, jy in jn_normals.get(f, ()):
+                    if abs(nx * jx + ny * jy) > 0.8:
+                        return True
+        return False
+
+    w_line = line_beta
+    for i, j in line_pairs if w_line > 0.0 else []:
+        si, sj = seams[i], seams[j]
+        if not all(f in idx for f in (si["a"], si["b"], sj["a"], sj["b"])):
+            continue
+        nx, ny = (si if si["length"] >= sj["length"] else sj)["n"]
+        if line_conflicted(si, sj, nx, ny):
+            continue
+        ki = tuple(0.5 * (u + v) for u, v in zip(copy_off(si, si["a"]), copy_off(si, si["b"])))
+        kj = tuple(0.5 * (u + v) for u, v in zip(copy_off(sj, sj["a"]), copy_off(sj, sj["b"])))
+        # Collinearity residual: n . (drawn_mid_i - drawn_mid_j), where each seam's drawn
+        # midline is the average of its two states' copies of the seam midpoint.
+        target = nx * (kj[0] - ki[0]) + ny * (kj[1] - ki[1])
+        coefs: dict[int, float] = defaultdict(float)
+        for f, sgn in ((si["a"], 0.5), (si["b"], 0.5), (sj["a"], -0.5), (sj["b"], -0.5)):
+            coefs[2 * idx[f]] += sgn * nx
+            coefs[2 * idx[f] + 1] += sgn * ny
+        add(list(coefs.items()), target, w_line * min(si["length"], sj["length"]) / mean_len)
+
+    if corner_beta > 0.0:
+        for c in usable_corners:
+            a, b = idx[c["a"]], idx[c["b"]]
+            # Outline continuation: kill the offset PERPENDICULAR to the outline between the
+            # two states' copies of the junction point, so both corners sit on the same
+            # coast / border line. The slide ALONG the outline stays free — that's the
+            # gutter itself (constraining the tangential component instead fights the
+            # gutter and leaves the visible misalignment: measured, it made the coast
+            # stagger worse, not better).
+            tx, ty = c["t_out"]
+            nx, ny = -ty, tx
+            oa = (scl[c["a"]] * (c["c"][0] - rep[c["a"]][0]), scl[c["a"]] * (c["c"][1] - rep[c["a"]][1]))
+            ob = (scl[c["b"]] * (c["c"][0] - rep[c["b"]][0]), scl[c["b"]] * (c["c"][1] - rep[c["b"]][1]))
+            target = nx * (ob[0] - oa[0]) + ny * (ob[1] - oa[1])
+            add(
+                [(2 * a, nx), (2 * a + 1, ny), (2 * b, -nx), (2 * b + 1, -ny)],
+                target,
+                corner_beta,
+            )
+
+    sol = np.linalg.solve(mat, rhs)
+    out = dict(seeds)
+    for f in present:
+        out[f] = (float(sol[2 * idx[f]]), float(sol[2 * idx[f] + 1]))
+    return out
+
+
 def compute_scaled_layout(
     seat_by_fips: dict[str, int],
     outlines: dict[str, dict],
     hex_area: float,
     R: float,
     max_iter: int = 1000,
-    ne_expand: float = NE_EXPAND,
+    seed_centroids: dict[str, tuple[float, float]] | None = None,
+    compaction_center: tuple[float, float] | None = None,
+    compaction: float = COMPACTION,
+    adjacency: list[tuple[str, str, float, float]] | None = None,
+    spring_scale: float = 1.0,
 ) -> dict[str, dict]:
-    """Scale each state's outline to delegation size, then resolve overlaps.
+    """Scale each state's outline to delegation size, place it, then resolve overlaps.
 
     For each admitted state:
       - target_area = seats * 5 * hex_area
       - area_scale  = sqrt(target_area / real_area)
       - geom is scaled around the state's real centroid
 
-    The Northeast cluster (NE_FIPS) is then given a local radial expansion by
-    `ne_expand` (positions pushed out from the seat-weighted NE centroid) so those
-    crammed small states get maneuvering room. This is a placement-only nudge local
-    to the NE; the rest of the map stays geographic and the overlap-resolver below
-    absorbs the push where the cluster meets its inland neighbours.
+    Initial placement (the state's starting centroid):
+      - If `seed_centroids[fips]` is given (the previous Congress's resolved position,
+        or a split child's pop-off seed), the state starts there. This carries position
+        forward across Congresses so states move only gradually (temporal stability).
+      - Otherwise the state starts at its "home" anchor: its real centroid pulled
+        `compaction` of the way toward `compaction_center` (a fixed national center).
+        This gently translates sparse/early clusters toward frame-center to use empty
+        space, and is ~invisible for the full modern map. Replaces the old NE_EXPAND.
 
-    Then iteratively pick the most-overlapping pair of states and push both
-    halfway apart along their centroid-to-centroid vector until separation
-    reaches `target_gap = 0.5 * R`. Iterative pairwise displacement: simple,
-    deterministic, and converges fast for these dozens of polygons.
+    Then a fast circle-model phase positions states topologically (directional adjacency
+    springs + non-adjacent repulsion, see `adjacency` / `build_adjacency`), so neighbours sit
+    nestled in their real relative direction. Finally the exact polygon resolver iteratively
+    pushes the most-overlapping pair apart along their centroid vector until separation reaches
+    `target_gap = 0.5 * R`, guaranteeing a non-overlapping layout.
 
     Returns fips -> dict with:
       geom (Shapely scaled+displaced),
@@ -281,6 +675,7 @@ def compute_scaled_layout(
       displacement (dx, dy applied after scaling).
     """
     target_gap = 0.5 * R
+    seed_centroids = seed_centroids or {}
     layout: dict[str, dict] = {}
     for fips, seats in seat_by_fips.items():
         outline_feat = outlines.get(fips)
@@ -296,12 +691,26 @@ def compute_scaled_layout(
         scaled = shapely_scale(real_geom, xfact=scale, yfact=scale, origin=(cx, cy))
         if not scaled.is_valid:
             scaled = scaled.buffer(0)
+        # Initial centroid: carry forward the previous position if we have one, else
+        # the compacted "home" anchor. The scaled geom is centered on the real centroid,
+        # so translate it onto the chosen start position.
+        if fips in seed_centroids:
+            tx, ty = seed_centroids[fips]
+        elif compaction_center is not None and compaction != 1.0:
+            ccx, ccy = compaction_center
+            tx = ccx + compaction * (cx - ccx)
+            ty = ccy + compaction * (cy - ccy)
+        else:
+            tx, ty = cx, cy
+        dx0, dy0 = tx - cx, ty - cy
+        if dx0 or dy0:
+            scaled = shapely_translate(scaled, xoff=dx0, yoff=dy0)
         layout[fips] = {
             "geom": scaled,
-            "centroid": (cx, cy),
+            "centroid": (tx, ty),
             "anchor": (cx, cy),
             "scale": scale,
-            "displacement": (0.0, 0.0),
+            "displacement": (dx0, dy0),
         }
 
     fips_list = list(layout)
@@ -314,17 +723,67 @@ def compute_scaled_layout(
         ddx, ddy = rec["displacement"]
         rec["displacement"] = (ddx + dx, ddy + dy)
 
-    # Targeted Northeast de-jam: spread the NE cluster outward from its seat-weighted
-    # centroid before overlap resolution, so its small dense states (RI, CT, DE, NJ…)
-    # start with room instead of being relaxed into a tight jam.
-    ne_members = [f for f in fips_list if f in NE_FIPS]
-    if ne_expand != 1.0 and ne_members:
-        sw = sum(seat_by_fips[f] for f in ne_members)
-        ncx = sum(layout[f]["centroid"][0] * seat_by_fips[f] for f in ne_members) / sw
-        ncy = sum(layout[f]["centroid"][1] * seat_by_fips[f] for f in ne_members) / sw
-        for f in ne_members:
-            cx, cy = layout[f]["centroid"]
-            displace(f, (ne_expand - 1.0) * (cx - ncx), (ne_expand - 1.0) * (cy - ncy))
+    # ---- Adjacency relaxation: directional springs + repulsion to a joint fixed point ----
+    # A lightweight circle model (radius sqrt(area/pi)) positions states topologically: an
+    # adjacent pair is sprung toward separation r_a+r_b+gap in its REAL relative direction
+    # (but only beyond a deadband), and non-adjacent pairs repel when closer than that. With
+    # the deadband the converged configuration is a true fixed point, so re-seeding it next
+    # Congress produces no movement (temporal stability). The converged circle centroids are
+    # stored as `seed_centroid` and carried forward by main(); the polygon overlap resolver
+    # below still runs on the geometry for exact non-overlap in the rendered output.
+    cap = 0.5 * target_gap
+    present = set(fips_list)
+    edges = [(a, b, ux, uy) for (a, b, ux, uy) in (adjacency or []) if a in present and b in present]
+    if edges and len(fips_list) > 1 and spring_scale > 0.0:
+        # Vectorized circle-model relaxation (springs + repulsion) to a static, idempotent
+        # equilibrium. State count is small (~50) so the full N*N repulsion is cheap in numpy.
+        idx = {f: i for i, f in enumerate(fips_list)}
+        N = len(fips_list)
+        P = np.array([layout[f]["centroid"] for f in fips_list], dtype=float)
+        rad = np.array([math.sqrt(max(seat_by_fips.get(f, 1), 1) * 5 * hex_area / math.pi) for f in fips_list])
+        ea = np.array([idx[a] for a, b, _, _ in edges], dtype=int)
+        eb = np.array([idx[b] for a, b, _, _ in edges], dtype=int)
+        edir = np.array([(ux, uy) for _, _, ux, uy in edges], dtype=float)
+        eL = rad[ea] + rad[eb] + target_gap
+        adjM = np.zeros((N, N), dtype=bool)
+        adjM[ea, eb] = True
+        adjM[eb, ea] = True
+        trigger = (rad[:, None] + rad[None, :] + target_gap) - SPRING_DEADBAND * R  # repel threshold
+        deadband = SPRING_DEADBAND * R
+        move_eps = SPRING_MOVE_EPS * R
+        for _ in range(SPRING_ITERS):
+            disp = np.zeros((N, 2))
+            # Directional adjacency springs: pull b toward a + dir*(r_a+r_b+gap), silent inside
+            # the deadband (that silence is what makes the equilibrium a true fixed point).
+            evec = (P[ea] + edir * eL[:, None]) - P[eb]
+            errn = np.hypot(evec[:, 0], evec[:, 1])
+            smask = errn > deadband
+            if smask.any():
+                k = (SPRING_K * 0.5 * spring_scale) * np.where(smask, (errn - deadband) / np.maximum(errn, 1e-9), 0.0)
+                f = evec * k[:, None]
+                np.add.at(disp, eb, f)
+                np.add.at(disp, ea, -f)
+            # Non-adjacent repulsion: push apart only the overlap beyond the deadband.
+            diff = P[:, None, :] - P[None, :, :]
+            dist = np.hypot(diff[:, :, 0], diff[:, :, 1])
+            np.fill_diagonal(dist, np.inf)
+            rmask = (dist < trigger) & (~adjM)
+            if rmask.any():
+                unit = diff / np.maximum(dist, 1e-9)[:, :, None]
+                mag = np.where(rmask, SPRING_REPULSE * 0.5 * (trigger - dist), 0.0)
+                disp += (mag[:, :, None] * unit).sum(axis=1)
+            step = np.clip(disp * SPRING_STEP, -cap, cap)
+            P += step
+            if np.abs(step).max() < move_eps:
+                break
+        for f in fips_list:
+            cx0, cy0 = layout[f]["centroid"]
+            nx, ny = float(P[idx[f]][0]), float(P[idx[f]][1])
+            layout[f]["seed_centroid"] = (nx, ny)
+            displace(f, nx - cx0, ny - cy0)
+    else:
+        for f in fips_list:
+            layout[f]["seed_centroid"] = layout[f]["centroid"]
 
     for _ in range(max_iter):
         # Find the most-overlapping pair (largest intersection area).
@@ -1047,6 +1506,160 @@ def render_state_tiles(
     return out
 
 
+# ---- Read-only layout diagnostic (--diagnose) ------------------------------------------
+# Coarse regional buckets (continental FIPS) for measuring east-west spread of the layout.
+# AK(02)/HI(15)/DC(11) are excluded everywhere in the diagnostic (insets / non-state). EAST
+# is computed as "every laid-out state not in WEST/MIDWEST/excluded", so it auto-covers the
+# original 13, the South, and the south-central states without an explicit list.
+DIAG_WEST_FIPS = frozenset({"04", "06", "08", "16", "30", "32", "35", "41", "49", "53", "56"})
+DIAG_MIDWEST_FIPS = frozenset({"17", "18", "19", "20", "26", "27", "29", "31", "38", "39", "46", "55"})
+DIAG_EXCLUDE_FIPS = frozenset({"02", "15", "11"})
+
+
+def _region_stats(layout: dict, fips_set: frozenset[str]) -> dict | None:
+    """Mean centroid + east-west spread of the laid-out members of a region. Uses each
+    record's resolved (post-overlap) `centroid`. Returns None if no member is present."""
+    xs: list[float] = []
+    ys: list[float] = []
+    for f in fips_set:
+        rec = layout.get(f)
+        if rec is None:
+            continue
+        cx, cy = rec["centroid"]
+        xs.append(cx)
+        ys.append(cy)
+    if not xs:
+        return None
+    return {
+        "n": len(xs),
+        "mean": (sum(xs) / len(xs), sum(ys) / len(ys)),
+        "xspread": max(xs) - min(xs),
+        "x_min": min(xs),
+        "x_max": max(xs),
+    }
+
+
+def _collect_layout_metrics(congress_number: int, layout: dict) -> dict:
+    """Capture raw (frame-independent) layout numbers for one Congress. Frame-relative
+    fractions are derived later in _diagnose_format once the C119 frame is known."""
+    geoms = [rec["geom"] for rec in layout.values() if rec.get("geom") is not None]
+    union = unary_union(geoms) if geoms else None
+    bbox = union.bounds if (union is not None and not union.is_empty) else None
+    east_fips = frozenset(
+        f for f in layout
+        if f not in DIAG_WEST_FIPS and f not in DIAG_MIDWEST_FIPS and f not in DIAG_EXCLUDE_FIPS
+    )
+    ca = layout.get("06")
+    return {
+        "congress": congress_number,
+        "n_states": len(layout),
+        "bbox": bbox,
+        "union_area": (union.area if union is not None else 0.0),
+        "ca_xmin": (ca["geom"].bounds[0] if ca is not None else None),
+        "ca_centroid_x": (ca["centroid"][0] if ca is not None else None),
+        "regions": {
+            "EAST": _region_stats(layout, east_fips),
+            "MIDWEST": _region_stats(layout, DIAG_MIDWEST_FIPS),
+            "WEST": _region_stats(layout, DIAG_WEST_FIPS),
+        },
+    }
+
+
+def _diagnose_frame(cds_root: Path, records: list[dict], pad_frac: float = 0.02) -> tuple[float, float, float, float]:
+    """The fixed viewer frame = bounds of the committed C119 CD output (what web/app.js fits
+    its single projection to), padded `pad_frac` per axis. Falls back to the union bbox of the
+    collected records if 119.geojson is absent (e.g. a partial diagnose walk before any regen)."""
+    bbox = None
+    f119 = cds_root / "119.geojson"
+    if f119.exists():
+        try:
+            fc = json.loads(f119.read_text(encoding="utf-8"))
+            u = unary_union([shape(ft["geometry"]) for ft in fc.get("features", [])])
+            if not u.is_empty:
+                bbox = u.bounds
+        except Exception:
+            bbox = None
+    if bbox is None:
+        bxs = [r["bbox"] for r in records if r["bbox"] is not None]
+        if not bxs:
+            return (0.0, 0.0, 1.0, 1.0)
+        bbox = (min(b[0] for b in bxs), min(b[1] for b in bxs),
+                max(b[2] for b in bxs), max(b[3] for b in bxs))
+    minx, miny, maxx, maxy = bbox
+    w, h = (maxx - minx) or 1.0, (maxy - miny) or 1.0
+    return (minx - pad_frac * w, miny - pad_frac * h, maxx + pad_frac * w, maxy + pad_frac * h)
+
+
+def _diagnose_format(
+    records: list[dict],
+    frame: tuple[float, float, float, float],
+    compaction_center: tuple[float, float],
+    conus_center: tuple[float, float],
+) -> tuple[str, dict]:
+    """Render the per-Congress table (frame-relative %) + a JSON payload. All `*_frac` values
+    are fractions of frame width (x) so 0%=west edge, 100%=east edge."""
+    fminx, fminy, fmaxx, fmaxy = frame
+    fw = (fmaxx - fminx) or 1.0
+    fh = (fmaxy - fminy) or 1.0
+    farea = fw * fh
+
+    def xf(v: float | None) -> float | None:
+        return None if v is None else (v - fminx) / fw
+
+    lines: list[str] = []
+    lines.append(
+        f"Layout diagnostic - frame bbox=({fminx:.0f},{fminy:.0f},{fmaxx:.0f},{fmaxy:.0f}) "
+        f"w={fw:.0f} h={fh:.0f}"
+    )
+    lines.append(
+        f"compaction_center x-frac={xf(compaction_center[0]):.3f} (incl AK/HI insets)   "
+        f"CONUS-center x-frac={xf(conus_center[0]):.3f}   "
+        f"skew dx={compaction_center[0]-conus_center[0]:+.0f}m dy={compaction_center[1]-conus_center[1]:+.0f}m"
+    )
+    lines.append("(x-fracs: 0%=west frame edge, 100%=east frame edge)")
+    lines.append("")
+    lines.append(
+        f"{'C':>4} {'states':>6} {'cover%':>7} {'bboxW%':>7} {'CAxmin%':>8} "
+        f"{'EASTx%':>7} {'WESTx%':>7} {'E-Wgap%':>8} {'WESTspr%':>8}"
+    )
+
+    def pct(v: float | None, width: int = 7) -> str:
+        return (f"{v*100:.1f}".rjust(width)) if v is not None else "n/a".rjust(width)
+
+    payload: dict = {
+        "frame": list(frame),
+        "compaction_center": list(compaction_center),
+        "conus_center": list(conus_center),
+        "congresses": [],
+    }
+    for r in records:
+        cover = r["union_area"] / farea if farea else 0.0
+        bboxw = ((r["bbox"][2] - r["bbox"][0]) / fw) if r["bbox"] else None
+        ca = xf(r["ca_xmin"])
+        east = r["regions"]["EAST"]
+        west = r["regions"]["WEST"]
+        eastx = xf(east["mean"][0]) if east else None
+        westx = xf(west["mean"][0]) if west else None
+        ewgap = (eastx - westx) if (eastx is not None and westx is not None) else None
+        westspr = (west["xspread"] / fw) if west else None
+        lines.append(
+            f"{r['congress']:>4} {r['n_states']:>6} {pct(cover)} {pct(bboxw)} {pct(ca, 8)} "
+            f"{pct(eastx)} {pct(westx)} {pct(ewgap, 8)} {pct(westspr, 8)}"
+        )
+        payload["congresses"].append({
+            "congress": r["congress"],
+            "n_states": r["n_states"],
+            "cover_frac": cover,
+            "bbox_w_frac": bboxw,
+            "ca_xmin_frac": ca,
+            "east_x_frac": eastx,
+            "west_x_frac": westx,
+            "ew_gap_frac": ewgap,
+            "west_xspread_frac": westspr,
+        })
+    return "\n".join(lines), payload
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Allocate hex cells to states and tile each as pentahexes")
     parser.add_argument("--seats", default=str(ROOT / "data_processed" / "seats" / "state_seats_by_congress.csv"))
@@ -1057,6 +1670,56 @@ def main() -> None:
     parser.add_argument("--states-out-root", default=str(ROOT / "data_processed" / "polyhex_states_by_congress"))
     parser.add_argument("--outlines-out-root", default=str(ROOT / "data_processed" / "state_outlines_by_congress"))
     parser.add_argument("--warnings-out", default=str(ROOT / "data_processed" / "tiling_warnings.json"))
+    parser.add_argument(
+        "--allow-warnings",
+        action="store_true",
+        help="Exit 0 even if some states failed to tile. By default a clean regen MUST end "
+        "with warnings: 0 (the project invariant), so any warning makes the run exit non-zero "
+        "to make a layout regression loud. Use this only for debugging/partial runs.",
+    )
+    parser.add_argument(
+        "--diagnose",
+        action="store_true",
+        help="Read-only layout diagnostic: walk the per-Congress layout (honest carried "
+        "history) and print east-west spread / frame-coverage metrics for the requested "
+        "Congresses, then exit WITHOUT writing any GeoJSON / index / warnings. Used to ground "
+        "layout tuning (e.g. the 'condensed West') in real numbers before changing anything.",
+    )
+    parser.add_argument(
+        "--diagnose-congresses",
+        default="1,53,54,55,56,57,58,59,60,61,62,63,68,119",
+        help="Comma-separated Congress numbers to report under --diagnose. The walk stops "
+        "after the largest one (so a small set is fast). The fixed C119 frame is read from the "
+        "committed 119.geojson regardless.",
+    )
+    parser.add_argument("--diagnose-out", default=None, help="Optional path to also write the --diagnose report as JSON.")
+    parser.add_argument(
+        "--reference-anchors",
+        default=str(REFERENCE_ANCHORS_PATH),
+        help="Path to the HexCDv31wm anchor JSON (scripts/extract_reference_anchors.py). "
+        "Pass an empty string or a missing path to fall back to the legacy carried-seed layout.",
+    )
+    parser.add_argument(
+        "--seam-beta",
+        type=float,
+        default=SEAM_BETA,
+        help="Weight of the tangential seam term vs the anchor term (see SEAM_BETA comment; "
+        "default off — measured too costly against the footprint-fitted anchors).",
+    )
+    parser.add_argument(
+        "--seam-line-beta",
+        type=float,
+        default=SEAM_LINE_BETA,
+        help="Weight of the collinear-border-line term ('the VA-NC line carries into the "
+        "KY-TN line'). 0 disables; see SEAM_LINE_BETA comment.",
+    )
+    parser.add_argument(
+        "--seam-corner-beta",
+        type=float,
+        default=SEAM_CORNER_BETA,
+        help="Weight of the national-outline junction term ('the coast / Mexico line "
+        "carries across the gutter'). 0 disables; see SEAM_CORNER_BETA comment.",
+    )
     args = parser.parse_args()
 
     seats_by_congress = load_seats(Path(args.seats))
@@ -1075,6 +1738,85 @@ def main() -> None:
 
     warnings: list[dict] = []
     summary = {"generator_version": GENERATOR_VERSION, "timeline": []}
+
+    # Fixed national center for gentle compaction (computed once from all modern
+    # outlines, including the AK/HI insets so it matches the drawn frame). The same
+    # center every Congress keeps framing stable as western states fill in.
+    _center_geom = unary_union([o["_geom"] for o in outlines.values()]).centroid
+    compaction_center = (_center_geom.x, _center_geom.y)
+
+    # Real-geography adjacency graph (computed once from modern outlines). Each Congress uses
+    # the subset whose endpoints are both seated, to spring neighbouring states into their real
+    # relative positions during layout. See build_adjacency / the circle-model phase.
+    # (Unused in the reference-anchored mode below, where springs are off.)
+    adjacency = build_adjacency(outlines)
+
+    # Reference anchors: each state's blob centroid in the HexCDv31wm reference, similarity-
+    # transformed into our hex space (uniform scale matching hex sizes, recentred on the fixed
+    # national centre so the map stays where the grid already is). See the constant's comment.
+    anchor_pos: dict[str, tuple[float, float]] = {}
+    seams: list[dict] = []
+    seam_corners: list[dict] = []
+    seam_line_pairs: list[tuple[int, int]] = []
+    anchors_path = Path(args.reference_anchors) if args.reference_anchors else None
+    if anchors_path is not None and anchors_path.exists():
+        ref = json.loads(anchors_path.read_text(encoding="utf-8"))
+        s_ref = math.sqrt(hex_area / ref["hex_area_ref"])
+        rcx, rcy = ref["map_centroid"]
+        # Prefer the footprint-fitted anchor (where the outline's representative point sits
+        # when our scaled silhouette best covers the reference blob — aligns EDGES, so the
+        # reference's coastlines and gutter lines carry over); blob centroid is the fallback.
+        anchor_pos = {}
+        for f, st in ref["states"].items():
+            ax, ay = st.get("fitted_anchor", st["centroid"])
+            anchor_pos[f] = (
+                compaction_center[0] + s_ref * (ax - rcx),
+                compaction_center[1] + s_ref * (ay - rcy),
+            )
+        print(f"Reference-anchored layout: {len(anchor_pos)} state anchors from {anchors_path.name} "
+              f"(scale {s_ref:.4f})")
+        if args.seam_beta > 0 or args.seam_line_beta > 0 or args.seam_corner_beta > 0:
+            seams, seam_corners = build_seams(outlines)
+        seam_line_pairs = find_collinear_seam_pairs(seams)
+        if seams:
+            print(f"Seam alignment: {len(seams)} real-border seams, "
+                  f"{len(seam_line_pairs)} collinear pairs, {len(seam_corners)} outline junctions "
+                  f"(tangential beta={args.seam_beta}, line beta={args.seam_line_beta}, "
+                  f"corner beta={args.seam_corner_beta})")
+    else:
+        print(
+            "Reference anchors disabled or not found "
+            f"({anchors_path}); using legacy carried-seed + adjacency-spring layout"
+        )
+
+    # Resolved state centroids carried across Congresses for temporal stability. Persisted
+    # (not reset per Congress) so a state that briefly drops out keeps its position on return.
+    prev_centroids: dict[str, tuple[float, float]] = {}
+
+    # Identical-input fast path: when a Congress's effective inputs (post-Maine seat table +
+    # MAINE_IN_MA entry) match the previous Congress's exactly, reuse the previous layout/
+    # tiles/statuses verbatim instead of recomputing. Recomputing from carried seeds is only
+    # *approximately* a fixed point — the polygon overlap resolver re-runs from the circle
+    # equilibrium and lands sub-hex differently each Congress — so without reuse even
+    # seat-identical transitions wobble (measured: 90/118 transitions are seat-identical but
+    # only 1 rendered frozen). Reuse makes "nothing changed => nothing moves" exact and skips
+    # the dominant layout/allocation/tiling cost (~most Congresses within a decade). Gated on
+    # the previous Congress having tiled fully ok so a failing Congress is never frozen in —
+    # recomputation keeps its self-healing chance. Rendering still runs per Congress (it is
+    # deterministic on identical inputs) so dates/metadata stay correct.
+    reuse_sig: tuple | None = None
+    reuse_state: tuple | None = None  # (layout, tiles_by_state, statuses)
+    reused_count = 0
+
+    # --diagnose: collect layout metrics for the requested Congresses, then exit before any
+    # writes. The walk still runs from C1 so carried history is honest, but stops after the
+    # largest requested Congress and skips per-state rendering.
+    diag_set: set[int] = set()
+    diag_max: int | None = None
+    diag_records: list[dict] = []
+    if args.diagnose:
+        diag_set = {int(x) for x in args.diagnose_congresses.split(",") if x.strip()}
+        diag_max = max(diag_set) if diag_set else None
 
     for congress_number in sorted(seats_by_congress):
         seat_rows = seats_by_congress[congress_number]
@@ -1115,31 +1857,163 @@ def main() -> None:
         # anchors and clipping in this Congress.
         eff_outlines = build_effective_outlines(outlines, set(seat_by_fips))
 
-        # HexCDv31-style scaled outlines: scale each state to its delegation-size
-        # area around its real centroid, then iteratively push overlapping pairs
-        # apart so the layout is non-overlapping. The pre-allocator then sees a
-        # set of outlines that already have ~the right cell count inside.
-        layout = compute_scaled_layout(seat_by_fips, eff_outlines, hex_area, R)
+        # Temporal seeding: carry each state's resolved position from the previous Congress
+        # so the layout moves only gradually. `retention` optionally pulls each carried state
+        # toward its fixed compacted "home" (used only by the failure-recovery ladder below;
+        # 0.0 = pure carry). A split child first appearing (KY/WV from VA, TN from NC, AL/MS
+        # from GA) has no prior position, so it is always seeded adjacent to its parent's
+        # current position — offset by the real centroid gap — so it "pops off" the parent
+        # rather than teleporting to its own raw centroid (retention never applies to it).
+        ccx0, ccy0 = compaction_center
 
-        # Expand the hex grid (in place) if the scaled+displaced layout reaches
-        # past the current grid bbox; keeps tile size constant across Congresses.
-        if layout:
-            xs_min = min(rec["geom"].bounds[0] for rec in layout.values())
-            ys_min = min(rec["geom"].bounds[1] for rec in layout.values())
-            xs_max = max(rec["geom"].bounds[2] for rec in layout.values())
-            ys_max = max(rec["geom"].bounds[3] for rec in layout.values())
-            expand_grid_if_needed(hex_by_qr, R, origin, (xs_min, ys_min, xs_max, ys_max), margin=2 * R)
+        def build_seeds(retention: float) -> dict[str, tuple[float, float]]:
+            seeds: dict[str, tuple[float, float]] = {}
+            for fips in seat_by_fips:
+                if fips in prev_centroids:
+                    sx, sy = prev_centroids[fips]
+                    feat = eff_outlines.get(fips) or outlines.get(fips)
+                    if feat is not None and retention:
+                        rx, ry = feat["_centroid"]
+                        hx = ccx0 + COMPACTION * (rx - ccx0)
+                        hy = ccy0 + COMPACTION * (ry - ccy0)
+                        sx += retention * (hx - sx)
+                        sy += retention * (hy - sy)
+                    seeds[fips] = (sx, sy)
+                    continue
+                parent = PREDECESSOR_PARENT.get(fips)
+                if parent and parent in prev_centroids and parent in outlines and fips in outlines:
+                    pcx, pcy = outlines[parent]["_centroid"]
+                    ccx, ccy = outlines[fips]["_centroid"]
+                    ppx, ppy = prev_centroids[parent]
+                    seeds[fips] = (ppx + (ccx - pcx), ppy + (ccy - pcy))
+            return seeds
 
-        # Build cell -> fips from scaled outlines, and use displaced centroids
-        # as each state's pull-anchor inside the allocator.
-        cell_outline_fips = build_cell_outline_map(hex_by_qr, layout, geom_key="geom")
-        centroid_by_fips = {fips: rec["centroid"] for fips, rec in layout.items()}
-        # States with no layout entry (missing/invalid outline) get no chance to tile.
-        for f in seat_by_fips:
-            if f not in centroid_by_fips and f in eff_outlines:
-                centroid_by_fips[f] = eff_outlines[f]["_centroid"]
+        def build_anchor_seeds(spread: float) -> dict[str, tuple[float, float]]:
+            # Reference-anchored seeds: every state at its HexCDv31wm anchor, every Congress.
+            # spread > 1 scales the whole configuration radially about the fixed national
+            # centre (failure recovery: relieves crowding when a mid-era giant outgrows its
+            # reference hole and boxes a neighbour in). A state without an anchor falls
+            # through to compute_scaled_layout's compacted-home placement. Seam alignment
+            # then restores real-border relationships the reference itself breaks (KY/TN vs
+            # the VA-NC line) — see seam_align_positions.
+            seeds: dict[str, tuple[float, float]] = {}
+            for fips in seat_by_fips:
+                a = anchor_pos.get(fips)
+                if a is not None:
+                    seeds[fips] = (ccx0 + spread * (a[0] - ccx0), ccy0 + spread * (a[1] - ccy0))
+            return seam_align_positions(
+                seeds, seat_by_fips, eff_outlines, seams, seam_line_pairs, seam_corners,
+                hex_area, R,
+                beta=args.seam_beta, line_beta=args.seam_line_beta,
+                corner_beta=args.seam_corner_beta,
+            )
 
-        tiles_by_state, statuses = place_pentahex_tiles(seat_by_fips, centroid_by_fips, cell_outline_fips, hex_by_qr)
+        def _layout_and_tile(seeds: dict[str, tuple[float, float]] | None, spring_scale: float = 1.0):
+            # HexCDv31-style scaled outlines: scale each state to its delegation-size area
+            # around its real centroid, place it at its carried/seeded/compacted-home
+            # position, run the adjacency springs, then push overlapping pairs apart to a
+            # non-overlapping layout. The pre-allocator then sees outlines that already have
+            # ~the right cell count inside.
+            lay = compute_scaled_layout(
+                seat_by_fips, eff_outlines, hex_area, R,
+                seed_centroids=seeds, compaction_center=compaction_center,
+                adjacency=adjacency, spring_scale=spring_scale,
+            )
+            # Expand the hex grid (in place) if the layout reaches past the current bbox;
+            # keeps tile size constant across Congresses. Additive, so safe to call twice.
+            if lay:
+                xs_min = min(rec["geom"].bounds[0] for rec in lay.values())
+                ys_min = min(rec["geom"].bounds[1] for rec in lay.values())
+                xs_max = max(rec["geom"].bounds[2] for rec in lay.values())
+                ys_max = max(rec["geom"].bounds[3] for rec in lay.values())
+                expand_grid_if_needed(hex_by_qr, R, origin, (xs_min, ys_min, xs_max, ys_max), margin=2 * R)
+            # Build cell -> fips from scaled outlines; displaced centroids are pull-anchors.
+            cof = build_cell_outline_map(hex_by_qr, lay, geom_key="geom")
+            cby = {fips: rec["centroid"] for fips, rec in lay.items()}
+            for f in seat_by_fips:  # states with no layout entry still get a pull-anchor
+                if f not in cby and f in eff_outlines:
+                    cby[f] = eff_outlines[f]["_centroid"]
+            tbs, st = place_pentahex_tiles(seat_by_fips, cby, cof, hex_by_qr)
+            return lay, cof, cby, tbs, st
+
+        # Identical-input fast path (see the reuse_sig comment above the loop): the signature
+        # is the post-Maine-adjustment seat table plus the MAINE_IN_MA entry (which also
+        # drives the render-time relabel). Same signature => same eff_outlines (a function of
+        # the seated set) and same carried seeds (the previous Congress's no-op update), so
+        # the previous layout/tiles are reused verbatim and this transition is exactly frozen.
+        input_sig = (tuple(sorted(seat_by_fips.items())), MAINE_IN_MA.get(congress_number))
+        if (
+            input_sig == reuse_sig
+            and reuse_state is not None
+            and all(s == "ok" for s in reuse_state[2].values())
+        ):
+            layout, tiles_by_state, statuses = reuse_state
+            reused_count += 1
+        elif anchor_pos:
+            # Reference-anchored layout (stateless, springs off): seed at the anchors and let
+            # the polygon overlap resolver absorb eras whose delegations outgrow their
+            # reference holes. Failure recovery = retry at progressively spread-out anchors,
+            # then the legacy compacted-home fresh placement as the guaranteed final rung.
+            layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = _layout_and_tile(
+                build_anchor_seeds(1.0), spring_scale=0.0
+            )
+            best_bad = sum(1 for s in statuses.values() if s != "ok")
+            if best_bad:
+                for spread in (*ANCHOR_SPREAD_LADDER, None):
+                    seeds = build_anchor_seeds(spread) if spread is not None else build_seeds(1.0)
+                    cand = _layout_and_tile(seeds, spring_scale=0.0)
+                    cand_bad = sum(1 for s in cand[4].values() if s != "ok")
+                    if cand_bad < best_bad:
+                        rung = f"anchor spread={spread}" if spread is not None else "legacy fresh placement"
+                        print(
+                            f"C{congress_number}: escalation adopted {rung}; "
+                            f"non-ok states {best_bad} -> {cand_bad}",
+                            flush=True,
+                        )
+                        layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = cand
+                        best_bad = cand_bad
+                        if best_bad == 0:
+                            break
+        else:
+            # Legacy fallback (no anchors JSON): pure carry first (retention 0.0) —
+            # stationary states stay exactly put.
+            layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = _layout_and_tile(build_seeds(0.0))
+
+            # Failure recovery: a Congress can be left un-tileable either by temporal drift boxing
+            # a growing state in, or by the springs over-constraining a many-neighbour hub. Retry
+            # down ESCALATION_LADDER (relax toward home and/or weaken springs), adopting the first
+            # rung that reduces warnings. The ladder ends at the proven no-spring baseline, so this
+            # localizes any disruption to the few failing Congresses while guaranteeing recovery.
+            best_bad = sum(1 for s in statuses.values() if s != "ok")
+            if best_bad:
+                for retention, spring_scale in ESCALATION_LADDER:
+                    cand = _layout_and_tile(build_seeds(retention), spring_scale)
+                    cand_bad = sum(1 for s in cand[4].values() if s != "ok")
+                    if cand_bad < best_bad:
+                        print(
+                            f"C{congress_number}: escalation adopted rung (retention={retention}, "
+                            f"spring_scale={spring_scale}); non-ok states {best_bad} -> {cand_bad}",
+                            flush=True,
+                        )
+                        layout, cell_outline_fips, centroid_by_fips, tiles_by_state, statuses = cand
+                        best_bad = cand_bad
+                        if best_bad == 0:
+                            break
+        reuse_sig = input_sig
+        reuse_state = (layout, tiles_by_state, statuses)
+
+        # Carry forward the adopted layout's circle-equilibrium positions (idempotent, so a
+        # stable Congress re-seeds to itself with zero drift). Merge to keep history.
+        prev_centroids.update({f: rec.get("seed_centroid", rec["centroid"]) for f, rec in layout.items()})
+
+        # --diagnose: capture metrics for requested Congresses and skip rendering. Carry is
+        # already updated above, so the walk stays honest; stop once past the largest request.
+        if args.diagnose:
+            if congress_number in diag_set:
+                diag_records.append(_collect_layout_metrics(congress_number, layout))
+            if diag_max is not None and congress_number >= diag_max:
+                break
+            continue
 
         cd_features: list[dict] = []
         state_features: list[dict] = []
@@ -1366,9 +2240,37 @@ def main() -> None:
             }
         )
 
+    if args.diagnose:
+        # CONUS centroid (AK/HI insets + DC excluded) — the un-skewed reference Part B will use.
+        _conus = unary_union([o["_geom"] for f, o in outlines.items() if f not in DIAG_EXCLUDE_FIPS]).centroid
+        conus_center = (_conus.x, _conus.y)
+        frame = _diagnose_frame(cds_root, diag_records)
+        text, payload = _diagnose_format(diag_records, frame, compaction_center, conus_center)
+        print(text)
+        if args.diagnose_out:
+            Path(args.diagnose_out).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        return
+
     (states_root / "_index.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     Path(args.warnings_out).write_text(json.dumps({"warnings": warnings}, indent=2), encoding="utf-8")
-    print(f"Done. Wrote tiling outputs for {len(summary['timeline'])} Congresses; warnings: {len(warnings)}")
+    print(
+        f"Done. Wrote tiling outputs for {len(summary['timeline'])} Congresses; "
+        f"warnings: {len(warnings)} (layout reused for {reused_count} identical-input Congresses)"
+    )
+
+    # Enforce the project invariant in code, not just in the sweep: a clean regen MUST end with
+    # warnings: 0. The escalation ladder is only empirically guaranteed to reach 0 (its final
+    # rung is the proven baseline), so a future seat-table / outline / layout change could
+    # silently ship a partial Congress. Exit non-zero so that regression is loud and fails CI
+    # / the web build pipeline instead of producing a quietly-broken map. (--allow-warnings opts
+    # out for debugging/partial runs.)
+    if warnings and not args.allow_warnings:
+        congresses = sorted({w["congress"] for w in warnings if "congress" in w})
+        raise SystemExit(
+            f"FAILED: {len(warnings)} tiling warning(s) across Congress(es) {congresses}. "
+            f"A clean regen must end with warnings: 0; see {args.warnings_out}. "
+            f"Pass --allow-warnings to override for debugging."
+        )
 
 
 if __name__ == "__main__":

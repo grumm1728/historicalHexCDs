@@ -208,36 +208,193 @@ own `seats×5×hex_area`, so an early composite parent is a larger-silhouette bu
 seat-correctly-sized blob. As with any layout change, a bigger early VA/MA/GA silhouette can
 crowd a neighbour, so re-sweep all 119 Congresses for `warnings: 0` after touching this.
 
-## NE de-jam and the density/geography tradeoff
+## Reference-anchored layout (primary mode)
 
-**The problem:** The Northeast (NY/PA/NJ/CT/RI/MA/NH/VT/MD/DE/ME/DC) contains ~85 seats
-in a small real area. After scaling, these states inflate into large outlines that jam
-together. The overlap resolver only pushes pairs apart — it never pulls distant states
-together — so the NE stays crowded while the sparse West floats with large gaps.
+The layout aims directly at the hand-authored HexCDv31wm reference.
+`scripts/extract_reference_anchors.py` distills the reference shapefile into
+`data_raw/reference/hexcdv31_anchors.json` (checked in: per-state blob centroid + CD count,
+`R_ref` ≈ 40 km, map centroid; one reference record has a FIPS in its STATEAB column, so
+states key off GEOID). The tiler similarity-transforms those centroids into hex space
+(uniform scale `sqrt(hex_area/hex_area_ref)`, recentred on `compaction_center`) and seeds
+**every state at its anchor every Congress** with springs off — stateless: no temporal
+carry, no path dependence; identical seat tables give identical layouts. The polygon
+overlap resolver alone absorbs eras where a delegation outgrows its reference hole (1930s
+NY at 45 seats pushes NJ/CT a few R; they return to anchor as it shrinks — displacement is
+local, bounded, and always decays back toward the canonical arrangement).
 
-**What we tried and why it didn't work:** A global tilegram-style warp (force-directed,
-Dorling-style, shrink-toward-center) that closes western gaps while preserving order.
-Result: any setting that materially closes western gaps produces a roundish blob that
-loses the US silhouette (fill ~35%). The gap isn't a layout bug — it's structural: those
-states have few seats, so in an equal-area-per-seat cartogram that region is genuinely
-sparse. Density and geographic fidelity are a hard tradeoff. We chose geographic fidelity.
+**Why anchors, not springs:** the reference packing is deliberately *loose* — real-neighbour
+gutters range 0.6–7.7 `R_ref` — so springing neighbours to touching would distort it. Pinning
+to measured positions preserves the reference look exactly. Earlier Congresses are the same
+arrangement with era-sized states; the earliest Congresses trade tighter puzzle-fit for
+positional fidelity (small states sit in modern-sized holes). Movement profile: 90/118
+transitions frozen, only C16→C17 (Maine statehood handover) exceeds 5R.
 
-**What we did:** Targeted local expansion of just the NE cluster's anchors, radially
-outward from the seat-weighted NE centroid, before overlap resolution. This gives the
-cluster internal breathing room without distorting the rest of the map. The overlap
-resolver absorbs the push where the cluster meets its inland neighbours.
+**Anchors are footprint-fitted, not centroid-pinned.** Centroid equality is the wrong
+registration when shapes differ (our states are real silhouettes, the reference's are
+hand-drawn blobs): centroids can match while *edges* land wrong — WA/OR drifted east off
+CA's coast diagonal, the GA–SC–NC–VA seaboard broke. The extractor therefore grid-searches,
+per state, the translation minimizing the symmetric difference between our C119-scaled
+silhouette and the reference blob (areas are equal by construction) and stores that
+`fitted_anchor` (the outline *representative point*'s position — the tiler's scale origin —
+in reference coords). This aligns coastlines and gutter lines with the reference: C119
+rendered-vs-blob IoU mean 0.759 / median 0.795 (vs 0.676/0.705 centroid-pinned); the
+remaining worst fits are inherent (HI's island chain vs a compact blob, the crowded small
+Northeast). Re-run `scripts/extract_reference_anchors.py` if the modern outlines or `R`
+change; measure with `scripts/diag_reference_fit.py` (IoU is the headline C119 metric).
 
-**`NE_EXPAND = 1.25`** is the constant. Hard ceiling: 1.3 reshapes early Massachusetts
-(14 seats, C3–C7) into a genuinely un-tileable elongated shape → warnings. Always
-re-sweep all 119 Congresses (`_measure_after_fix`-style status sweep) before raising it.
-The CLAUDE.md invariant is: **a clean regen ends with `warnings: 0`**.
+**Seam alignment (on top of the anchors).** The reference itself breaks some real-border
+relationships (it draws KY/TN ~4.3R above the VA–NC line, losing the 36°30' continuation).
+`build_seams` extracts every real shared-border segment; `find_collinear_seam_pairs`
+detects seams on the same real straight line (36°30': KY-TN/TN-VA/NC-VA; 37°:
+CO-NM/KS-OK/AZ-UT; the northern-plains parallels), gated to ≤1000 km so same-latitude
+borders across the continent (CA-OR vs IN-MI, both ~42°N) are never yoked; and
+`seam_align_positions` solves one small least-squares system pulling each group's *drawn*
+lines collinear against a weight-1 anchor term. Result: gutter offset dy(KY-TN vs VA-NC)
+improves from −4.3R (the reference's own value) to −0.9..−1.5R in every era. Two stronger
+variants were measured and rejected — see the `SEAM_BETA` comment (tangential alignment
+too costly; full seam-zipping contracts the whole map). Stateless and deterministic like
+the anchors themselves.
 
-**Future:** The right solution for a truly gap-free national cartogram is a purpose-built
-balanced hex-region partition (Gastner–Newman diffusion or a custom hex-lattice allocation
-that assigns states to contiguous lattice regions sized to delegation). This would
-reproduce the HexCDv31wm reference exactly but requires building a different algorithmic
-foundation. The current approach (scaled outlines + displacement) is a good approximation
-that preserves geographic intuition.
+**Outline junctions (curated) + the small-state conflict gate.** Where two neighbours'
+shared border meets the national outline, `seam_align_positions` also aligns both states'
+copies of the junction point *perpendicular to the outline* — "the coast / Mexico line
+carries across the gutter" (constraining the tangential component instead fights the
+gutter itself; measured, it made the coast stagger worse). **The junction set is curated**
+(`SEAM_JUNCTION_PAIRS`: Pacific CA-OR-WA, Mexico AZ-CA/AZ-NM/NM-TX, Canada MT-ND/MN-ND)
+because no automatic straightness measure separates the great straight national lines from
+bending coasts (CA-OR scores 0.93 at every PCA radius while the New England junctions
+overlap everything else; un-gated they dragged MA off its blob and squeezed NH/RI to IoU
+0.0, and the Canada line flung 2-seat ID because the reference's ID blob deliberately stops
+short of 49°). Expand the set only with a measured probe. Related:
+`SEAM_LINE_SMALL_SEATS` drops an interior collinear pair when a ≤5-seat member also sits
+on a parallel national-outline line it cannot span to — the four-corners conflict (3-seat
+NM can't reach from the 37° line to the Mexico border; like the reference's author, NM
+keeps the Mexico line and gives up the 37° alignment). Net effect at C119: WA-OR west
+edges flush, OR on CA's coast diagonal, AZ-NM carrying the Mexico line, reference-IoU
+0.640 with min 0.244 (UT/AZ/OR worst — they sit on their lines instead of their blobs).
+
+**Failure recovery:** retry at progressively spread anchors (`ANCHOR_SPREAD_LADDER`, radial
+about the fixed national centre — relieves crowding-induced un-tileable shapes; C98 needs
+1.04), ending at the legacy compacted-home fresh placement as the guaranteed final rung.
+`--reference-anchors ""` (or a missing JSON) falls back to the legacy carried-seed +
+adjacency-spring layout documented below. Measure fit with `scripts/diag_reference_fit.py`
+and movement with `scripts/diag_movement.py`.
+
+## Temporal stability, split pop-off, and gentle compaction (legacy fallback)
+
+**This entire machinery is now the fallback when the reference anchors JSON is absent** —
+the primary mode above supersedes it. Kept because it's proven (`warnings: 0`) and
+anchor-independent. `compute_scaled_layout`
+takes two inputs that tie the timeline together (both threaded from `main()`):
+
+**1. Temporal seeding (`seed_centroids`).** `main()` keeps a persistent `prev_centroids`
+dict (FIPS → resolved centroid) and passes each Congress the previous Congress's resolved
+positions. A scaled state starts at its carried position, so the overlap resolver only
+nudges it incrementally — most consecutive Congresses have **zero** state movement, and the
+only real motion happens at decennial reapportionments (seat counts change → scales change →
+the resolver re-packs). This is the intended "gradual growth, no congress-to-congress jumps."
+`prev_centroids` is *merged* (never reset) so a state that briefly drops out keeps its place
+on return.
+
+**Identical-input fast path (makes "nothing changed ⇒ nothing moves" exact).** Re-seeding a
+carried equilibrium is only *approximately* a fixed point: the polygon overlap resolver
+re-runs from the circle equilibrium every Congress and lands sub-hex differently, so before
+this fast path 90 of 118 transitions had byte-identical seat tables but only 1 rendered
+frozen (Maryland, squeezed between PA/VA/DE, wobbled >1R in many quiet transitions). Now
+`main()` computes a per-Congress signature (post-Maine-adjustment seat table +
+`MAINE_IN_MA` entry); when it matches the previous Congress's, the previous
+layout/tiles/statuses are reused verbatim and only rendering (deterministic on identical
+inputs) re-runs for correct dates/metadata. This freezes all seat-identical transitions
+exactly — including C118→C119, which previously echoed an escalation with a mean 6.4R /
+max 19R move despite zero seat changes — and skips the dominant layout/allocation cost for
+~90 of 119 Congresses. The fast path is gated on the previous Congress having tiled fully
+`ok`, so a failing Congress is never frozen in (recomputation keeps its self-healing chance).
+
+**Home-retention escalation (keeps `warnings: 0` with minimal disruption).** Carrying a
+cramped arrangement forward can, over many Congresses, drift a *growing* state into a
+boxed-in packing that won't tile (observed: NY C53–57, MI C83–87 — both `partial`, the
+allocator couldn't reach `need` cells). A *global* home-retention pull was rejected: it makes
+the home-pull and overlap-push reach a limit cycle that never settles, so every Congress
+jitters (~5R) even in stable periods. Instead `main()` uses **pure carry by default** (a
+stationary state has *zero* drift) and only when a Congress fails does it retry with carried
+seeds pulled progressively toward each state's fixed compacted home along `RETENTION_LADDER`
+(0.15…1.0), adopting the **smallest pull that reduces warnings** (1.0 == full fresh
+placement). A state's home is seat-independent, so the pull always moves toward the
+deterministic, known-tileable fresh layout. This localizes motion to the few failing
+Congresses and uses the minimum nudge: e.g. C52→C53 (NY peak, 1893) settles with a small
+retention (~6R reflow that self-heals within two Congresses) rather than a 26–39R whole-map
+snap. Net result: ~90 of 118 transitions are perfectly stable; the rest are reapportionment
+growth. Mirrors the self-correcting spirit of the `steal_exempt` meta-loop; never adopted
+when worse.
+
+**2. Split pop-off.** A child state's first seated Congress has no carried position, so it
+is seeded adjacent to its parent's *current drawn* position, offset by the real centroid gap
+(`parent_prev_centroid + (child_real_centroid − parent_real_centroid)`). KY/WV emerge on
+VA's flank, TN off NC, AL/MS off GA — each "pops off" the parent instead of teleporting to
+its own raw centroid. Lineage reuses `PREDECESSOR_PARENT`. (Maine needs no special seed: it
+is allocated in its own outline throughout the `MAINE_IN_MA` era, so its position is already
+carried in `prev_centroids` before it becomes an ordinary state.)
+
+**3. Gentle compaction (`COMPACTION`, replaces the old `NE_EXPAND`).** A state's
+*first-appearance* "home" is its real centroid pulled `COMPACTION` of the way toward a fixed
+national center (`compaction_center`, computed once in `main()` from the union of all modern
+outlines incl. AK/HI insets). **Why this works and isn't a no-op:** the web viewer fits one
+projection to the largest (C119) frame and reuses it for every Congress, so pulling toward a
+*fixed* center translates sparse/early clusters toward frame-center — using the empty western
+space to give the early eastern states a more central, legible footprint — while being
+~invisible for the full modern map (a uniform scale-about-center that `fitSize` re-normalizes).
+Because compaction sets only the *home* (not carried positions, so it never compounds) and the
+overlap resolver still restores `target_gap = 0.5R`, the dense core is not re-jammed: the net
+effect is closing western gaps, not shrinking the east. `COMPACTION = 1.0` disables it.
+Since the viewer gained per-Congress **auto-zoom** (an animated camera transform fitted to
+each Congress's footprint, default on in `web/app.js`), early-era legibility no longer
+depends on compaction alone — don't strengthen `COMPACTION` to fix framing; that's the
+camera's job now.
+
+**The "condensed West" is cartogram-correct — measured, do not "fix" it.** Normalized to
+each map's own CONUS bbox, our C119 matches the hand-authored HexCDv31wm reference almost
+exactly (West centroid x-spread 24.0% vs 23.2%; E–W gap 52% vs 58%). The historical era's
+tighter West (11–13% in C53–C68) reflects its genuinely small delegations (~25 seats in
+1893 vs ~100 today); the apparent "empty western band" under the old fixed viewport was a
+framing artifact that auto-zoom resolves.
+
+**4. Directional adjacency springs (`build_adjacency` + the circle-model phase).** Scaling +
+overlap-resolution alone only *repels*; it never preserves which states border which, so a
+small state could float away from its neighbour (Delaware drifting off Maryland) or a
+non-neighbour could wedge between two states that really touch (Missouri between KY/TN). Fix:
+a real-geography adjacency graph (one edge per pair of outlines sharing a border, carrying the
+unit direction between their real centroids) drives a fast **vectorized circle model** inside
+`compute_scaled_layout` *before* the polygon overlap resolver. Each adjacent pair is sprung
+toward separation `r_a+r_b+gap` (radii = `sqrt(area/π)`) **in its real relative direction**,
+non-adjacent pairs only repel, and both forces are silent inside a **deadband** (`SPRING_DEADBAND`).
+The deadband is load-bearing: it makes the converged configuration a true *fixed point*, so
+re-seeding it next Congress produces zero movement — the circle equilibrium centroids
+(`seed_centroid`) are what `main()` carries forward, preserving temporal stability, while the
+polygon resolver still runs on the geometry for exact non-overlap. This gives "big state grows →
+its springs lengthen → neighbours pushed out but kept in their real direction" for free (no
+per-state rules), and keeps the neighbour graph intact (DE nestles in MD's corner abutting
+MD/NJ/PA; KY–TN touch so MO can't sit between). **Adjacency-first**: springs are strong, but a
+many-neighbour hub they over-constrain into an un-tileable shape (IL C63–72) is recovered by the
+escalation ladder weakening/zeroing the springs for that Congress only.
+
+**Failure recovery is a 2-D ladder (`ESCALATION_LADDER`).** A Congress that fails to tile is
+retried down `((retention, spring_scale), …)`, adopting the first rung that reduces warnings:
+`retention` pulls carried seeds toward home (fixes temporal-drift box-ins: NY C53–57, MI
+C83–87); `spring_scale` weakens the adjacency springs (fixes hub over-constraint: IL). The
+ladder ends at `(1.0, 0.0)` = fresh placement with no springs = the proven warning-free
+baseline, so recovery is guaranteed and localized to the few failing Congresses.
+
+**Invariant unchanged: a clean regen ends with `warnings: 0`.** Layout is still fragile —
+any change to seeding/compaction/scaling/springs can box a state into an un-tileable shape in
+*some* Congress, so always re-sweep all 119 and watch the large-state and many-neighbour
+outliers (NY at peak ~C73, IL, PA, OH, CA/TX) first.
+
+**Future (deferred option 1):** a purpose-built balanced hex-region partition
+(Gastner–Newman diffusion or a custom hex-lattice allocation assigning states to contiguous
+lattice regions sized to delegation) would reproduce the HexCDv31wm reference exactly and
+truly close all gaps, but requires a different algorithmic foundation. The current approach
+(scaled outlines + temporal seeding + gentle compaction + displacement) preserves geographic
+intuition and temporal continuity as a strong approximation.
 
 ## Pipeline (how a full rebuild runs)
 
@@ -267,9 +424,11 @@ cells, `GENERATOR_VERSION = "v6-pentahex-scaled-outlines"`.
 Algorithm (in order):
 
 1. **`compute_scaled_layout`** — scale each state's real outline to `seats·5·hex_area`
-   around its real centroid; apply the **NE de-jam** (radially expand the `NE_FIPS`
-   cluster by `NE_EXPAND` from the seat-weighted NE centroid); then iterative
-   pairwise overlap-resolution to a non-overlapping layout (`target_gap = 0.5R`).
+   around its real centroid; place it at its **reference anchor** (see "Reference-anchored
+   layout" above — the primary, stateless mode), then iterative pairwise overlap-resolution
+   to a non-overlapping layout (`target_gap = 0.5R`). The legacy fallback (no anchors JSON)
+   instead uses carried positions / compacted homes / split pop-off seeds plus the
+   directional adjacency-spring circle model — see the legacy section above.
 2. **`expand_grid_if_needed`** — grow the hex grid in-memory to cover the layout bbox.
 3. **`build_cell_outline_map`** — cell → state FIPS by point-in-polygon vs scaled outlines.
 4. **`allocate_territories`** — grow exactly `need` cells/state from seeds, smallest-need
@@ -293,11 +452,14 @@ Algorithm (in order):
 - **A clean regen ends with `warnings: 0`** (`data_processed/tiling_warnings.json`).
   A warning = a state with `tiling_status` `partial`/`no-tiles` (couldn't reach `need`
   cells, or its cell set won't tile into pentahexes).
-- **`NE_EXPAND` is capped at 1.25.** 1.3 reshapes early Massachusetts (14 seats) into a
-  genuinely un-tileable shape → warnings. Re-sweep all 119 Congresses before raising it.
-- **Layout changes are fragile.** Any change to anchors/scaling/expansion can push some
+- **`COMPACTION = 0.9` (lower = stronger pull toward `compaction_center`).** Replaces the
+  old `NE_EXPAND` radial hack. Too-strong compaction re-jams the dense east into un-tileable
+  shapes; re-sweep all 119 Congresses before lowering it. `1.0` disables compaction.
+- **Layout changes are fragile.** Any change to seeding/anchoring/scaling can push some
   state into an un-tileable or boxed-in shape in *some* Congress; always re-check the full
-  119-Congress warning count, not just one Congress.
+  119-Congress warning count, not just one Congress. (The reference-anchored mode is
+  stateless per Congress, so sweep order no longer matters — but the legacy fallback is
+  temporally seeded and must sweep from C1 in order.)
 - **Area ratio outliers are expected.** `tile_area_ratio ≈ 1.0` for interior tiles and
   most boundary tiles after option-3. Geographic outliers (Long Island tip, Cape Cod)
   reach ~2.8×. This is correct — do not treat >1.0 ratios as bugs.

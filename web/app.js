@@ -7,6 +7,7 @@ const label = document.getElementById("congressLabel");
 const tooltip = document.getElementById("tooltip");
 const outlineOnlyToggle = document.getElementById("outlineOnlyToggle");
 const showDistrictsToggle = document.getElementById("showDistrictsToggle");
+const autoZoomToggle = document.getElementById("autoZoomToggle");
 const civilWarBanner = document.getElementById("civilWarBanner");
 const readoutCongress = document.getElementById("readoutCongress");
 const readoutYears = document.getElementById("readoutYears");
@@ -24,6 +25,45 @@ let svg;
 let stateColor;
 let stableProjection = null;
 let stablePath = null;
+
+// Auto-zoom camera: a zoom/pan transform applied on top of the stable base projection so
+// each Congress's footprint fills the viewport (early Congresses cover ~5% of the C119
+// frame and sat far east). Geometry coordinates never change — only the <g> transform —
+// and transitions are animated so a frame change reads as a camera move, not states
+// moving. Because the layout is frozen across seat-identical Congresses, the fitted view
+// is identical there too: a stable era has a perfectly still camera.
+const VIEW_PAD = 0.04;  // fractional padding around the fitted Congress bbox
+const VIEW_KMAX = 3;    // max zoom factor (C1 is height-constrained at ~1.5)
+let currentView = { k: 1, x: 0, y: 0 };
+
+function viewTransform(v) {
+  return `translate(${v.x},${v.y}) scale(${v.k})`;
+}
+
+// Fit `fitGeo` (data-space features) into the viewport as a {k,x,y} transform over the
+// stable projection. Identity when auto-zoom is off or anything needed is unavailable.
+function computeTargetView(fitGeo) {
+  const identity = { k: 1, x: 0, y: 0 };
+  if (!stableProjection || !fitGeo) return identity;
+  if (autoZoomToggle && !autoZoomToggle.checked) return identity;
+  const b = geometryBounds(fitGeo);
+  if (!Number.isFinite(b.minX) || b.maxX <= b.minX || b.maxY <= b.minY) return identity;
+  const p0 = stableProjection([b.minX, b.minY]);
+  const p1 = stableProjection([b.maxX, b.maxY]);
+  const x0 = Math.min(p0[0], p1[0]);
+  const x1 = Math.max(p0[0], p1[0]);
+  const y0 = Math.min(p0[1], p1[1]);
+  const y1 = Math.max(p0[1], p1[1]);
+  const bw = (x1 - x0) * (1 + 2 * VIEW_PAD);
+  const bh = (y1 - y0) * (1 + 2 * VIEW_PAD);
+  if (bw <= 0 || bh <= 0) return identity;
+  // No lower clamp: a frame whose footprint exceeds the base projection's reference frame
+  // (or whose padding pushes past it) zooms OUT slightly so it always fits the viewport.
+  const k = Math.min(VIEW_KMAX, Math.min(width / bw, height / bh));
+  const cx = (x0 + x1) / 2;
+  const cy = (y0 + y1) / 2;
+  return { k, x: width / 2 - k * cx, y: height / 2 - k * cy };
+}
 // Distinguish CDs within a state by hashing state+cd_index into d3's category palette,
 // with a stable per-state base hue overlay so adjacent CDs in the same state look related.
 function cdColor(props) {
@@ -279,9 +319,12 @@ async function loadIndex() {
 // reuse the projection for every frame.
 async function buildStableProjection() {
   // Pick the frame with the most CDs (or the last one as a proxy).
-  const v5Frames = timeline.filter((e) => String(e.generator_version || "").startsWith("v5") && e.cd_feature_path);
-  const ref = v5Frames.length
-    ? v5Frames.reduce((a, b) => ((a.cd_feature_count || 0) >= (b.cd_feature_count || 0) ? a : b))
+  // Prefer the LATEST frame among max-CD ties: many Congresses share the 435 cap, but the
+  // map's footprint keeps spreading over time, so the newest (C119) has the largest bbox.
+  // (Fitting to the first 435-CD frame, 1963, cropped C119's edges off the viewport.)
+  const cartogramFrames = timeline.filter((e) => isCartogramFrame(e) && e.cd_feature_path);
+  const ref = cartogramFrames.length
+    ? cartogramFrames.reduce((a, b) => ((b.cd_feature_count || 0) >= (a.cd_feature_count || 0) ? b : a))
     : timeline[timeline.length - 1];
   const path = ref.cd_feature_path || ref.state_feature_path;
   try {
@@ -319,15 +362,18 @@ async function buildStableProjection() {
   }
 }
 
-function isV5Frame(entry) {
-  return String(entry?.generator_version || "").startsWith("v5");
+// v5+ generators emit absolute Web-Mercator coordinates that already respect the cartogram
+// layout (v6 = pentahex scaled outlines). Only legacy template frames need the collision relax.
+function isCartogramFrame(entry) {
+  const v = String(entry?.generator_version || "");
+  return v.startsWith("v5") || v.startsWith("v6");
 }
 
 async function drawFrame(entry) {
   const featurePath = entry.state_feature_path || entry.feature_path;
   const cdPath = entry.cd_feature_path;
   const showDistricts = Boolean(showDistrictsToggle?.checked) && Boolean(cdPath);
-  const v5 = isV5Frame(entry);
+  const cartogram = isCartogramFrame(entry);
 
   const [geo, rawOutlineGeo, cdGeo] = await Promise.all([
     cachedFetchJson(`./${featurePath}`),
@@ -347,10 +393,10 @@ async function drawFrame(entry) {
 
   updateReadout(entry, geo.features);
 
-  // v5 uses absolute WM coordinates that already respect the cartogram layout.
+  // Cartogram frames use absolute WM coordinates that already respect the layout.
   // The legacy collision relax was for the old template generator only.
   const outlineGeo = rawOutlineGeo
-    ? (v5 ? rawOutlineGeo : applyCollisionLayout(rawOutlineGeo, congressNumber))
+    ? (cartogram ? rawOutlineGeo : applyCollisionLayout(rawOutlineGeo, congressNumber))
     : null;
   const showSilhouettes = Boolean(outlineOnlyToggle?.checked);
   const outlineAvailable = Boolean(outlineGeo && Array.isArray(outlineGeo.features) && outlineGeo.features.length > 0);
@@ -375,6 +421,22 @@ async function drawFrame(entry) {
 
   svg.selectAll("g").remove();
   const g = svg.append("g");
+
+  // Auto-zoom camera: start at the previous view and ease to this Congress's fitted view,
+  // so frame changes read as one smooth camera move. Identical layouts (the 90 frozen
+  // seat-identical transitions) produce an identical target — a perfectly still camera.
+  const targetView = computeTargetView(geo);
+  g.attr("transform", viewTransform(currentView));
+  const viewDelta =
+    Math.abs(targetView.k - currentView.k) * Math.max(width, height) +
+    Math.abs(targetView.x - currentView.x) +
+    Math.abs(targetView.y - currentView.y);
+  if (viewDelta > 1) {
+    g.transition().duration(700).ease(d3.easeCubicInOut).attr("transform", viewTransform(targetView));
+  } else if (viewDelta > 0) {
+    g.attr("transform", viewTransform(targetView));
+  }
+  currentView = targetView;
 
   // Layer 1: state silhouettes (faint backdrop) when toggled.
   if (showSilhouettes && outlineAvailable) {
@@ -519,18 +581,25 @@ function setupControls() {
       await setFrame(frameIndex);
     });
   }
+  if (autoZoomToggle) {
+    autoZoomToggle.addEventListener("change", async () => {
+      await setFrame(frameIndex);
+    });
+  }
 }
 
 async function main() {
   setControlsEnabled(false);
 
-  if (!window.d3) {
-    setStatus("D3 failed to load. Ensure web/vendor/d3.min.js exists.");
+  // Check file:// FIRST: under file:// the d3 <script> usually fails to load too, so
+  // checking d3 first masks this far more actionable message.
+  if (window.location.protocol === "file:") {
+    setStatus("This app cannot run from file:// because browsers block local fetch. Start a local server: python -m http.server 8000 --directory web and open http://localhost:8000");
     return;
   }
 
-  if (window.location.protocol === "file:") {
-    setStatus("This app cannot run from file:// because browsers block local fetch. Start a local server: python -m http.server 8000 --directory web and open http://localhost:8000");
+  if (!window.d3) {
+    setStatus("D3 failed to load. Ensure web/vendor/d3.min.js exists.");
     return;
   }
 

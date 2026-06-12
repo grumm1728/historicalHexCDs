@@ -16,3 +16,11 @@ web/data_processed/
 # Third-party reference PDFs (not redistributable)
 *.pdf
 source data/
+
+# Detached tiler run artifacts (regenerable; see CLAUDE.md "Iterating on the tiler")
+tiler_run.log
+tiler_run.err.log
+tiler_run_start.txt
+
+# Local manual backup patches
+*.patch
