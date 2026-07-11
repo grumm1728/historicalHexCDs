@@ -14,6 +14,12 @@ State_Urban_Rural_Pop_2020_2010.xlsx
   https://www2.census.gov/geo/docs/reference/ua/State_Urban_Rural_Pop_2020_2010.xlsx
   2020 uses the housing-unit-based urban definition; 2010 the UA/UC definition.
 
+sf1_p002_2000.json
+  Census 2000 SF1 table P002 (Urban and Rural), state level, via the Census API.
+  Pulled 2026-07-10 from
+  https://api.census.gov/data/2000/dec/sf1?get=NAME,P002001,P002002,P002005&for=state:*
+  Columns: P002001 total, P002002 urban, P002005 rural (urban + rural = total,
+  verified). 52 rows: 50 states + DC + Puerto Rico. 2000 uses the UA/UC definition.
+
 Still to acquire (registration-gated; see ticket #21):
   - 1790-1890 state urban population (ICPSR 2896 via an NHGIS CSV extract; free account)
-  - Census 2000 SF1 table P002 via the Census API (free API key)

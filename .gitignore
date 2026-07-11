@@ -24,3 +24,6 @@ tiler_run_start.txt
 
 # Local manual backup patches
 *.patch
+
+# Local Census API key (never commit)
+census_API_key.txt
