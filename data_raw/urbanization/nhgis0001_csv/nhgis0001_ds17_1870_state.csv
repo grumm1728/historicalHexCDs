@@ -1,0 +1,48 @@
+GISJOIN,YEAR,STATE,STATEA,COUNTYA,AREANAME,STATEICP,COUNTYICP,AJ3001,AKE001
+"G010","1870","Alabama","010",,"Alabama","41","0",996992,62700
+"G045","1870","Arizona Territory","045",,"Arizona Territory","61","0",9658,3224
+"G050","1870","Arkansas","050",,"Arkansas","42","0",484471,12380
+"G060","1870","California","060",,"California","71","0",560247,208438
+"G085","1870","Colorado Territory","085",,"Colorado Territory","62","0",39864,4759
+"G090","1870","Connecticut","090",,"Connecticut","1","0",537454,177153
+"G095","1870","Dakota Territory","095",,"Dakota Territory","37","0",14181,0
+"G100","1870","Delaware","100",,"Delaware","11","0",125015,30841
+"G110","1870","District Of Columbia","110",,"District of Columbia","98","0",131700,120583
+"G120","1870","Florida","120",,"Florida","43","0",187748,15275
+"G130","1870","Georgia","130",,"Georgia","44","0",1184109,100053
+"G165","1870","Idaho Territory","165",,"Idaho Territory","63","0",14999,0
+"G170","1870","Illinois","170",,"Illinois","21","0",2539891,596042
+"G180","1870","Indiana","180",,"Indiana","22","0",1680637,247657
+"G190","1870","Iowa","190",,"Iowa","31","0",1194020,156327
+"G200","1870","Kansas","200",,"Kansas","32","0",364399,51870
+"G210","1870","Kentucky","210",,"Kentucky","51","0",1321011,195896
+"G220","1870","Louisiana","220",,"Louisianna","45","0",726915,202523
+"G230","1870","Maine","230",,"Maine","2","0",626915,131744
+"G240","1870","Maryland","240",,"Maryland","52","0",780894,295459
+"G250","1870","Massachusetts","250",,"Massachusetts","3","0",1457351,972081
+"G260","1870","Michigan","260",,"Michigan","23","0",1184059,237985
+"G270","1870","Minnesota","270",,"Minnesota","33","0",439706,70754
+"G280","1870","Mississippi","280",,"Mississippi","46","0",827922,33255
+"G290","1870","Missouri","290",,"Missouri","34","0",1721295,429578
+"G305","1870","Montana Territory","305",,"Montana Territory","64","0",20595,3106
+"G310","1870","Nebraska","310",,"Nebraska","35","0",122993,22133
+"G320","1870","Nevada","320",,"Nevada","65","0",42491,7048
+"G330","1870","New Hampshire","330",,"New Hampshire","4","0",318300,83456
+"G340","1870","New Jersey","340",,"New Jersey","12","0",906096,396012
+"G355","1870","New Mexico Territory","355",,"New Mexico Territory","66","0",91874,4765
+"G360","1870","New York","360",,"New York","13","0",4382759,2189455
+"G370","1870","North Carolina","370",,"North Carolina","47","0",1071361,36218
+"G390","1870","Ohio","390",,"Ohio","24","0",2665260,682922
+"G410","1870","Oregon","410",,"Oregon","72","0",90923,8293
+"G420","1870","Pennsylvania","420",,"Pennsylvania","14","0",3521951,1312833
+"G440","1870","Rhode Island","440",,"Rhode Island","5","0",217353,162107
+"G450","1870","South Carolina","450",,"South Carolina","48","0",705606,61011
+"G470","1870","Tennessee","470",,"Tennessee","54","0",1258520,94237
+"G480","1870","Texas","480",,"Texas","49","0",818579,54521
+"G495","1870","Utah Territory","495",,"Utah Territory","67","0",86786,15981
+"G500","1870","Vermont","500",,"Vermont","6","0",330551,22960
+"G510","1870","Virginia","510",,"Virginia","40","0",1225163,145618
+"G535","1870","Washington Territory","535",,"Washington Territory","73","0",23955,0
+"G540","1870","West Virginia","540",,"West Virginia","56","0",442014,36009
+"G550","1870","Wisconsin","550",,"Wisconsin","25","0",1054670,207099
+"G565","1870","Wyoming Territory","565",,"Wyoming Territory","68","0",9118,0

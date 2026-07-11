@@ -1,0 +1,31 @@
+GISJOIN,YEAR,STATE,STATEA,COUNTYA,AREANAME,STATEICP,COUNTYICP,ACN001
+"G010","1840","Alabama","010",,"Alabama","41","0",12672
+"G050","1840","Arkansas","050",,"Arkansas","42","0",0
+"G090","1840","Connecticut","090",,"Connecticut","1","0",38952
+"G100","1840","Delaware","100",,"Delaware","11","0",8367
+"G110","1840","District Of Columbia","110",,"District of Columbia","98","0",39135
+"G125","1840","Florida Territory","125",,"Florida Territory","43","0",0
+"G130","1840","Georgia","130",,"Georgia","44","0",24658
+"G170","1840","Illinois","170",,"Illinois","21","0",9607
+"G180","1840","Indiana","180",,"Indiana","22","0",10716
+"G195","1840","Iowa Territory","195",,"Iowa Territory","31","0",0
+"G210","1840","Kentucky","210",,"Kentucky","51","0",30948
+"G220","1840","Louisiana","220",,"Louisianna","45","0",105400
+"G230","1840","Maine","230",,"Maine","2","0",39342
+"G240","1840","Maryland","240",,"Maryland","52","0",113912
+"G250","1840","Massachusetts","250",,"Massachusetts","3","0",279454
+"G260","1840","Michigan","260",,"Michigan","23","0",9102
+"G280","1840","Mississippi","280",,"Mississippi","46","0",3612
+"G290","1840","Missouri","290",,"Missouri","34","0",16469
+"G330","1840","New Hampshire","330",,"New Hampshire","4","0",28531
+"G340","1840","New Jersey","340",,"New Jersey","12","0",39548
+"G360","1840","New York","360",,"New York","13","0",471266
+"G370","1840","North Carolina","370",,"North Carolina","47","0",13310
+"G390","1840","Ohio","390",,"Ohio","24","0",83491
+"G420","1840","Pennsylvania","420",,"Pennsylvania","14","0",307977
+"G440","1840","Rhode Island","440",,"Rhode Island","5","0",47662
+"G450","1840","South Carolina","450",,"South Carolina","48","0",33601
+"G470","1840","Tennessee","470",,"Tennessee","54","0",6929
+"G500","1840","Vermont","500",,"Vermont","6","0",0
+"G510","1840","Virginia","510",,"Virginia","40","0",70394
+"G555","1840","Wisconsin Territory","555",,"Wisconsin Territory","25","0",0

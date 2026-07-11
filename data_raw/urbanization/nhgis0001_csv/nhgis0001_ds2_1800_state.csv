@@ -1,0 +1,21 @@
+GISJOIN,YEAR,STATE,STATEA,COUNTYA,AREANAME,STATEICP,COUNTYICP,AAS001,AAV001,AAZ001
+"G090","1800","Connecticut","090",,"Connecticut","1","0",251002,12722,251002
+"G100","1800","Delaware","100",,"Delaware","11","0",64273,0,64273
+"G110","1800","District Of Columbia","110",,"District of Columbia","98","0",14093,11174,14093
+"G130","1800","Georgia","130",,"Georgia","44","0",162686,5146,162686
+"G185","1800","Indiana Territory","185",,"Indiana Territory","22","0",5641,0,4875
+"G210","1800","Kentucky","210",,"Kentucky","51","0",220955,0,220955
+"G240","1800","Maryland","240",,"Maryland","52","0",341548,26514,341548
+"G250","1800","Massachusetts","250",,"Massachusetts","3","0",574564,69004,574964
+"G285","1800","Mississippi Territory","285",,"Mississippi Territory","46","0",8850,0,8850
+"G330","1800","New Hampshire","330",,"New Hampshire","4","0",183858,5339,183762
+"G340","1800","New Jersey","340",,"New Jersey","12","0",211149,0,211949
+"G360","1800","New York","360",,"New York","13","0",586761,74757,586761
+"G370","1800","North Carolina","370",,"North Carolina","47","0",478103,0,478103
+"G385","1800","Northwest Territory","385",,"Northwest Territory","24","0",45365,0,45365
+"G420","1800","Pennsylvania","420",,"Pennsylvania","14","0",602365,68354,602365
+"G440","1800","Rhode Island","440",,"Rhode Island","5","0",69122,14353,69122
+"G450","1800","South Carolina","450",,"South Carolina","48","0",345591,18824,345591
+"G470","1800","Tennessee","470",,"Tennessee","54","0",105602,0,105602
+"G500","1800","Vermont","500",,"Vermont","6","0",154465,0,154465
+"G510","1800","Virginia","510",,"Virginia","40","0",880200,16184,880200

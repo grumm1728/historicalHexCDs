@@ -21,5 +21,13 @@ sf1_p002_2000.json
   Columns: P002001 total, P002002 urban, P002005 rural (urban + rural = total,
   verified). 52 rows: 50 states + DC + Puerto Rico. 2000 uses the UA/UC definition.
 
-Still to acquire (registration-gated; see ticket #21):
-  - 1790-1890 state urban population (ICPSR 2896 via an NHGIS CSV extract; free account)
+nhgis0001_csv.zip / nhgis0001_csv/
+  IPUMS NHGIS extract nhgis0001 (submitted + downloaded 2026-07-11 by Scott, free
+  NHGIS account). State-level Total Population (NT1) and Urban Population 2,500+
+  (NT2/NT3, the ICPSR 2896 retrospective places-2,500+ series) for every census
+  1790-1890. One CSV + codebook per dataset; 1840/1880/1890 split total vs urban
+  across two datasets, other years carry both tables in one file.
+  Verified: national urban share per year matches the Census Bureau's published
+  series (1790 5.13% ... 1890 35.28%); state counts 15 (1790) -> 51 (1890).
+  Citation requirement: publications using these figures must cite IPUMS NHGIS
+  (https://www.nhgis.org/frequently-asked-questions-faq).
