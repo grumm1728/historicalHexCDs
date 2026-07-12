@@ -1,0 +1,42 @@
+[
+ {
+  "congress": 68,
+  "fips": "06",
+  "seats": 11,
+  "urban_tiles": 6,
+  "anchors": [
+   "San Francisco",
+   "Los Angeles"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.2727272727272725,
+  "internal_edges_proto": 6.181818181818182
+ },
+ {
+  "congress": 68,
+  "fips": "17",
+  "seats": 27,
+  "urban_tiles": 14,
+  "anchors": [
+   "Chicago"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 5.925925925925926,
+  "internal_edges_proto": 6.37037037037037
+ },
+ {
+  "congress": 68,
+  "fips": "36",
+  "seats": 43,
+  "urban_tiles": 26,
+  "anchors": [
+   "New York"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.0,
+  "internal_edges_proto": 6.4186046511627906
+ }
+]
