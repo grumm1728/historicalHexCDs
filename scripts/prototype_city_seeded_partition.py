@@ -242,19 +242,31 @@ def plot_state(cong: int, fips: str, out_png: Path):
     palette = ["#7a1f1f", "#1f4e7a", "#3a6b35", "#7a5c1f"]
     for i, nm in enumerate(names):
         colors[nm] = palette[i % len(palette)]
+    from matplotlib.colors import to_rgb
+    from shapely.ops import unary_union
+
+    def shade(base_hex: str, k: int):
+        # cycle 4 lightness steps per tile so neighbouring districts of one
+        # cluster stay distinguishable
+        r, g, b = to_rgb(base_hex)
+        f = (k % 4) * 0.13
+        return (r + (1 - r) * f, g + (1 - g) * f, b + (1 - b) * f)
+
     fig, ax = plt.subplots(figsize=(9, 9))
     R = None
-    for tile, tag in zip(tiles, tags):
+    for i, (tile, tag) in enumerate(zip(tiles, tags)):
+        face = shade(colors[tag], i)
         for qr in tile:
             f = _HEX_BY_QR[qr]
             x, y = f["_xy"]
             R = f["properties"]["R"]
             ax.add_patch(RegularPolygon((x, y), 6, radius=R, orientation=0,
-                                        facecolor=colors[tag], edgecolor="white", linewidth=0.6))
-        # heavier outline per tile centroid marker
-        cx = sum(_HEX_BY_QR[q]["_xy"][0] for q in tile) / 5
-        cy = sum(_HEX_BY_QR[q]["_xy"][1] for q in tile) / 5
-        ax.plot(cx, cy, marker=".", ms=2, color="black", alpha=0.4)
+                                        facecolor=face, edgecolor="none"))
+        # heavy outline around each pentahex so district boundaries are visible
+        merged = unary_union([_HEX_BY_QR[qr]["_geom"] for qr in tile])
+        for poly in getattr(merged, "geoms", [merged]):
+            xs, ys = poly.exterior.xy
+            ax.plot(xs, ys, color="white", linewidth=1.8, solid_capstyle="round")
     for nm, (x, y), n in _PLOT_ANCHORS.get((cong, fips), []):
         ax.plot(x, y, marker="*", ms=22, color="black", mec="white")
         ax.annotate(f"{nm} ({n} CDs)", (x, y), textcoords="offset points", xytext=(10, 10), fontsize=11)
