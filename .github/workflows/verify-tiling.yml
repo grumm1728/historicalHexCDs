@@ -1,0 +1,55 @@
+name: Verify Tiling
+
+on:
+  pull_request:
+    branches: ["main"]
+
+concurrency:
+  group: verify-tiling-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: "Verify tiling (warnings: 0)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Path-filtering the trigger itself would mean this required check never
+      # reports on PRs that don't touch these paths, which leaves branch
+      # protection waiting forever. Instead always run this job, but only pay
+      # for the full pipeline (~20-35 min, see CLAUDE.md) when it's relevant.
+      - name: Check for tiler-relevant changes
+        id: changes
+        run: |
+          if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" \
+             | grep -qE '^(scripts/|data_raw/|requirements\.txt$)'; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "relevant=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Python
+        if: steps.changes.outputs.relevant == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Python dependencies
+        if: steps.changes.outputs.relevant == 'true'
+        run: pip install -r requirements.txt
+
+      - name: "Run full historical pipeline (must end with warnings: 0)"
+        if: steps.changes.outputs.relevant == 'true'
+        run: python scripts/build_all_historical.py --allow-modern-outline-fallback
+
+      - name: Show tiling warning summary
+        if: always() && steps.changes.outputs.relevant == 'true'
+        run: cat data_processed/tiling_warnings.json || true
+
+      - name: Skip (no scripts/data_raw/requirements changes in this PR)
+        if: steps.changes.outputs.relevant != 'true'
+        run: echo "No tiler-relevant paths changed — skipping the full pipeline run."
