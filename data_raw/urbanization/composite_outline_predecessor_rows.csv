@@ -1,0 +1,4 @@
+parent_state_fips,parent_state_abbr,census_year,extra_row_name,covers_children,source_file,total_pop_col,total_pop_value,urban_pop_col,urban_pop_value
+37,NC,1790,Southwest Territory,TN,nhgis0001_csv/nhgis0001_ds1_1790_state.csv,AAA001,35691,AAK001,0
+13,GA,1800,Mississippi Territory,MS+AL,nhgis0001_csv/nhgis0001_ds2_1800_state.csv,AAS001,8850,AAV001,0
+13,GA,1810,Mississippi Territory,MS+AL,nhgis0001_csv/nhgis0001_ds3_1810_state.csv,AA1001,40352,AA4001,0
