@@ -1,0 +1,655 @@
+[
+ {
+  "congress": 1,
+  "fips": "36",
+  "seats": 6,
+  "urban_tiles": 1,
+  "anchors": [
+   "New York City"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.333333333333333,
+  "internal_edges_proto": 6.333333333333333
+ },
+ {
+  "congress": 2,
+  "fips": "36",
+  "seats": 6,
+  "urban_tiles": 1,
+  "anchors": [
+   "New York City"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.333333333333333,
+  "internal_edges_proto": 6.333333333333333
+ },
+ {
+  "congress": 3,
+  "fips": "36",
+  "seats": 10,
+  "urban_tiles": 1,
+  "anchors": [
+   "New York City"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.4,
+  "internal_edges_proto": 6.4
+ },
+ {
+  "congress": 4,
+  "fips": "36",
+  "seats": 10,
+  "urban_tiles": 1,
+  "anchors": [
+   "New York City"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.4,
+  "internal_edges_proto": 6.4
+ },
+ {
+  "congress": 8,
+  "fips": "36",
+  "seats": 17,
+  "urban_tiles": 2,
+  "anchors": [
+   "New York City"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.117647058823529,
+  "internal_edges_proto": 6.176470588235294
+ },
+ {
+  "congress": 13,
+  "fips": "36",
+  "seats": 27,
+  "urban_tiles": 3,
+  "anchors": [
+   "New York City"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.333333333333333,
+  "internal_edges_proto": 5.518518518518518
+ },
+ {
+  "congress": 15,
+  "fips": "36",
+  "seats": 27,
+  "urban_tiles": 3,
+  "anchors": [
+   "New York City"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.333333333333333,
+  "internal_edges_proto": 5.518518518518518
+ },
+ {
+  "congress": 16,
+  "fips": "36",
+  "seats": 27,
+  "urban_tiles": 3,
+  "anchors": [
+   "New York City"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.333333333333333,
+  "internal_edges_proto": 5.518518518518518
+ },
+ {
+  "congress": 17,
+  "fips": "36",
+  "seats": 27,
+  "urban_tiles": 3,
+  "anchors": [
+   "New York City"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.333333333333333,
+  "internal_edges_proto": 5.518518518518518
+ },
+ {
+  "congress": 18,
+  "fips": "36",
+  "seats": 34,
+  "urban_tiles": 4,
+  "anchors": [
+   "New York City+Brooklyn"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.235294117647059,
+  "internal_edges_proto": 6.029411764705882
+ },
+ {
+  "congress": 23,
+  "fips": "36",
+  "seats": 40,
+  "urban_tiles": 6,
+  "anchors": [
+   "New York City+Brooklyn",
+   "Albany+Troy"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 5.9,
+  "internal_edges_proto": 5.775
+ },
+ {
+  "congress": 28,
+  "fips": "36",
+  "seats": 34,
+  "urban_tiles": 7,
+  "anchors": [
+   "New York City+Brooklyn",
+   "Albany+Troy"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 5.735294117647059,
+  "internal_edges_proto": 5.705882352941177
+ },
+ {
+  "congress": 33,
+  "fips": "36",
+  "seats": 33,
+  "urban_tiles": 10,
+  "anchors": [
+   "New York City+Brooklyn",
+   "Albany",
+   "Buffalo"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.151515151515151,
+  "internal_edges_proto": 6.2727272727272725
+ },
+ {
+  "congress": 33,
+  "fips": "48",
+  "seats": 2,
+  "outcome": "no-anchor-share"
+ },
+ {
+  "congress": 38,
+  "fips": "36",
+  "seats": 31,
+  "urban_tiles": 12,
+  "anchors": [
+   "New York City+Brooklyn",
+   "Buffalo",
+   "Albany"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.258064516129032,
+  "internal_edges_proto": 6.387096774193548
+ },
+ {
+  "congress": 38,
+  "fips": "48",
+  "seats": 4,
+  "outcome": "no-anchor-share"
+ },
+ {
+  "congress": 43,
+  "fips": "36",
+  "seats": 33,
+  "urban_tiles": 16,
+  "anchors": [
+   "New York City+Brooklyn",
+   "Buffalo",
+   "Albany",
+   "Rochester"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.03030303030303,
+  "internal_edges_proto": 6.333333333333333
+ },
+ {
+  "congress": 43,
+  "fips": "48",
+  "seats": 6,
+  "outcome": "no-anchor-share"
+ },
+ {
+  "congress": 48,
+  "fips": "36",
+  "seats": 34,
+  "urban_tiles": 19,
+  "anchors": [
+   "New York City+Brooklyn",
+   "Buffalo",
+   "Albany",
+   "Rochester"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.176470588235294,
+  "internal_edges_proto": 6.382352941176471
+ },
+ {
+  "congress": 48,
+  "fips": "48",
+  "seats": 11,
+  "urban_tiles": 1,
+  "anchors": [
+   "Galveston"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.090909090909091,
+  "internal_edges_proto": 6.363636363636363
+ },
+ {
+  "congress": 53,
+  "fips": "36",
+  "seats": 34,
+  "urban_tiles": 22,
+  "anchors": [
+   "New York City+Brooklyn",
+   "Buffalo",
+   "Rochester",
+   "Albany"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.264705882352941,
+  "internal_edges_proto": 6.529411764705882
+ },
+ {
+  "congress": 53,
+  "fips": "48",
+  "seats": 13,
+  "urban_tiles": 2,
+  "anchors": [
+   "Dallas",
+   "San Antonio"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.076923076923077,
+  "internal_edges_proto": 6.384615384615385
+ },
+ {
+  "congress": 58,
+  "fips": "36",
+  "seats": 37,
+  "urban_tiles": 27,
+  "anchors": [
+   "New York City",
+   "Buffalo",
+   "Rochester",
+   "Syracuse",
+   "Albany"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 1,
+  "internal_edges_base": 6.081081081081081,
+  "internal_edges_proto": 6.513513513513513
+ },
+ {
+  "congress": 58,
+  "fips": "48",
+  "seats": 16,
+  "urban_tiles": 3,
+  "anchors": [
+   "San Antonio",
+   "Houston",
+   "Dallas"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.3125,
+  "internal_edges_proto": 6.0
+ },
+ {
+  "congress": 63,
+  "fips": "36",
+  "seats": 43,
+  "urban_tiles": 34,
+  "anchors": [
+   "New York City",
+   "Buffalo",
+   "Rochester",
+   "Syracuse"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 1,
+  "internal_edges_base": 6.0,
+  "internal_edges_proto": 6.534883720930233
+ },
+ {
+  "congress": 63,
+  "fips": "48",
+  "seats": 18,
+  "urban_tiles": 4,
+  "anchors": [
+   "Dallas+Fort Worth",
+   "San Antonio",
+   "Houston"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.388888888888889,
+  "internal_edges_proto": 6.333333333333333
+ },
+ {
+  "congress": 73,
+  "fips": "36",
+  "seats": 45,
+  "urban_tiles": 38,
+  "anchors": [
+   "New York City+Yonkers",
+   "Buffalo",
+   "Rochester"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.311111111111111,
+  "internal_edges_proto": 6.6
+ },
+ {
+  "congress": 73,
+  "fips": "48",
+  "seats": 21,
+  "urban_tiles": 9,
+  "anchors": [
+   "Dallas+Fort Worth",
+   "Houston",
+   "San Antonio"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.380952380952381,
+  "internal_edges_proto": 6.142857142857143
+ },
+ {
+  "congress": 78,
+  "fips": "36",
+  "seats": 45,
+  "urban_tiles": 37,
+  "anchors": [
+   "New York City+Yonkers",
+   "Buffalo",
+   "Rochester",
+   "Syracuse"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 1,
+  "internal_edges_base": 5.822222222222222,
+  "internal_edges_proto": 6.355555555555555
+ },
+ {
+  "congress": 78,
+  "fips": "48",
+  "seats": 21,
+  "urban_tiles": 10,
+  "anchors": [
+   "Dallas+Fort Worth",
+   "Houston",
+   "San Antonio",
+   "El Paso"
+  ],
+  "outcome": "bail"
+ },
+ {
+  "congress": 83,
+  "fips": "36",
+  "seats": 43,
+  "urban_tiles": 37,
+  "anchors": [
+   "New York City+Yonkers",
+   "Buffalo",
+   "Rochester",
+   "Syracuse"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 5.790697674418604,
+  "internal_edges_proto": 6.651162790697675
+ },
+ {
+  "congress": 83,
+  "fips": "48",
+  "seats": 22,
+  "urban_tiles": 14,
+  "anchors": [
+   "Dallas+Fort Worth",
+   "Houston",
+   "San Antonio+Austin"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 5.954545454545454,
+  "internal_edges_proto": 6.409090909090909
+ },
+ {
+  "congress": 88,
+  "fips": "36",
+  "seats": 41,
+  "urban_tiles": 35,
+  "anchors": [
+   "New York City+Yonkers",
+   "Buffalo",
+   "Rochester",
+   "Syracuse"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 5.926829268292683,
+  "internal_edges_proto": 6.7073170731707314
+ },
+ {
+  "congress": 88,
+  "fips": "48",
+  "seats": 23,
+  "urban_tiles": 17,
+  "anchors": [
+   "Dallas+Fort Worth",
+   "Houston",
+   "San Antonio",
+   "El Paso"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.217391304347826,
+  "internal_edges_proto": 6.391304347826087
+ },
+ {
+  "congress": 93,
+  "fips": "36",
+  "seats": 39,
+  "urban_tiles": 33,
+  "anchors": [
+   "New York City+Yonkers",
+   "Buffalo",
+   "Rochester"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.17948717948718,
+  "internal_edges_proto": 6.666666666666667
+ },
+ {
+  "congress": 93,
+  "fips": "48",
+  "seats": 24,
+  "urban_tiles": 19,
+  "anchors": [
+   "Dallas+Fort Worth",
+   "Houston",
+   "San Antonio",
+   "El Paso"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 2,
+  "internal_edges_base": 5.958333333333333,
+  "internal_edges_proto": 6.083333333333333
+ },
+ {
+  "congress": 98,
+  "fips": "36",
+  "seats": 34,
+  "urban_tiles": 29,
+  "anchors": [
+   "New York City+Yonkers",
+   "Buffalo",
+   "Rochester",
+   "Syracuse"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 5.794117647058823,
+  "internal_edges_proto": 6.617647058823529
+ },
+ {
+  "congress": 98,
+  "fips": "48",
+  "seats": 27,
+  "urban_tiles": 22,
+  "anchors": [
+   "Houston",
+   "Dallas+Fort Worth",
+   "San Antonio",
+   "El Paso"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.037037037037037,
+  "internal_edges_proto": 6.518518518518518
+ },
+ {
+  "congress": 103,
+  "fips": "36",
+  "seats": 31,
+  "urban_tiles": 26,
+  "anchors": [
+   "New York City+Yonkers",
+   "Buffalo",
+   "Rochester"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 5.935483870967742,
+  "internal_edges_proto": 6.387096774193548
+ },
+ {
+  "congress": 103,
+  "fips": "48",
+  "seats": 30,
+  "urban_tiles": 24,
+  "anchors": [
+   "Houston",
+   "San Antonio+Austin",
+   "Dallas",
+   "El Paso"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.433333333333334,
+  "internal_edges_proto": 6.566666666666666
+ },
+ {
+  "congress": 108,
+  "fips": "36",
+  "seats": 29,
+  "urban_tiles": 25,
+  "anchors": [
+   "New York City+Yonkers",
+   "Buffalo",
+   "Rochester"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 2,
+  "internal_edges_base": 5.9655172413793105,
+  "internal_edges_proto": 6.310344827586207
+ },
+ {
+  "congress": 108,
+  "fips": "48",
+  "seats": 32,
+  "urban_tiles": 26,
+  "anchors": [
+   "Houston",
+   "San Antonio+Austin",
+   "Dallas",
+   "El Paso"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 6.28125,
+  "internal_edges_proto": 6.71875
+ },
+ {
+  "congress": 113,
+  "fips": "36",
+  "seats": 27,
+  "urban_tiles": 24,
+  "anchors": [
+   "New York City+Yonkers",
+   "Buffalo",
+   "Rochester"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 5.518518518518518,
+  "internal_edges_proto": 6.518518518518518
+ },
+ {
+  "congress": 113,
+  "fips": "48",
+  "seats": 36,
+  "urban_tiles": 30,
+  "anchors": [
+   "Houston",
+   "Dallas+Fort Worth",
+   "San Antonio",
+   "Austin"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 2,
+  "internal_edges_base": 6.25,
+  "internal_edges_proto": 6.388888888888889
+ },
+ {
+  "congress": 118,
+  "fips": "36",
+  "seats": 26,
+  "urban_tiles": 23,
+  "anchors": [
+   "New York City+Yonkers",
+   "Buffalo",
+   "Rochester"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 0,
+  "internal_edges_base": 5.923076923076923,
+  "internal_edges_proto": 6.423076923076923
+ },
+ {
+  "congress": 118,
+  "fips": "48",
+  "seats": 38,
+  "urban_tiles": 32,
+  "anchors": [
+   "Houston",
+   "Dallas+Fort Worth",
+   "San Antonio",
+   "Austin"
+  ],
+  "outcome": "ok",
+  "relaxed_tiles": 1,
+  "internal_edges_base": 6.2368421052631575,
+  "internal_edges_proto": 6.394736842105263
+ }
+]
