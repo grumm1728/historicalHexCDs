@@ -446,6 +446,31 @@ Algorithm (in order):
    tiles) is redistributed so the **state union equals the outline**: tiny slivers merge
    into the best-adjacent tile, larger components split across adjacent tiles by nearest
    tile (`_nearest_tile_split`, a Voronoi of adjacent tiles' boundary seeds).
+8. **Urban/rural labels** (label-only; never touches geometry) — see below.
+
+## Urban/rural district labels (issue #7)
+
+Each CD feature carries `is_urban`, `urban_cluster`, `urban_rank`, `urban_cluster_seats`.
+Three modules, decided on wayfinder map #12:
+- `scripts/urban_seats.py` — per state/Congress count: `round-half-up(urban_share × seats)`,
+  census data spliced across four eras, stepped on the apportionment cutover; composite
+  outline states (NC/GA) sum predecessor-territory rows; the pre-statehood Maine block is 0%.
+- `scripts/urban_clusters.py` — top `min(5, urban_seats)` CESTA cities projected through the
+  state's **live** layout record (AK/HI via the shared `inset_lonlat`), single-linkage at
+  2.9R, seats by population share. Then `label_urban_tiles`: nearest-first contiguous BFS
+  from each anchor over **rendered**-tile adjacency (cell adjacency lies where the outline
+  clip removed the shared cells), growing clusters **round-robin** (largest first within a
+  round) with a preference for tiles in the cluster's own anchor-Voronoi cell.
+- **Why round-robin, not #19's largest-first-to-completion:** growing the biggest cluster to
+  completion swallowed smaller clusters' cities (C119 San Diego seeded in the Central Valley,
+  Austin out west; 839 seeds >4R from their anchor, up to 30R). Round-robin: 20, max 5R.
+- **Spill-over:** a cluster can be walled in by neighbours' regions before reaching its seats.
+  Regions stay contiguous, so it stops short and its leftover seats go to clusters that can
+  still grow (state total stays exact). ~100 state-Congresses; each event is written to
+  `data_processed/urban_label_notes.json` for a future map-footnotes section.
+- The merge radius is deliberately 2.9R: SF–San Jose (3.07R) stays separate because no radius
+  can merge it while keeping San Antonio–Austin (3.05R) apart. Don't retune it to fix one pair.
+- Tests: `python -m pytest tests` (not run in CI).
 
 ## Invariants & gotchas
 

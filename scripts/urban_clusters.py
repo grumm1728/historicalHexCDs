@@ -198,3 +198,112 @@ def urban_clusters(
         if seats > 0:
             out.append(UrbanCluster("+".join(names), xy, pop, seats, names))
     return out
+
+
+# ---------------------------------------------------------------- label-only mechanism (#19/#28)
+
+@dataclass(frozen=True)
+class UrbanLabel:
+    cluster: str   # UrbanCluster.name
+    rank: int      # BFS claim order within the cluster: 0 = the tile nearest the anchor
+    seats: int     # tiles the cluster finally holds (rank / (seats - 1) drives #29's gradient)
+
+
+@dataclass(frozen=True)
+class UrbanSpill:
+    """A cluster walled in by larger clusters' regions before reaching its seat count;
+    its leftover seats went to clusters that could still grow (kept for map footnotes)."""
+    cluster: str
+    allocated: int
+    placed: int
+    recipients: tuple[tuple[str, int], ...]  # (cluster name, extra seats taken)
+    detached: int = 0  # seats no region could reach, placed as a detached piece of the largest
+
+
+def label_urban_tiles(
+    centers: list[tuple[float, float]],
+    adjacency: list[set[int]],
+    clusters: list[UrbanCluster],
+) -> tuple[list[UrbanLabel | None], list[UrbanSpill]]:
+    """Post-hoc urban labels for a state's final tiles (never touches geometry).
+
+    Each cluster grows a contiguous region by nearest-first BFS from its anchor: seed at
+    the unclaimed tile nearest the anchor, then repeatedly claim the unclaimed tile
+    adjacent to the region that is nearest the anchor. Unclaimed tiles are rural.
+
+    Round-robin: clusters grow one tile per round (largest first within a round) rather
+    than each growing to completion in turn. Largest-first-to-completion (#19 as first
+    written) let a big cluster swallow a smaller cluster's city, which then seeded far
+    away — C119 San Diego landed in the Central Valley, Austin out west; 839 cluster seeds
+    ended >4R from their anchor (up to 30R). Round-robin cuts that to 20 (max 5R).
+    Voronoi preference: among frontier tiles, a cluster first takes those nearer its own
+    anchor than any other cluster's, so neighbours don't cut across each other's cities.
+
+    Spill-over: a region can be walled in (no unclaimed neighbour left) before it reaches
+    its seat count. Regions stay contiguous, so it stops short and its leftover seats go,
+    largest cluster first, to clusters that can still grow; the state's urban total stays
+    exact. Over all 119 Congresses this moves ~380 seats in ~100 state-Congresses; each
+    event is returned as an `UrbanSpill` for map footnotes.
+
+    Detached last resort: if every region is walled in and seats remain (only Michigan,
+    C83-87/C93-97 — the Lower Peninsula fills and the rest of the state is the separate
+    Upper Peninsula), the largest cluster reseeds at the unclaimed tile nearest its anchor
+    so the state total stays exact; recorded as `UrbanSpill.detached`.
+    """
+    owner: list[int | None] = [None] * len(centers)
+    regions: list[list[int]] = [[] for _ in clusters]
+    frontiers: list[set[int]] = [set() for _ in clusters]
+
+    def dist(k: int, i: int) -> float:
+        ax, ay = clusters[k].xy
+        return math.hypot(centers[i][0] - ax, centers[i][1] - ay)
+
+    # nearest anchor per tile (ties -> larger cluster) for the Voronoi preference
+    nearest = [min(range(len(clusters)), key=lambda k: (dist(k, i), k)) for i in range(len(centers))]
+
+    def claim_next(k: int, detach: bool = False) -> bool:
+        candidates = [i for i in frontiers[k] if owner[i] is None]
+        candidates = [i for i in candidates if nearest[i] == k] or candidates
+        if not candidates:
+            if regions[k] and not detach:
+                return False  # walled in
+            candidates = [i for i in range(len(centers)) if owner[i] is None]
+            if not candidates:
+                return False  # state has fewer tiles than urban seats (partial tiling)
+        # ties broken by tile index so the labelling is deterministic
+        pick = min(candidates, key=lambda i: (dist(k, i), i))
+        owner[pick] = k
+        regions[k].append(pick)
+        frontiers[k] |= adjacency[pick]
+        return True
+
+    growing = True
+    while growing:
+        growing = False
+        for k, cl in enumerate(clusters):
+            if len(regions[k]) < cl.seats and claim_next(k):
+                growing = True
+
+    short = [(k, cl.seats - len(regions[k])) for k, cl in enumerate(clusters) if len(regions[k]) < cl.seats]
+    extra = [0] * len(clusters)
+    pool = sum(n for _, n in short)
+    for k in range(len(clusters)):
+        while pool and claim_next(k):
+            extra[k] += 1
+            pool -= 1
+    detached = 0
+    while pool and clusters and claim_next(0, detach=True):
+        extra[0] += 1
+        detached += 1
+        pool -= 1
+    recipients = tuple((clusters[k].name, n) for k, n in enumerate(extra) if n)
+    spills = [
+        UrbanSpill(clusters[k].name, clusters[k].seats, clusters[k].seats - n, recipients, detached)
+        for k, n in short
+    ]
+
+    labels: list[UrbanLabel | None] = [None] * len(centers)
+    for k, region in enumerate(regions):
+        for rank, i in enumerate(region):
+            labels[i] = UrbanLabel(clusters[k].name, rank, len(region))
+    return labels, spills
