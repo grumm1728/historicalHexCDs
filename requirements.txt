@@ -1,3 +1,4 @@
 pyshp>=2.3.1
 shapely>=2.0
 pyproj>=3.6
+openpyxl>=3.1
