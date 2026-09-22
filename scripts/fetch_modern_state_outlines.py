@@ -145,6 +145,16 @@ def to_multipolygon(geom_obj):
     raise ValueError(f"Unexpected geometry: {type(geom_obj)}")
 
 
+def inset_lonlat(abbr: str, lon: float, lat: float) -> tuple[float, float]:
+    """The AK/HI lower-48 inset move for one WGS84 point (identity for other states).
+    Shared with `urban_clusters` so city anchors land inside the inset outlines."""
+    if abbr == "AK":
+        return (lon + 152.0) * 0.35 - 118.0, (lat - 64.0) * 0.35 + 27.0
+    if abbr == "HI":
+        return lon + 49.0, lat + 5.0
+    return lon, lat
+
+
 def apply_alaska_hawaii_inset(abbr: str, geom):
     """Lower-48 inset placement for AK and HI (in WGS84 degrees, applied pre-WM).
 
@@ -152,24 +162,18 @@ def apply_alaska_hawaii_inset(abbr: str, geom):
     transform doesn't produce nonsense coordinates.
     """
     if abbr == "AK":
-        clipped = geom.intersection(box(-180.0, 50.0, -129.0, 72.0))
-        if clipped.is_empty:
-            clipped = geom
-        def t(x, y, z=None):
-            x2 = (x + 152.0) * 0.35 - 118.0
-            y2 = (y - 64.0) * 0.35 + 27.0
-            return (x2, y2) if z is None else (x2, y2, z)
-        return shapely_transform(t, clipped)
-    if abbr == "HI":
-        clipped = geom.intersection(box(-160.5, 18.5, -154.0, 22.5))
-        if clipped.is_empty:
-            clipped = geom
-        def t(x, y, z=None):
-            x2 = x + 49.0
-            y2 = y + 5.0
-            return (x2, y2) if z is None else (x2, y2, z)
-        return shapely_transform(t, clipped)
-    return geom
+        clip = box(-180.0, 50.0, -129.0, 72.0)
+    elif abbr == "HI":
+        clip = box(-160.5, 18.5, -154.0, 22.5)
+    else:
+        return geom
+    clipped = geom.intersection(clip)
+    if clipped.is_empty:
+        clipped = geom
+    def t(x, y, z=None):
+        x2, y2 = inset_lonlat(abbr, x, y)
+        return (x2, y2) if z is None else (x2, y2, z)
+    return shapely_transform(t, clipped)
 
 
 def reproject_geom_to_wm(geom):
