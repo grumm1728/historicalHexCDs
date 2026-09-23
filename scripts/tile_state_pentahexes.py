@@ -46,6 +46,9 @@ from shapely.geometry import MultiPoint, MultiPolygon, Point, Polygon, mapping, 
 from shapely.ops import unary_union, voronoi_diagram
 from shapely.strtree import STRtree
 
+from urban_clusters import label_urban_tiles, urban_clusters
+from urban_seats import urban_seats
+
 ROOT = Path(__file__).resolve().parent.parent
 GENERATOR_VERSION = "v6-pentahex-scaled-outlines"
 
@@ -1670,6 +1673,7 @@ def main() -> None:
     parser.add_argument("--states-out-root", default=str(ROOT / "data_processed" / "polyhex_states_by_congress"))
     parser.add_argument("--outlines-out-root", default=str(ROOT / "data_processed" / "state_outlines_by_congress"))
     parser.add_argument("--warnings-out", default=str(ROOT / "data_processed" / "tiling_warnings.json"))
+    parser.add_argument("--urban-notes-out", default=str(ROOT / "data_processed" / "urban_label_notes.json"))
     parser.add_argument(
         "--allow-warnings",
         action="store_true",
@@ -1737,6 +1741,7 @@ def main() -> None:
     outlines_root.mkdir(parents=True, exist_ok=True)
 
     warnings: list[dict] = []
+    urban_notes: list[dict] = []  # urban spill-over events, kept for map footnotes
     summary = {"generator_version": GENERATOR_VERSION, "timeline": []}
 
     # Fixed national center for gentle compaction (computed once from all modern
@@ -2044,8 +2049,39 @@ def main() -> None:
             # outline, then redistribute the leftover gap so the state snaps to its
             # outline (option-3 snap-to-edge).
             tile_geoms = render_state_tiles(tiles, hex_by_qr, scaled_outline, boundary_cells, R, hex_area)
+
+            # Urban/rural labels (#19 label-only mechanism): a post-hoc pass over the final
+            # tiles — geometry is already fixed. Clusters are anchored through this
+            # Congress's live layout record. The pre-statehood Maine block is 0% urban.
+            urban_labels = [None] * len(tiles)
+            n_urban = urban_seats(fips, congress_number, seats)
+            if n_urban > 0 and layout_rec is not None and tiles:
+                # Adjacency from the RENDERED tiles, not hex cells: two tiles can share cells
+                # only in overshoot the outline clip removed, leaving the drawn districts apart.
+                grown = [g.buffer(1.0) for g in tile_geoms]
+                tree = STRtree(grown)
+                tile_adj = [
+                    {int(j) for j in tree.query(g, predicate="intersects")} - {i}
+                    for i, g in enumerate(grown)
+                ]
+                centers = [(g.centroid.x, g.centroid.y) for g in tile_geoms]
+                clusters = urban_clusters(fips, congress_number, layout_rec, n_urban)
+                urban_labels, spills = label_urban_tiles(centers, tile_adj, clusters)
+                for sp in spills:
+                    urban_notes.append({
+                        "congress": congress_number,
+                        "state_fips": fips,
+                        "state_abbr": str(meta_by_fips[fips]["state_abbr"]).strip().upper(),
+                        "kind": "spill",
+                        "cluster": sp.cluster,
+                        "allocated_seats": sp.allocated,
+                        "placed_seats": sp.placed,
+                        "recipients": [{"cluster": name, "seats": n} for name, n in sp.recipients],
+                        "detached_seats": sp.detached,
+                    })
+
             cd_feats_for_state: list[dict] = []
-            for idx, (tile, geom) in enumerate(zip(tiles, tile_geoms), start=1):
+            for idx, (tile, geom, urban) in enumerate(zip(tiles, tile_geoms, urban_labels), start=1):
                 touches_boundary = any(qr in boundary_cells for qr in tile)
                 ratio = geom.area / (5.0 * hex_area) if hex_area > 0 else 0.0
                 cd_feats_for_state.append(
@@ -2063,6 +2099,10 @@ def main() -> None:
                             "hex_count": len(tile),
                             "is_boundary_tile": bool(touches_boundary),
                             "tile_area_ratio": ratio,
+                            "is_urban": urban is not None,
+                            "urban_cluster": urban.cluster if urban else None,
+                            "urban_rank": urban.rank if urban else None,
+                            "urban_cluster_seats": urban.seats if urban else None,
                             "source_seat_version": str(row.get("source_seat_version", "unknown")),
                             "generator_version": GENERATOR_VERSION,
                         },
@@ -2253,6 +2293,8 @@ def main() -> None:
 
     (states_root / "_index.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     Path(args.warnings_out).write_text(json.dumps({"warnings": warnings}, indent=2), encoding="utf-8")
+    Path(args.urban_notes_out).write_text(json.dumps({"notes": urban_notes}, indent=2), encoding="utf-8")
+    print(f"Urban labels: {len(urban_notes)} spill-over note(s) -> {args.urban_notes_out}")
     print(
         f"Done. Wrote tiling outputs for {len(summary['timeline'])} Congresses; "
         f"warnings: {len(warnings)} (layout reused for {reused_count} identical-input Congresses)"
