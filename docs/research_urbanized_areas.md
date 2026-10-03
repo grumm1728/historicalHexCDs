@@ -65,6 +65,16 @@ Keep it to large UAs and do not chain through small ones. Pick one of:
 
 Whichever is chosen, the NHGIS extract below closes the 1970/1980 gap.
 
+**Decision (2026-10-02, Scott): Option A′ with per-area anchors.** This amends #33
+decisions 3 and 6, and #36 carries the full spec.
+- 1990–2020: areas that are both ≥ 500,000 link at a boundary gap of ≤ 5 km.
+- 1950–1980: the same areas link at a first-named-city distance of ≤ 100 km.
+- Small areas never link, and never bridge a chain.
+- Linking sets only national ranking and per-portion seat rounding. Anchors stay one per
+  original area's in-state portion, and the merged seats are split among them by
+  population (largest remainder).
+- Baltimore+DC and Boston+Providence merging is accepted.
+
 ## 1. What exists per census year
 
 ### 1950 — the urbanized-area concept is introduced
