@@ -25,6 +25,12 @@ ua_state_portions.csv  (GENERATED -- python scripts/normalize_urbanized_areas.py
   split was not transcribed; row carries the whole area under the first-named
   state -- all such areas rank 46th or lower in 1960).
 
+ua_large_area_gaps.csv  (GENERATED -- python scripts/build_ua_large_area_gaps.py, #36)
+  Boundary gap (km, EPSG:5070) between every pair of urbanized areas of 500,000+
+  within 60 km of each other, 1990-2020, from the boundary files below. The metro
+  module (scripts/metro_seats.py) links pairs with gap <= 5 km; precomputing keeps
+  geopandas out of the tiler. Columns: year, ua_code_a, ua_code_b, gap_km.
+
 -------------------------------------------------------------------------------
 DEFINITIONS PER YEAR (sources in the research note)
   1950  UA concept introduced: a central city of 50,000+ plus its contiguous

@@ -46,7 +46,8 @@ from shapely.geometry import MultiPoint, MultiPolygon, Point, Polygon, mapping, 
 from shapely.ops import unary_union, voronoi_diagram
 from shapely.strtree import STRtree
 
-from urban_clusters import label_urban_tiles, urban_clusters
+from metro_seats import metro_clusters
+from urban_clusters import label_urban_tiles
 from urban_seats import urban_seats
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -2050,12 +2051,14 @@ def main() -> None:
             # outline (option-3 snap-to-edge).
             tile_geoms = render_state_tiles(tiles, hex_by_qr, scaled_outline, boundary_cells, R, hex_area)
 
-            # Urban/rural labels (#19 label-only mechanism): a post-hoc pass over the final
-            # tiles — geometry is already fixed. Clusters are anchored through this
-            # Congress's live layout record. The pre-statehood Maine block is 0% urban.
+            # Metro labels (#19 label-only mechanism, #36 metro seats): a post-hoc pass over
+            # the final tiles — geometry is already fixed. Anchors are projected through this
+            # Congress's live layout record. The pre-statehood Maine block gets 0 metro seats.
+            # The #26 Census-urban count is exported alongside (two-tier option).
             urban_labels = [None] * len(tiles)
-            n_urban = urban_seats(fips, congress_number, seats)
-            if n_urban > 0 and layout_rec is not None and tiles:
+            census_urban = urban_seats(fips, congress_number, seats)
+            clusters = metro_clusters(fips, congress_number, layout_rec, seats) if layout_rec is not None else []
+            if clusters and tiles:
                 # Adjacency from the RENDERED tiles, not hex cells: two tiles can share cells
                 # only in overshoot the outline clip removed, leaving the drawn districts apart.
                 grown = [g.buffer(1.0) for g in tile_geoms]
@@ -2065,7 +2068,6 @@ def main() -> None:
                     for i, g in enumerate(grown)
                 ]
                 centers = [(g.centroid.x, g.centroid.y) for g in tile_geoms]
-                clusters = urban_clusters(fips, congress_number, layout_rec, n_urban)
                 urban_labels, spills = label_urban_tiles(centers, tile_adj, clusters)
                 for sp in spills:
                     urban_notes.append({
@@ -2099,10 +2101,11 @@ def main() -> None:
                             "hex_count": len(tile),
                             "is_boundary_tile": bool(touches_boundary),
                             "tile_area_ratio": ratio,
-                            "is_urban": urban is not None,
-                            "urban_cluster": urban.cluster if urban else None,
-                            "urban_rank": urban.rank if urban else None,
-                            "urban_cluster_seats": urban.seats if urban else None,
+                            "is_metro": urban is not None,
+                            "metro_cluster": urban.cluster if urban else None,
+                            "metro_rank": urban.rank if urban else None,
+                            "metro_cluster_seats": urban.seats if urban else None,
+                            "state_census_urban_seats": census_urban,
                             "source_seat_version": str(row.get("source_seat_version", "unknown")),
                             "generator_version": GENERATOR_VERSION,
                         },
