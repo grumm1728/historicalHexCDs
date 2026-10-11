@@ -1,0 +1,24 @@
+
+May 2002
+Geography Division
+U.S. Census Bureau
+
+
+AREA MEASUREMENT
+Area measurement data provide the size, in square units 
+(metric and nonmetric) of geographic entities for which 
+the U.S. Census Bureau tabulates and disseminates data.
+
+Area is calculated from the specific boundary recorded for 
+each entity in the U.S. Census Bureau's geographic database. 
+These area measurements are recorded as whole square meters. 
+
+To convert square meters to square kilometers, divide by 1,000,000. 
+To convert square kilometers to square miles, divide by 2.58999. 
+To convert square meters to square miles, divide by 2,589,988.
+
+
+----------------------------------------
+The information above was extracted from 
+Appendix A of the Census 2000 Summary File
+1 Technical Documentation.

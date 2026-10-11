@@ -1,0 +1,214 @@
+rank,ua_name,population
+1,New York-Northeastern New Jersey,14114927
+2,"Los Angeles-Long Beach, Calif.",6488791
+3,Chicago-Northwestern Indiana,5959213
+4,"Philadelphia, Pa.-N.J.",3635228
+5,"Detroit, Mich.",3537709
+6,"San Francisco-Oakland, Calif.",2430663
+7,"Boston, Mass.",2413236
+8,"Washington, D.C.-Md.-Va.",1808423
+9,"Pittsburgh, Pa.",1804400
+10,"Cleveland, Ohio",1784991
+11,"St. Louis, Mo.-Ill.",1667693
+12,"Baltimore, Md.",1418948
+13,"Minneapolis-St. Paul, Minn.",1377143
+14,"Milwaukee, Wis.",1149997
+15,"Houston, Texas",1139678
+16,"Buffalo, N.Y.",1054370
+17,"Cincinnati, Ohio-Ky.",993568
+18,"Dallas, Texas",932349
+19,"Kansas City, Mo.-Kans.",921121
+20,"Seattle, Wash.",864109
+21,"Miami, Fla.",852705
+22,"New Orleans, La.",845237
+23,"San Diego, Calif.",836175
+24,"Denver, Colo.",803624
+25,"Atlanta, Ga.",768125
+26,"Providence-Pawtucket, R.I.-Mass.",659542
+27,"Portland, Oreg.-Wash.",651685
+28,"San Antonio, Texas",641965
+29,"Indianapolis, Ind.",639340
+30,"Columbus, Ohio",616743
+31,"Louisville, Ky.-Ind.",606659
+32,"San Jose, Calif.",602805
+33,"Phoenix, Ariz.",552043
+34,"Memphis, Tenn.",544505
+35,"Birmingham, Ala.",521330
+36,"Norfolk-Portsmouth, Va.",507825
+37,"Fort Worth, Texas",502682
+38,"Dayton, Ohio",501664
+39,"Rochester, N.Y.",493402
+40,"Akron, Ohio",458253
+41,"Albany-Schenectady-Troy, N.Y.",455447
+42,"Sacramento, Calif.",451920
+43,"Springfield-Chicopee-Holyoke, Mass.-Conn.",449777
+44,"Toledo, Ohio",438283
+45,"Oklahoma City, Okla.",429188
+46,"Omaha, Nebr.-Iowa",389881
+47,"Hartford, Conn.",381619
+48,"San Bernardino-Riverside, Calif.",377531
+49,"Youngstown-Warren, Ohio-Pa.",372748
+50,"Jacksonville, Fla.",372569
+51,"Bridgeport, Conn.",366654
+52,"Honolulu, Hawaii",351336
+53,"Salt Lake City, Utah",348661
+54,"Nashville, Tenn.",346729
+55,"Richmond, Va.",333438
+56,"Syracuse, N.Y.",333286
+57,"St. Petersburg, Fla.",324842
+58,"Fort Lauderdale-Hollywood, Fla.",319951
+59,"Tampa, Fla.",301790
+60,"Tulsa, Okla.",298922
+61,"Grand Rapids, Mich.",294230
+62,"Wichita, Kans.",292138
+63,"Wilmington, Del.-N.J.",283667
+64,"New Haven, Conn.",278794
+65,"Flint, Mich.",277786
+66,"El Paso, Texas",277128
+67,"Mobile, Ala.",268139
+68,"Allentown-Bethlehem, Pa.",256016
+69,"Trenton, N.J.-Pa.",242401
+70,"Albuquerque, N. Mex.",241216
+71,"Des Moines, Iowa",241115
+72,"Wilkes-Barre, Pa.",233932
+73,"Tucson, Ariz.",227433
+74,"Davenport-Rock Island-Moline, Iowa-Ill.",227176
+75,"Spokane, Wash.",226938
+76,"Worcester, Mass.",225446
+77,"South Bend, Ind.-Mich.",218933
+78,"Tacoma, Wash.",214930
+79,"Canton, Ohio",213574
+80,"Fresno, Calif.",213444
+81,"Scranton, Pa.",210676
+82,"Charlotte, N.C.",209551
+83,"Harrisburg, Pa.",209501
+84,"Newport News-Hampton, Va.",208874
+85,"Shreveport, La.",208583
+86,"Chattanooga, Tenn.-Ga.",205143
+87,"Orlando, Fla.",200995
+88,"Baton Rouge, La.",193485
+89,"Utica-Rome, N.Y.",187779
+90,"Austin, Texas",187157
+91,"Pomona-Ontario, Calif.",186547
+92,"Little Rock-North Little Rock, Ark.",185017
+93,"Peoria, Ill.",181432
+94,"Fort Wayne, Ind.",179571
+95,"Erie, Pa.",177433
+96,"Corpus Christi, Texas",177380
+97,"West Palm Beach, Fla.",172835
+98,"Knoxville, Tenn.",172734
+99,"Rockford, Ill.",171681
+100,"Savannah, Ga.",169887
+101,"Charleston, W.Va.",169500
+102,"Lansing, Mich.",169325
+103,"Stamford, Conn.",166990
+104,"Lawrence-Haverhill, Mass.-N.H.",166125
+105,"Huntington-Ashland, W.Va.-Ky.-Ohio",165732
+106,"Columbia, S.C.",162601
+107,"Reading, Pa.",160297
+108,"Charleston, S.C.",160113
+109,"Columbus, Ga.-Ala.",158382
+110,"Binghamton, N.Y.",158141
+111,"Madison, Wis.",157814
+112,"Jackson, Miss.",147480
+113,"Duluth-Superior, Minn.-Wis.",144763
+114,"Evansville, Ind.",143660
+115,"Montgomery, Ala.",142893
+116,"Lorain-Elyria, Ohio",142860
+117,"Bakersfield, Calif.",141763
+118,"Waterbury, Conn.",141626
+119,"Stockton, Calif.",141604
+120,"Amarillo, Texas",137969
+121,"Lincoln, Nebr.",136220
+122,"Lubbock, Texas",129289
+123,"Saginaw, Mich.",129215
+124,"Winston-Salem, N.C.",128176
+125,"Pensacola, Fla.",128049
+126,"Greenville, S.C.",126887
+127,"New Bedford, Mass.",126657
+128,"Atlantic City, N.J.",124902
+129,"Roanoke, Va.",124752
+130,"Fall River, Mass.-R.I.",123951
+131,"Augusta, Ga.-S.C.",123698
+132,"Greensboro, N.C.",123334
+133,"Ogden, Utah",121927
+134,"Topeka, Kans.",119500
+135,"Beaumont, Texas",119178
+136,"Lowell, Mass.",118547
+137,"Galveston-Texas City, Texas",118482
+138,"Joliet, Ill.",116585
+139,"Port Arthur, Texas",116365
+140,"Waco, Texas",116163
+141,"Kalamazoo, Mich.",115659
+142,"Ann Arbor, Mich.",115282
+143,"Macon, Ga.",114161
+144,"Lexington, Ky.",111940
+145,"Portland, Maine",111701
+146,"Springfield, Ill.",111403
+147,"Brockton, Mass.",111315
+148,"Cedar Rapids, Iowa",105118
+149,"Pueblo, Colo.",103336
+150,"Waterloo, Iowa",102827
+151,"Wichita Falls, Texas",102104
+152,"York, Pa.",100872
+153,"Colorado Springs, Colo.",100220
+154,"New Britain, Conn.",99894
+155,"Wheeling, W.Va.-Ohio",98951
+156,"Sioux City, Iowa-Nebr.-S. Dak.",97926
+157,"Springfield, Mo.",97224
+158,"Green Bay, Wis.",97162
+159,"Johnstown, Pa.",96474
+160,"Racine, Wis.",95862
+161,"Eugene, Oreg.",95686
+162,"Muskegon-Muskegon Heights, Mich.",95350
+163,"Raleigh, N.C.",93931
+164,"Lancaster, Pa.",93855
+165,"Manchester, N.H.",91698
+166,"Abilene, Texas",91566
+167,"Springfield, Ohio",90157
+168,"Hamilton, Ohio",89778
+169,"Decatur, Ill.",89516
+170,"Las Vegas, Nev.",89427
+171,"Lake Charles, La.",89115
+172,"Aurora, Ill.",85522
+173,"Durham, N.C.",84642
+174,"Odessa, Texas",84285
+175,"Altoona, Pa.",83058
+176,"Norwalk, Conn.",82270
+177,"Steubenville-Weirton, Ohio-W.Va.",81613
+178,"Terre Haute, Ind.",81415
+179,"St. Joseph, Mo.-Kans.",81187
+180,"Monroe, La.",80546
+181,"Champaign-Urbana, Ill.",78014
+182,"Muncie, Ind.",77504
+183,"Tuscaloosa, Ala.",76815
+184,"Huntsville, Ala.",74970
+185,"Kenosha, Wis.",72852
+186,"Bay City, Mich.",72763
+187,"Santa Barbara, Calif.",72740
+188,"Fargo-Moorhead, N. Dak.-Minn.",72730
+189,"Fitchburg-Leominster, Mass.",72347
+190,"Jackson, Mich.",71412
+191,"Reno, Nev.",70189
+192,"Gadsden, Ala.",68944
+193,"Asheville, N.C.",68592
+194,"Sioux Falls, S. Dak.",66582
+195,"High Point, N.C.",66543
+196,"Lewiston-Auburn, Maine",65253
+197,"Midland, Texas",63274
+198,"Lima, Ohio",62963
+199,"Pittsfield, Mass.",62306
+200,"Lawton, Okla.",61941
+201,"Harlingen-San Benito, Texas",61658
+202,"Fort Smith, Ark.-Okla.",61640
+203,"Provo-Orem, Utah",60795
+204,"Billings, Mont.",60712
+205,"Laredo, Texas",60678
+206,"Dubuque, Iowa-Ill.",59447
+207,"Lynchburg, Va.",59319
+208,"San Angelo, Texas",58815
+209,"Albany, Ga.",58353
+210,"Great Falls, Mont.",57629
+211,"Texarkana, Texas-Ark.",53420
+212,"Meriden, Conn.",51850
+213,"Tyler, Texas",51739

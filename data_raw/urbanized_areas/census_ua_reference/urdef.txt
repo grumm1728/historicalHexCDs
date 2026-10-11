@@ -1,0 +1,129 @@
+                   URBAN AND RURAL DEFINITIONS
+
+Source: US Census Bureau
+Released: Oct. 1995
+
+URBAN AND RURAL
+
+     The Census Bureau defines "urban" for the 1990 census as
+comprising all territory, population, and housing units in
+urbanized areas and in places of 2,500 or more persons outside
+urbanized areas.  More specifically, "urban" consists of
+territory, persons, and housing units in:
+
+     1.   Places of 2,500 or more persons incorporated as cities,
+          villages, boroughs (except in Alaska and New York), and
+          towns (except in the six New England States, New York,
+          and Wisconsin), but excluding the rural portions of
+          "extended cities."
+
+     2.   Census designated places of 2,500 or more persons.
+
+     3.   Other territory, incorporated or unincorporated,
+          included in urbanized areas.
+
+     Territory, population, and housing units not classified as
+urban constitute "rural."  In the 100-percent data products,
+"rural" is divided into "places of less than 2,500" and "not in
+places."  The "not in places" category comprises "rural" outside
+incorporated and census designated places and the rural portions
+of extended cities.  In many data products, the term "other
+rural" is used; "other rural" is a residual category specific to
+the classification of the rural in each data product.
+
+     In the sample data products, rural population and housing
+units are subdivided into "rural farm" and "rural nonfarm." 
+"Rural farm" comprises all rural households and housing units on
+farms (places from which $1,000 or more of agricultural products
+were sold in 1989); "rural nonfarm" comprises the remaining
+rural.
+
+     The urban and rural classification cuts across the other
+hierarchies; for example, there is generally both urban and rural
+territory within both metropolitan and nonmetropolitan areas.
+
+     In censuses prior to 1950, "urban" comprised all territory,
+persons, and housing units in incorporated places of 2,500 or
+more persons, and in areas (usually minor civil divisions)
+classified as urban under special rules relating to population
+size and density.  The definition of urban that restricted itself
+to incorporated places having 2,500 or more persons excluded many
+large, densely settled areas merely because they were not
+incorporated.  Prior to the 1950 census, the Census Bureau
+attempted to avoid some of the more obvious omissions by
+classifying selected areas as "urban under special rules."  Even
+with these rules, however, many large, closely built-up areas
+were excluded from the urban category.
+
+     To improve its measure of urban territory, population, and
+housing units, the Census Bureau adopted the concept of the
+urbanized area and delineated boundaries for unincorporated
+places (now, census designated places) for the 1950 census. 
+Urban was defined as territory, persons, and housing units in
+urbanized areas and, outside urbanized areas, in all places,
+incorporated or unincorporated, that had 2,500 or more persons. 
+With the following three exceptions, the 1950 census definition
+of urban has continued substantially unchanged.  First, in the
+1960 census (but not in the 1970, 1980, or 1990 censuses),
+certain towns in the New England States, townships in New Jersey
+and Pennsylvania, and Arlington County, Virginia, were designated
+as urban.  However, most of these "special rule" areas would have
+been classified as urban anyway because they were included in an
+urbanized area or in an unincorporated place of 2,500 or more
+persons.  Second, "extended cities" were identified for the 1970,
+1980, and 1990 censuses.  Extended cities primarily affect the
+figures for urban and rural territory (area), but have very
+little effect on the urban and rural population and housing units
+at the national and State levels--although for some individual
+counties and urbanized areas, the effects have been more evident. 
+Third, changes since the 1970 census in the criteria for defining
+urbanized areas have permitted these areas to be defined around
+smaller centers.
+
+     Documentation of the urbanized area and extended city
+criteria is available from the Chief, Geography Division, U.S.
+Bureau of the Census, Washington, DC 20233.
+
+Extended City
+
+     Since the 1960 census, there has been a trend in some States
+toward the extension of city boundaries to include territory that
+is essentially rural in character.  The classification of all the
+population and living quarters of such places as urban would
+include in the urban designation territory, persons, and housing
+units whose environment is primarily rural.  For the 1970, 1980,
+and 1990 censuses, the Census Bureau identified as rural such
+territory and its population and housing units for each extended
+city whose closely settled area was located in an urbanized area. 
+For the 1990 census, this classification also has been applied to
+certain places outside urbanized areas.
+
+     In summary presentations by size of place, the urban portion
+of an extended city is classified by the population of the entire
+place; the rural portion is included in "other rural."
+
+URBANIZED AREA (UA)
+
+     The Census Bureau delineates urbanized areas (UA's) to
+provide a better separation of urban and rural territory,
+population, and housing in the vicinity of large places.  A UA
+comprises one or more places ("central place") and the adjacent
+densely settled surrounding territory ("urban fringe") that
+together have a minimum of 50,000 persons.  The urban fringe
+generally consists of contiguous territory having a density of at
+least 1,000 persons per square mile.  The urban fringe also
+includes outlying territory of such density if it was connected
+to the core of the contiguous area by road and is within 1 1/2
+road miles of that core, or within 5 road miles of the core but
+separated by water or other undevelopable territory.  Other
+territory with a population density of fewer than 1,000 people
+per square mile is included in the urban fringe if it eliminates
+an enclave or closes an indentation in the boundary of the
+urbanized area.  The population density is determined by (1)
+outside of a place, one or more contiguous census blocks with a
+population density of at least 1,000 persons per square mile or
+(2) inclusion of a place containing census blocks that have at
+least 50 percent of the population of the place and a density of
+at least 1,000 persons per square mile.  The complete criteria
+are available from the Chief, Geography Division, U.S. Bureau of
+the Census, Washington, DC 20233. 
