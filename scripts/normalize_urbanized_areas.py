@@ -12,7 +12,9 @@ Coverage per year (what the raw inputs allow):
               for the 17 principal multi-state areas transcribed from the state
               volumes (published_tables/); point = first-named central city
               (CESTA coordinates) for that city's own state portion only.
-  1970, 1980  NHGIS extract (not yet acquired; see README) -- skipped if absent.
+  1970, 1980  NHGIS extract nhgis0002_csv/ (1970 Count 2 NT1 at Urbanized Area
+              (by State); 1980 STF 1 NT1A at Urban Area + State (by Urban Area));
+              point = first-named central city (CESTA), as for 1950/1960.
   1990        STF 1C summary levels 400 (UA) / 410 (UA--State part), with the
               Bureau's own internal points for both the UA and each state part.
   2000        ua2k.txt + st2kua.txt (as tabulated in SF1); location = representative
@@ -158,6 +160,38 @@ def load_2020() -> list[dict]:
     return rows
 
 
+# ------------------------------------------------------------------ 1970/1980
+NHGIS = RAW / "nhgis0002_csv"
+
+
+def load_1970() -> list[dict]:
+    """1970 Count 2 NT1 (sex by race) at Urbanized Area (by State): each row is a
+    state part; persons = sum of the 18 cells, UA total = sum of its parts."""
+    p = NHGIS / "nhgis0002_ds95_1970_urb_area_038.csv"
+    if not p.exists():
+        return []
+    df = pd.read_csv(p, dtype=str)
+    df["pop"] = df[[c for c in df.columns if c.startswith("CEB")]].astype(int).sum(axis=1)
+    tot = df.groupby("URB_AREAA")["pop"].sum()
+    return [dict(year=1970, ua_code=r.URB_AREAA, ua_name=r.URB_AREA, state_fips=r.STATEA,
+                 portion_pop=int(r["pop"]), total_pop=int(tot[r.URB_AREAA]))
+            for _, r in df.iterrows()]
+
+
+def load_1980() -> list[dict]:
+    """1980 STF 1 NT1A (persons): Urban Area (400) totals + State (by Urban Area)
+    (410) parts. LANDAREA/LONGITUD/LATITUDE are blank in the extract."""
+    p = NHGIS / "nhgis0002_ds104_1980_state_410.csv"
+    if not p.exists():
+        return []
+    ua = pd.read_csv(NHGIS / "nhgis0002_ds104_1980_urb_area.csv", dtype=str).set_index("URB_AREAA")
+    df = pd.read_csv(p, dtype=str)
+    return [dict(year=1980, ua_code=r.URB_AREAA, ua_name=ua.loc[r.URB_AREAA, "URB_AREA"],
+                 state_fips=r.STATEA, portion_pop=int(r.C7L001),
+                 total_pop=int(ua.loc[r.URB_AREAA, "C7L001"]))
+            for _, r in df.iterrows()]
+
+
 # ------------------------------------------------------------------ transcribed
 PUB = RAW / "published_tables"
 
@@ -259,7 +293,7 @@ PARTS_1950_ALIAS = {
 
 
 def add_transcribed_locations(rows: list[dict]) -> None:
-    """1950/1960: first-named central city (CESTA coords) for the portion in
+    """1950-1980: first-named central city (CESTA coords) for the portion in
     that city's state; other portions are left without a point (see README)."""
     c = pd.read_csv(ROOT / "data_raw" / "cities" / "1790-2010_MASTER.csv", encoding="latin-1")
     look = {}
@@ -269,10 +303,13 @@ def add_transcribed_locations(rows: list[dict]) -> None:
         look[(str(r.City).strip(), str(r.ST).strip())] = (lon, lat)
     st_postal = {f: a for a, f in ABBR2FIPS.items()}
     for r in rows:
-        if r["year"] not in (1950, 1960) or not r["state_fips"]:
+        if r["year"] not in (1950, 1960, 1970, 1980) or not r["state_fips"]:
             continue
         st = st_postal.get(r["state_fips"], "")
         head = r["ua_name"].split(",")[0].strip()  # "Wilkes-Barre" must stay whole
+        head = re.sub(r"^St\.? ", "St. ", head)  # 1980 NHGIS writes "St Louis"
+        if head.startswith("New York"):  # CESTA spells it "New York City"
+            head = "New York City"
         pt = look.get((head, st)) or look.get((head.split("-")[0].strip(), st))
         if pt:
             r["lon"], r["lat"] = round(float(pt[0]), 6), round(float(pt[1]), 6)
@@ -349,6 +386,8 @@ def main() -> None:
     rows = []
     rows += load_transcribed(1950)
     rows += load_transcribed(1960)
+    rows += load_1970()
+    rows += load_1980()
     rows += load_1990()
     rows += load_2000()
     rows += load_2010()

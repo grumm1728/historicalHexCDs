@@ -18,8 +18,8 @@ output is `data_raw/urbanized_areas/ua_state_portions.csv`, written by
 |---|---|---|---|---|---|
 | 1950 | 157 areas, transcribed (sum matches published total exactly) | 17 principal multi-state areas transcribed from the 1960 state volumes | first-named central city (CESTA) | printed maps only | **acquired** |
 | 1960 | 213 areas, transcribed (sum matches exactly) | same 17 areas | first-named central city (CESTA) | printed maps only | **acquired** |
-| 1970 | NHGIS `1970_Cnt2`, "Urbanized Area (by State)" | yes (the level *is* state parts) | none published digitally | none | **needs NHGIS extract** |
-| 1980 | NHGIS `1980_STF1`, "Urban Area" + "State (by Urban Area)" | yes | none published digitally | none | **needs NHGIS extract** |
+| 1970 | NHGIS `1970_Cnt2`, "Urbanized Area (by State)" | yes (the level *is* state parts) | first-named central city (CESTA) | none | **acquired** (248 areas, 286 parts) |
+| 1980 | NHGIS `1980_STF1`, "Urban Area" + "State (by Urban Area)" | yes | first-named central city (CESTA) | none | **acquired** (366 areas, 422 parts) |
 | 1990 | STF 1C, 396 UAs | yes, with the Bureau's internal points | official internal point per part | cartographic boundary file | **acquired** |
 | 2000 | `ua2k.txt`, 465 UAs | `st2kua.txt` | polygon representative point | cartographic boundary file | **acquired** |
 | 2010 | `ua_list_ua.txt`, 497 UAs | `ua_st_list_ua.txt` | gazetteer internal point | cb 1:500k | **acquired** |
@@ -159,6 +159,20 @@ confirms the Urban Area GIS row: no marks under 1980, 1950–1970, or earlier
 The Census Bureau's own 1980 volumes are scans with no text layer, for example
 <https://www2.census.gov/library/publications/decennial/1980/volume-1/united-states-summary/1980a_usc-01.pdf>.
 NHGIS is therefore the practical route for 1970 and 1980.
+
+**Acquired 2026-10-10** as `data_raw/urbanized_areas/nhgis0002_csv/` (Scott's extract).
+- **1970:** 248 areas, which matches the published count of "248 UAs delineated for the
+  1970 Census" ([PC(S1)-108](https://www.census.gov/library/publications/1979/dec/pc-s1-108.html)).
+  The sum of the 286 state parts is 118,446,566.
+- **1980:** 366 areas. The 422 state parts sum exactly to the area totals (139,170,683).
+- **Checks:** in both years every state's urbanized-area sum is at most its urban
+  population in `urpop0090.txt`. The UA share of urban population runs 0.20–0.95 in 1970
+  and 0.37–0.96 in 1980.
+- **Not yet checked:** neither national sum has been matched to a published national
+  table. The 1970 and 1980 volumes are scans, and they were not transcribed.
+- **Coverage gaps:** neither extract includes Puerto Rico. Neither carries land area or
+  coordinates, so the normalizer locates each area by its first-named city, as for
+  1950/1960.
 
 ### 1990
 
@@ -329,7 +343,7 @@ in 1990). No boundary- or distance-based rule can merge SF+SJ (gap 0) while keep
 Baltimore+DC (gap 0) apart. If those must stay separate, the rule has to be a curated
 merge list (Option B in the summary).
 
-## 4. NHGIS extract to request (Scott — needs your free NHGIS account)
+## 4. NHGIS extract (requested by Scott; acquired 2026-10-10)
 
 No IPUMS API key was found in the environment (`IPUMS_API_KEY` is unset; the repo has
 only a Census API key). The existing `data_raw/urbanization/nhgis0001_csv` was a manual
@@ -343,8 +357,9 @@ Data Finder extract by Scott. Request one extract at <https://data2.nhgis.org/ma
 
 - Settings: CSV, "include additional descriptive header row", no GIS files. None exist
   for these levels.
-- Save the zip as `data_raw/urbanized_areas/nhgis0002_csv.zip`. The normalizer has
-  1970/1980 as an unimplemented hook and needs a small loader once the files exist.
+- Saved unzipped as `data_raw/urbanized_areas/nhgis0002_csv/`.
+  `normalize_urbanized_areas.py` loads it (`load_1970`, `load_1980`). The optional
+  1970 Count 4Pa was not requested.
 - NHGIS citation is required in publications
   (<https://www.nhgis.org/frequently-asked-questions-faq>).
 - 1970/1980 locations: NHGIS source tables carry codes and names, not coordinates. Use the
@@ -352,8 +367,8 @@ Data Finder extract by Scott. Request one extract at <https://data2.nhgis.org/ma
 
 ## 5. Gaps and risks
 
-- **1970/1980 missing** until the extract above arrives. This is the only blocking gap
-  for #36.
+- **1970/1980 national totals not matched to a published table.** The internal checks
+  pass (§1); only a cross-check against a printed volume remains. This does not block #36.
 - **1950/1960 land areas not transcribed.** They sit in 1960 U.S. Summary Table 22, pdf
   pages 40–49 (both years). They are only needed if a radius-based rule is chosen. The
   recommended options do not need them.

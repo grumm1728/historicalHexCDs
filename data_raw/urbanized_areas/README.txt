@@ -5,19 +5,19 @@ pre-1990 boundary answer, and the linking-rule measurements.
 
 All files below were retrieved 2026-09-22 from census.gov / www2.census.gov
 (US Census Bureau, public domain) unless noted. Nothing here needed an
-account or API key.
+account or API key, except the 1970/1980 NHGIS extract (nhgis0002_csv/,
+requested by Scott through his NHGIS account, added 2026-10-10).
 
 ua_state_portions.csv  (GENERATED -- python scripts/normalize_urbanized_areas.py)
   One row per (census year, urbanized area, state portion). Columns:
     year, ua_code, ua_name, state_fips, portion_pop, total_pop,
     portion_land_sqkm, total_land_sqkm, lon, lat, loc_source, part_note
-  Years present: 1950, 1960, 1990, 2000, 2010, 2020. 1970 and 1980 are
-  missing until the NHGIS extract below is requested.
+  Years present: 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020.
   loc_source: stf1c_intpt_part (1990 official internal point of the state part),
   gazetteer_intpt (2010/2020 official UA internal point, single-state areas),
   polygon_reppoint / polygon_x_state_reppoint (representative point of the UA
   polygon, or of UA polygon ∩ state polygon, computed from the boundary files
-  below), cesta_first_named_city (1950/1960: first-named central city's
+  below), cesta_first_named_city (1950-1980: first-named central city's
   coordinates from data_raw/cities/1790-2010_MASTER.csv; only the portion in
   that city's state gets a point).
   part_note (1950/1960 only): published / derived_total_minus_other_parts /
@@ -112,6 +112,19 @@ stf1c_1990/   (1990 STF 1C national file, dBase, from
   unames.dbf.zip, stf1stru.dbf.zip, tables.dbf.zip   name/structure lookups.
   doc_sum_lev.asc, doc_usernote.asc   STF 1C summary-level documentation.
 
+nhgis0002_csv/   (NHGIS extract, IPUMS NHGIS, University of Minnesota,
+                  www.nhgis.org; CSV, no GIS files -- none exist for these levels)
+  nhgis0002_ds95_1970_urb_area_038.csv   1970 Count 2 (1970_Cnt2), level
+      "Urbanized Area (by State)" (038), table NT1 Sex by Race (CEB001-018).
+      Each row is a state part; persons = sum of the 18 cells; a UA's total
+      = sum of its parts. 286 parts of 248 UAs; no Puerto Rico rows.
+  nhgis0002_ds104_1980_urb_area.csv      1980 STF 1 (1980_STF1), level
+      "Urban Area" (400), table NT1A Persons (C7L001). 366 UAs.
+  nhgis0002_ds104_1980_state_410.csv     same, level "State (by Urban Area)"
+      (410): 422 state parts. LONGITUD/LATITUDE/LANDAREA are blank in both
+      1980 files; no Puerto Rico rows.
+  *_codebook.txt   NHGIS codebooks (variable definitions, citation).
+
 published_tables/   (hand-transcribed from scanned Census volumes; no text
                      layer / unusable OCR, so values were read from page images
                      and checked against published totals)
@@ -145,6 +158,18 @@ VERIFICATION (all exact unless stated)
         213 areas)". Ranks are monotone; 12 spot values cross-checked against
         Table 22 rows. Every state-part set sums to its UA total; published
         parts were checked against their printed county components.
+  1970  248 UAs = the published 1970 count ("the 248 UAs delineated for the
+        1970 Census", PC(S1)-108,
+        https://www.census.gov/library/publications/1979/dec/pc-s1-108.html).
+        Sum of parts = 118,446,566. NOT yet matched to a published national
+        total (the 1970/1980 volumes are scans; not transcribed). Each state's
+        UA sum is <= its urban population in ../urbanization/urpop0090.txt
+        (UA share of urban 0.20-0.95). NY 16,206,841 (NY 11,369,576 + NJ
+        4,837,265) / LA 8,351,266 / Chicago 6,714,578 (IL 6,185,156 + IN 529,422).
+  1980  366 UAs; the 422 state parts sum exactly to the UA totals (both
+        139,170,683). NOT yet matched to a published national total. Each
+        state's UA sum is <= its urban population in urpop0090.txt (share
+        0.37-0.96). NY 15,590,274 / LA 9,479,436 / Chicago 6,779,799.
   1990  sum over 396 UAs = 158,258,878 = STF 1C US "inside urbanized area"
         (GEOCOMP 02); parts sum to totals exactly.
   2000  50 states + DC sum = 192,323,824 = the Census Bureau's published
@@ -161,13 +186,10 @@ VERIFICATION (all exact unless stated)
         Chicago 8,671,746.
 
 -------------------------------------------------------------------------------
-NOT ACQUIRED (needs Scott's free NHGIS account; no IPUMS API key in the
-environment) -- see the research note for the exact extract spec:
-  1970  NHGIS dataset 1970_Cnt2, geographic level "Urbanized Area (by State)"
-        (NHGIS code 038), table NT1 (Sex by Race; sum = total persons).
-  1980  NHGIS dataset 1980_STF1, geographic levels "Urban Area" (400) and
-        "State (by Urban Area)" (410), table NT1A (Persons).
-  Also missing: 1990 Puerto Rico UA populations (in the separate PR STF 1
+STILL MISSING
+  1990 Puerto Rico UA populations (in the separate PR STF 1
   files), 1950/1960 land areas (printed in 1960 U.S. Summary Table 22,
   pdf pages 40-49 -- not transcribed), and the state splits of 15 small
-  1960 multi-state UAs.
+  1960 multi-state UAs. Puerto Rico 1970/1980 (not in the extract), and
+  1970/1980 land areas and official points (the extract has none; points
+  fall back to the first-named city).
