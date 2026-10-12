@@ -1,0 +1,34 @@
+May 2002
+Geography Division
+U.S. Census Bureau
+
+
+
+Record Layout for the Census 2000 State Urbanized Areas (UAs)
+
+State UAs
+Column 1-2		State Federal Information Processing Standard (FIPS) code
+Column 3		Blank
+Column 4-8		UA Code
+Column 9		Blank
+Column 10-65		Name
+Column 66		Blank
+Column 67-74		Population (2000)
+Column 75-78		Part Flag
+Column 86-95		Land area (Square meters)
+Column 109-114		Population Density (Square miles)
+
+
+
+Record Layout for the Census 2000 State Urban Clusters (UCs)
+
+State UCs
+Column 1-2		State Federal Information Processing Standard (FIPS) code
+Column 3		Blank
+Column 4-8		UA Code
+Column 9		Blank
+Column 10-65		Name
+Column 72-76		Population
+Column 77-80		Part Flag
+Column 89-97		Land area (Square meters)
+Column 111-116		Population Density (Square miles)

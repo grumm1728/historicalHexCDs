@@ -1,0 +1,468 @@
+Code      Name                                                 Population           Area             Population
+                                                                                  (sq meters)          Density
+00199     Aberdeen--Havre de Grace--Bel Air, MD                     174598        264318631             1710.8
+00280     Abilene, TX                                               107041        123183306             2250.6
+00631     Aguadilla--Isabela--San Sebastian, PR                     299086        620399071             1248.6
+00766     Akron, OH                                                 570215        797219468             1852.5
+00901     Albany, GA                                                 95450        170651516             1448.7
+00928     Albany, NY                                                558947        736206868             1966.4
+01171     Albuquerque, NM                                           598191        580018372             2671.1
+01279     Alexandria, LA                                             78504        151067320             1345.9
+01495     Allentown--Bethlehem, PA--NJ                              576408        749789616             1991.1
+01765     Alton, IL                                                  84655        132525390             1654.4
+01792     Altoona, PA                                                82520         97308804             2196.4
+01927     Amarillo, TX                                              179312        191869273             2420.5
+02062     Ames, IA                                                   50726         40904598             3211.9
+02305     Anchorage, AK                                             225744        204214975             2863.0
+02386     Anderson, IN                                               97038        164059137             1531.9
+02413     Anderson, SC                                               70436        178388969             1022.6
+02602     Ann Arbor, MI                                             283904        333474294             2205.0
+02629     Anniston, AL                                               75840        202768117              968.7
+02683     Antioch, CA                                               217591        156121048             3609.8
+02764     Appleton, WI                                              187683        189183839             2569.4
+03034     Arecibo, PR                                               145643        235106401             1604.4
+03358     Asheville, NC                                             221570        535501801             1071.6
+03574     Atascadero--El Paso de Robles (Paso Robles), CA            54762         79747822             1778.5
+03763     Athens-Clarke County, GA                                  106482        206060636             1338.4
+03817     Atlanta, GA                                              3499840       5083058909             1783.3
+03898     Atlantic City, NJ                                         227180        313029307             1879.7
+04033     Auburn, AL                                                 60137        103519296             1504.6
+04222     Augusta-Richmond County, GA--SC                           335630        600338881             1448.0
+04384     Austin, TX                                                901920        823944485             2835.1
+04546     Avondale, AZ                                               67875         76226710             2306.2
+04681     Bakersfield, CA                                           396125        285740955             3590.5
+04843     Baltimore, MD                                            2076354       1768260718             3041.3
+04951     Bangor, ME                                                 58983        100302297             1523.0
+05167     Barnstable Town, MA                                       243667        741127201              851.5
+05680     Baton Rouge, LA                                           479019        726888005             1706.8
+05707     Battle Creek, MI                                           79135        132515579             1546.7
+05869     Bay City, MI                                               74048        103034622             1861.3
+06058     Beaumont, TX                                              139304        210896368             1710.8
+06652     Bellingham, WA                                             84324         91902409             2376.4
+06760     Beloit, WI--IL                                             56462         72140929             2027.1
+06868     Bend, OR                                                   57525         94243246             1580.9
+07138     Benton Harbor--St. Joseph, MI                              61745        117576016             1360.1
+07705     Billings, MT                                              100317        118539142             2191.8
+07732     Binghamton, NY--PA                                        158884        197899797             2079.4
+07786     Birmingham, AL                                            663615       1015530546             1692.5
+07921     Bismarck, ND                                               74991         87863738             2210.5
+08002     Blacksburg, VA                                             57236         68162796             2174.8
+08380     Bloomington, IN                                            92456        111361032             2150.3
+08407     Bloomington--Normal, IL                                   112415         96270781             3024.3
+08785     Boise City, ID                                            272625        281484983             2508.5
+08974     Bonita Springs--Naples, FL                                221251        389051444             1472.9
+09271     Boston, MA--NH--RI                                       4032484       4496674090             2322.6
+09298     Boulder, CO                                               112299         85149359             3415.8
+09379     Bowling Green, KY                                          58314         94377425             1600.3
+09946     Bremerton, WA                                             178369        304329012             1518.0
+10162     Bridgeport--Stamford, CT--NY                              888890       1205143502             1910.3
+10351     Bristol, TN--Bristol, VA                                   58472        132297242             1144.7
+10729     Brooksville, FL                                           102193        216852581             1220.5
+10972     Brownsville, TX                                           165776        148489175             2891.5
+11026     Brunswick, GA                                              51653        111417908             1200.7
+11350     Buffalo, NY                                               976703        949733020             2663.5
+11728     Burlington, NC                                             94248        167712087             1455.5
+11755     Burlington, VT                                            105365        160145032             1704.0
+12754     Camarillo, CA                                              62798         55228642             2945.0
+13375     Canton, OH                                                266595        371690702             1857.7
+13510     Cape Coral, FL                                            329757        496807211             1719.1
+14158     Carson City, NV                                            58263         72725732             2074.9
+14482     Casper, WY                                                 57719         67656704             2209.6
+14752     Cedar Rapids, IA                                          155334        153663829             2618.1
+15211     Champaign, IL                                             123938        106299940             3019.7
+15481     Charleston, WV                                            182991        293693897             1613.7
+15508     Charleston--North Charleston, SC                          423410        598126799             1833.4
+15670     Charlotte, NC--SC                                         758927       1126416124             1745.0
+15724     Charlottesville, VA                                        81449         97040676             2173.9
+15832     Chattanooga, TN--GA                                       343509        751088622             1184.5
+16237     Cheyenne, WY                                               68202         87691260             2014.4
+16264     Chicago, IL--IN                                          8307904       5498056965             3913.6
+16318     Chico, CA                                                  89221         90463755             2554.4
+16885     Cincinnati, OH--KY--IN                                   1503262       1739864863             2237.8
+17317     Clarksville, TN--KY                                       121775        204230480             1544.3
+17668     Cleveland, OH                                            1786647       1675726340             2761.4
+17722     Cleveland, TN                                              58192        124931604             1206.4
+18451     Coeur d'Alene, ID                                          74800        109156799             1774.8
+18748     College Station--Bryan, TX                                132500        127288843             2696.0
+18856     Colorado Springs, CO                                      466122        511171483             2361.7
+18937     Columbia, MO                                               98779        133441260             1917.2
+18964     Columbia, SC                                              420537        696538009             1563.7
+19099     Columbus, GA--AL                                          242324        352642641             1779.8
+19126     Columbus, IN                                               50227         66989713             1941.9
+19234     Columbus, OH                                             1133193       1030057840             2849.3
+19504     Concord, CA                                               552624        457017877             3131.8
+19558     Concord, NC                                               115057        236206805             1261.6
+20287     Corpus Christi, TX                                        293925        285650962             2665.0
+20422     Corvallis, OR                                              58229         75067938             2009.0
+22042     Dallas--Fort Worth--Arlington, TX                        4145659       3644217906             2946.4
+22069     Dalton, GA                                                 57666        140895880             1060.0
+22096     Danbury, CT--NY                                           154455        320056820             1249.9
+22204     Danville, IL                                               53223         80116338             1720.6
+22258     Danville, VA                                               50902         84442806             1561.2
+22366     Davenport, IA--IL                                         270626        320795282             2184.9
+22420     Davis, CA                                                  66022         35290113             4845.4
+22528     Dayton, OH                                                703444        838006357             2174.1
+22636     Daytona Beach--Port Orange, FL                            255353        294122601             2248.6
+22690     Decatur, AL                                                52315         73017844             1855.6
+22717     Decatur, IL                                                96454        129887804             1923.3
+22960     DeKalb, IL                                                 55805         46306233             3121.3
+23311     Deltona, FL                                               147713        231884253             1649.9
+23500     Denton--Lewisville, TX                                    299823        314875939             2466.2
+23527     Denver--Aurora, CO                                       1984887       1291905997             3979.3
+23743     Des Moines, IA                                            370505        363430498             2640.4
+23824     Detroit, MI                                              3903377       3267140877             3094.4
+24472     Dothan, AL                                                 60792        138478930             1137.0
+24580     Dover, DE                                                  65044        112456448             1498.0
+24607     Dover--Rochester, NH--ME                                   80456        164506298             1266.7
+24823     Dubuque, IA--IL                                            65251         78296124             2158.5
+24850     Duluth, MN--WI                                            118265        171630641             1784.7
+25228     Durham, NC                                                287796        406053762             1835.7
+26038     Eau Claire, WI                                             91393        148909675             1589.6
+26416     El Centro, CA                                              52954         42741615             3208.8
+26794     Elkhart, IN--MI                                           131226        200706427             1693.4
+27118     Elmira, NY                                                 67159         89633808             1940.6
+27253     El Paso, TX--NM                                           674801        567523899             3079.6
+27766     Erie, PA                                                  194804        204074372             2472.3
+28117     Eugene, OR                                                224049        177414506             3270.8
+28333     Evansville, IN--KY                                        211989        273810035             2005.2
+28549     Fairbanks, AK                                              51926        111656982             1204.5
+28657     Fairfield, CA                                             112446         66862270             4355.7
+28981     Fajardo, PR                                                78595        112019098             1817.2
+29089     Fargo, ND--MN                                             142477        118638502             3110.4
+29278     Farmington, NM                                             53294        111522832             1237.7
+29440     Fayetteville, NC                                          276368        432856301             1653.6
+29494     Fayetteville--Springdale, AR                              172585        281812049             1586.1
+29818     Flagstaff, AZ                                              57050         84064794             1757.7
+29872     Flint, MI                                                 365096        598579191             1579.7
+29953     Florence, AL                                               71299        133797187             1380.2
+30061     Florence, SC                                               67314        162004313             1076.2
+30115     Florida--Barceloneta--Bajadero, PR                         68811        127968868             1392.7
+30223     Fond du Lac, WI                                            50058         52730983             2458.7
+30628     Fort Collins, CO                                          206633        215968958             2478.0
+30925     Fort Smith, AR--OK                                        106470        143215410             1925.5
+31060     Fort Walton Beach, FL                                     152741        250033887             1582.2
+31087     Fort Wayne, IN                                            287759        350302990             2127.6
+31519     Frederick, MD                                             119144        203675756             1515.1
+31600     Fredericksburg, VA                                         97102        169265629             1485.8
+31843     Fresno, CA                                                554923        359030809             4003.1
+32113     Gadsden, AL                                                61709        154682246             1033.3
+32167     Gainesville, FL                                           159508        200643776             2059.0
+32194     Gainesville, GA                                            88680        234049265              981.3
+32491     Galveston, TX                                              54770         31329844             4527.7
+32653     Gastonia, NC                                              141407        307787749             1189.9
+33328     Gilroy--Morgan Hill, CA                                    84620         99185327             2209.6
+33598     Glens Falls, NY                                            57627         91547677             1630.3
+33814     Goldsboro, NC                                              57915        113288387             1324.0
+34219     Grand Forks, ND--MN                                        56573         43395946             3376.4
+34273     Grand Junction, CO                                         92362        145146525             1648.1
+34300     Grand Rapids, MI                                          539080        666544152             2094.7
+34759     Great Falls, MT                                            64387         74323438             2243.7
+34786     Greeley, CO                                                93879         87366525             2783.1
+34813     Green Bay, WI                                             187316        212675847             2281.2
+35164     Greensboro, NC                                            267884        350858890             1977.5
+35380     Greenville, NC                                             84059        116350570             1871.2
+35461     Greenville, SC                                            302194        586731492             1334.0
+35866     Guayama, PR                                                77755        104669161             1924.0
+35920     Gulfport--Biloxi, MS                                      205754        349414787             1525.1
+36163     Hagatna, GU                                               132241        185600950             1845.4
+36190     Hagerstown, MD--WV--PA                                    120326        198696539             1568.4
+36892     Harlingen, TX                                             110770        153145586             1873.3
+37081     Harrisburg, PA                                            362782        539724198             1740.9
+37162     Harrisonburg, VA                                           52647         69133451             1972.3
+37243     Hartford, CT                                              851535       1215591516             1814.3
+37594     Hattiesburg, MS                                            61465        100953401             1576.9
+37945     Hazleton, PA                                               51746         74793711             1791.9
+38215     Hemet, CA                                                 117200        108290815             2803.1
+38647     Hickory, NC                                               187808        545962391              890.9
+38809     High Point, NC                                            132844        243599016             1412.4
+38836     Hightstown, NJ                                             69977         77482070             2339.1
+39133     Hinesville, GA                                             50360         70337358             1854.4
+39430     Holland, MI                                                91795        123442409             1926.0
+39889     Honolulu, HI                                              718182        399179856             4659.8
+40213     Hot Springs, AR                                            51763        117427100             1141.7
+40375     Houma, LA                                                 125929        199197047             1637.3
+40429     Houston, TX                                              3822509       3354721332             2951.1
+40753     Huntington, WV--KY--OH                                    177550        276595240             1662.5
+40780     Huntsville, AL                                            213253        407157178             1356.5
+40996     Idaho Falls, ID                                            66973         80250877             2161.5
+41212     Indianapolis, IN                                         1218919       1432057600             2204.5
+41347     Indio--Cathedral City--Palm Springs, CA                   254856        255344357             2585.0
+41590     Iowa City, IA                                              85247         92599642             2384.3
+41914     Ithaca, NY                                                 53528         76943299             1801.8
+42157     Jackson, MI                                                88050        133669255             1706.1
+42211     Jackson, MS                                               292637        416576099             1819.4
+42265     Jackson, TN                                                65086        100418474             1678.7
+42346     Jacksonville, FL                                          882295       1063231603             2149.2
+42400     Jacksonville, NC                                           95514        166013520             1490.1
+42562     Janesville, WI                                             66034         76018307             2249.8
+42967     Jefferson City, MO                                         53714         98835574             1407.6
+43210     Johnson City, TN                                          102456        235493543             1126.8
+43291     Johnstown, PA                                              76113        110836461             1778.6
+43345     Jonesboro, AR                                              51804        103363823             1298.1
+43399     Joplin, MO                                                 72089        148416453             1258.0
+43453     Juana Diaz, PR                                             54835         81755470             1737.2
+43669     Kailua (Honolulu County)--Kaneohe, HI                     117730         84474465             3609.6
+43723     Kalamazoo, MI                                             187961        279051079             1744.5
+43885     Kankakee, IL                                               65073         71482656             2357.8
+43912     Kansas City, MO--KS                                      1361744       1513627048             2330.1
+44479     Kennewick--Richland, WA                                   153851        219548009             1815.0
+44506     Kenosha, WI                                               110942        109167137             2632.1
+44992     Killeen, TX                                               167976        165957328             2621.5
+45235     Kingsport, TN--VA                                          95766        253786700              977.3
+45262     Kingston, NY                                               53458         87172611             1588.3
+45451     Kissimmee, FL                                             186667        271296228             1782.1
+45640     Knoxville, TN                                             419830        879260396             1236.7
+45694     Kokomo, IN                                                 63739         91883218             1796.7
+45910     La Crosse, WI--MN                                          89966        104602332             2227.6
+45937     Lady Lake, FL                                              50721        129445823             1014.8
+46018     Lafayette, IN                                             125738        141640673             2299.2
+46045     Lafayette, LA                                             178079        322704368             1429.2
+46126     Lafayette--Louisville, CO                                  60387         81018203             1930.5
+46531     Lake Charles, LA                                          132977        237362586             1451.0
+46801     Lake Jackson--Angleton, TX                                 73416         87604879             2170.5
+46828     Lakeland, FL                                              199487        312349139             1654.1
+47530     Lancaster, PA                                             323554        516519966             1622.4
+47611     Lancaster--Palmdale, CA                                   263532        234122253             2915.3
+47719     Lansing, MI                                               300032        354489122             2192.1
+47854     Laredo, TX                                                175586        110110429             4130.1
+47935     Las Cruces, NM                                            104186        166107865             1624.5
+47962     Las Vegas, NV                                            1314357        740498114             4597.1
+48232     Lawrence, KS                                               79647         58801723             3508.1
+48394     Lawton, OK                                                 89556        142951216             1622.6
+48664     Lebanon, PA                                                63681         77225887             2135.7
+48799     Leesburg--Eustis, FL                                       97497        183915386             1373.0
+48826     Lee's Summit, MO                                           55285         58858238             2432.8
+49096     Leominster--Fitchburg, MA                                 112943        162234921             1803.1
+49312     Lewiston, ID--WA                                           50317         73331927             1777.1
+49339     Lewiston, ME                                               50567         53459165             2449.9
+49582     Lexington-Fayette, KY                                     250994        180129735             3608.9
+49852     Lima, OH                                                   74071        119974473             1599.0
+49933     Lincoln, NE                                               226582        202317676             2900.6
+50392     Little Rock, AR                                           360331        532423462             1752.8
+50527     Livermore, CA                                              75202         54060803             3602.8
+50851     Lodi, CA                                                   83735         60961956             3557.5
+50959     Logan, UT                                                  76187         99345628             1986.2
+51040     Lompoc, CA                                                 55667        155667328              926.2
+51175     Longmont, CO                                               72929         58665030             3219.7
+51256     Longview, TX                                               78070        131073251             1542.7
+51283     Longview, WA--OR                                           60443         69575010             2250.0
+51364     Lorain--Elyria, OH                                        193586        226908847             2209.6
+51445     Los Angeles--Long Beach--Santa Ana, CA                  11789487       4319930311             7068.3
+51715     Louisville, KY--IN                                        863582       1013455139             2207.0
+51877     Lubbock, TX                                               202225        192988298             2713.9
+52201     Lynchburg, VA                                              98714        192964087             1325.0
+52390     McAllen, TX                                               523144        812821746             1667.0
+52687     McKinney, TX                                               54525         70254693             2010.1
+52822     Macon, GA                                                 135170        208571198             1678.5
+52984     Madera, CA                                                 58027         58572339             2565.9
+53200     Madison, WI                                               329533        295044727             2892.7
+53740     Manchester, NH                                            143549        184043509             2020.1
+53794     Mandeville--Covington, LA                                  62866        120149233             1355.2
+54091     Mansfield, OH                                              79698        131316445             1571.9
+54145     Manteca, CA                                                51176         35247429             3760.4
+55333     Marysville, WA                                            114372        190479446             1555.1
+55603     Mauldin--Simpsonville, SC                                  77831        144664457             1393.4
+55738     Mayaguez, PR                                              119350        156225286             1978.6
+55981     Medford, OR                                               128780        152008494             2194.2
+56116     Memphis, TN--MS--AR                                       972091       1035522536             2431.3
+56251     Merced, CA                                                110483         93155694             3071.7
+56602     Miami, FL                                                4919036       2890668454             4407.4
+56656     Michigan City, IN--MI                                      66199         86091101             1991.5
+56899     Middletown, NY                                             50071         72975347             1777.1
+56926     Middletown, OH                                             94355        124401036             1964.4
+57007     Midland, TX                                                99221        117232622             2192.1
+57466     Milwaukee, WI                                            1308913       1261441179             2687.5
+57628     Minneapolis--St. Paul, MN                                2388593       2316015560             2671.2
+57709     Mission Viejo, CA                                         533015        354533330             3893.9
+57736     Missoula, MT                                               69491         94235354             1909.9
+57925     Mobile, AL                                                317605        545900446             1506.9
+58006     Modesto, CA                                               310945        222937057             3612.4
+58168     Monessen, PA                                               56508         94629552             1546.6
+58330     Monroe, LA                                                113818        203178692             1450.9
+58357     Monroe, MI                                                 53153         76645563             1796.1
+58600     Montgomery, AL                                            196892        255798649             1993.6
+59275     Morgantown, WV                                             55997         88403985             1640.6
+59410     Morristown, TN                                             54368        117593145             1197.5
+60490     Mount Vernon, WA                                           51174         82166032             1613.1
+60625     Muncie, IN                                                 90673        111352743             2109.0
+60733     Murfreesboro, TN                                          135855        228782219             1538.0
+60841     Muskegon, MI                                              154729        258072657             1552.8
+60895     Myrtle Beach, SC                                          122984        261389814             1218.6
+60976     Nampa, ID                                                  95909        119179574             2084.3
+61057     Napa, CA                                                   79867         60929170             3395.0
+61165     Nashua, NH--MA                                            197155        356644085             1431.8
+61273     Nashville-Davidson, TN                                    749935       1115688349             1740.9
+61705     Newark, OH                                                 70001         91705002             1977.0
+61786     New Bedford, MA                                           146730        161924940             2346.9
+62407     New Haven, CT                                             531314        738944119             1862.2
+62677     New Orleans, LA                                          1009283        512392656             5101.6
+63217     New York--Newark, NY--NJ--CT                            17799861       8683203275             5309.3
+63433     Norman, OK                                                 86478         78316520             2859.9
+63838     North Port--Punta Gorda, FL                               122421        231508151             1369.6
+64135     Norwich--New London, CT                                   173160        318660884             1407.4
+64567     Ocala, FL                                                 106542        230385680             1197.7
+64864     Odessa, TX                                                111395        137939905             2091.6
+64945     Ogden--Layton, UT                                         417933        466339337             2321.1
+65080     Oklahoma City, OK                                         747003        834888045             2317.4
+65242     Olympia--Lacey, WA                                        143826        238146619             1564.2
+65269     Omaha, NE--IA                                             626623        586269954             2768.3
+65863     Orlando, FL                                              1157431       1173760455             2554.0
+66160     Oshkosh, WI                                                71070         68813473             2674.9
+66484     Owensboro, KY                                              67665         99782279             1756.3
+66673     Oxnard, CA                                                337591        196057094             4459.7
+67105     Palm Bay--Melbourne, FL                                   393289        569111160             1789.8
+67294     Panama City, FL                                           132419        263361932             1302.3
+67672     Parkersburg, WV--OH                                        85605        130642396             1697.1
+67807     Pascagoula, MS                                             54190         88198581             1591.3
+68482     Pensacola, FL--AL                                         323783        568149190             1476.0
+68509     Peoria, IL                                                247172        318940999             2007.2
+68887     Petaluma, CA                                               59958         47840726             3246.0
+69076     Philadelphia, PA--NJ--DE--MD                             5149079       4660716538             2861.4
+69184     Phoenix--Mesa, AZ                                        2907049       2069418674             3638.3
+69454     Pine Bluff, AR                                             58584         91898879             1651.1
+69697     Pittsburgh, PA                                           1753136       2207696575             2056.7
+69778     Pittsfield, MA                                             52772         87630716             1559.7
+70426     Pocatello, ID                                              62498         77542296             2087.5
+70642     Ponce, PR                                                 195037        150188672             3363.4
+70993     Port Arthur, TX                                           114656        118772004             2500.2
+71074     Porterville, CA                                            60261         54639137             2856.5
+71155     Port Huron, MI                                             86486        143825030             1557.4
+71263     Portland, ME                                              188080        320612664             1519.4
+71317     Portland, OR--WA                                         1583138       1227510314             3340.3
+71479     Port St. Lucie, FL                                        270774        437778242             1602.0
+71506     Portsmouth, NH--ME                                         50912        111161563             1186.2
+71749     Pottstown, PA                                              73597        142359541             1339.0
+71803     Poughkeepsie--Newburgh, NY                                351982        686317522             1328.3
+72046     Prescott, AZ                                               61909        100505868             1595.4
+72505     Providence, RI--MA                                       1174548       1304401262             2332.2
+72559     Provo--Orem, UT                                           303680        220151208             3572.7
+72613     Pueblo, CO                                                123351        139076370             2297.1
+73153     Racine, WI                                                129545        118766011             2825.1
+73180     Radcliff--Elizabethtown, KY                                64504        112680172             1482.6
+73261     Raleigh, NC                                               541527        827792910             1694.3
+73396     Rapid City, SD                                             66780         78706891             2197.5
+73693     Reading, PA                                               240264        260675561             2387.2
+73774     Redding, CA                                               105267        182949567             1490.2
+74179     Reno, NV                                                  303689        307183724             2560.5
+74746     Richmond, VA                                              818836       1131193512             1874.8
+75340     Riverside--San Bernardino, CA                            1506816       1136422783             3434.1
+75421     Roanoke, VA                                               197442        290009284             1763.3
+75637     Rochester, MN                                              91271        104271901             2267.1
+75664     Rochester, NY                                             694396        764443652             2352.7
+75718     Rockford, IL                                              270414        360220301             1944.3
+75745     Rock Hill, SC                                              70007        158464481             1144.2
+75988     Rocky Mount, NC                                            61657        105651780             1511.5
+76204     Rome, GA                                                   58287        105666296             1428.7
+76474     Round Lake Beach--McHenry--Grayslake, IL--WI              226848        344855947             1703.7
+77068     Sacramento, CA                                           1393498        955784543             3776.1
+77149     Saginaw, MI                                               140985        190998239             1911.8
+77230     St. Augustine, FL                                          53519         89663229             1545.9
+77257     St. Charles, MD                                            74765        119654621             1618.3
+77338     St. Cloud, MN                                              91305        102262394             2312.5
+77446     St. George, UT                                             62630         87055332             1863.3
+77743     St. Joseph, MO--KS                                         77231        100160414             1997.1
+77770     St. Louis, MO--IL                                        2077662       2146974101             2506.4
+78040     Saipan, MP                                                 61695         76163606             2098.0
+78229     Salem, OR                                                 207229        179270720             2993.9
+78310     Salinas, CA                                               179173        116284529             3990.7
+78364     Salisbury, MD--DE                                          59426        111213775             1383.9
+78499     Salt Lake City, UT                                        887650        597565978             3847.3
+78553     San Angelo, TX                                             87969        118121322             1928.9
+78580     San Antonio, TX                                          1327554       1055573512             3257.3
+78661     San Diego, CA                                            2674436       2026112024             3418.7
+78769     Sandusky, OH                                               50693         75865252             1730.6
+78904     San Francisco--Oakland, CA                               2995769       1107747057             7004.3
+78985     San German--Cabo Rojo--Sabana Grande, PR                  112939        233799127             1251.1
+79039     San Jose, CA                                             1538312        673683711             5914.1
+79093     San Juan, PR                                             2216616       2309422361             2485.9
+79147     San Luis Obispo, CA                                        53498         38415106             3606.9
+79228     San Rafael--Novato, CA                                    232836        256284325             2353.0
+79282     Santa Barbara, CA                                         196263        154823889             3283.2
+79309     Santa Clarita, CA                                         170481        140721950             3137.7
+79336     Santa Cruz, CA                                            157348        142196828             2866.0
+79363     Santa Fe, NM                                               80337        117524884             1770.4
+79417     Santa Maria, CA                                           120297         92062185             3384.3
+79498     Santa Rosa, CA                                            285408        264142433             2798.5
+79606     Sarasota--Bradenton, FL                                   559229        700437829             2067.8
+79633     Saratoga Springs, NY                                       51172         95565622             1386.8
+79768     Savannah, GA                                              208886        265194217             2040.1
+80227     Scranton, PA                                              385237        411033733             2427.4
+80362     Seaside--Monterey--Marina, CA                             125503        105252097             3088.3
+80389     Seattle, WA                                              2712205       2469881137             2844.1
+81118     Sheboygan, WI                                              68600         66716493             2663.1
+81631     Sherman, TX                                                56168         82559038             1762.1
+81739     Shreveport, LA                                            275213        400576316             1779.4
+82144     Simi Valley, CA                                           112345         70123206             4149.4
+82225     Sioux City, IA--NE--SD                                    106119        136683430             2010.8
+82252     Sioux Falls, SD                                           124269        118232975             2722.2
+82468     Slidell, LA                                                79926        145490083             1422.8
+83116     South Bend, IN--MI                                        276498        403518129             1774.7
+83332     South Lyon--Howell--Brighton, MI                          106139        246090796             1117.1
+83548     Spartanburg, SC                                           145058        356131799             1054.9
+83764     Spokane, WA--ID                                           334858        370509676             2340.8
+83899     Springfield, IL                                           153516        225602182             1762.4
+83926     Springfield, MA--CT                                       573610        800255409             1856.5
+83953     Springfield, MO                                           215004        293977763             1894.2
+83980     Springfield, OH                                            89684        113567884             2045.3
+84493     State College, PA                                          71301         55416540             3332.4
+85087     Stockton, CA                                              313392        192415050             4218.4
+85708     Sumter, SC                                                 64320        115730472             1439.4
+86302     Syracuse, NY                                              402267        465316094             2239.1
+86464     Tallahassee, FL                                           204260        294945742             1793.7
+86599     Tampa--St. Petersburg, FL                                2062339       2077874440             2570.6
+87004     Temecula--Murrieta, CA                                    229810        247585114             2404.0
+87058     Temple, TX                                                 71937        107081814             1739.9
+87139     Terre Haute, IN                                            79376        111984994             1835.8
+87193     Texarkana, TX--Texarkana, AR                               72288        150325905             1245.5
+87220     Texas City, TX                                             96417        151668090             1646.5
+87328     The Woodlands, TX                                          89445        107987273             2145.3
+87490     Thousand Oaks, CA                                         210990        223171056             2448.6
+87787     Titusville, FL                                             52922         81629693             1679.1
+87868     Toledo, OH--MI                                            503008        524032582             2486.1
+88084     Topeka, KS                                                142411        181831961             2028.5
+88273     Tracy, CA                                                  59020         33075133             4621.6
+88462     Trenton, NJ                                               268472        238590688             2914.4
+88732     Tucson, AZ                                                720425        754608795             2472.7
+88948     Tulsa, OK                                                 558329        677032189             2135.9
+89083     Turlock, CA                                                69507         48323193             3725.4
+89110     Tuscaloosa, AL                                            116888        196840250             1538.0
+89326     Tyler, TX                                                 101494        148817811             1766.4
+89650     Uniontown--Connellsville, PA                               58442        115537289             1310.1
+89785     Utica, NY                                                 113409        142333804             2063.7
+89866     Vacaville, CA                                              90264         65598046             3563.9
+89974     Valdosta, GA                                               57647         98233729             1519.9
+90028     Vallejo, CA                                               158967         87939538             4681.9
+90406     Vero Beach--Sebastian, FL                                 120962        210986660             1484.9
+90514     Victoria, TX                                               61529        132117043             1206.2
+90541     Victorville--Hesperia--Apple Valley, CA                   200436        321082129             1616.8
+90730     Vineland, NJ                                               88724        159486566             1440.8
+90892     Virginia Beach, VA                                       1394439       1364409880             2647.0
+90946     Visalia, CA                                               120044        103376801             3007.6
+91027     Waco, TX                                                  153198        180614619             2196.8
+91783     Warner Robins, GA                                          90838        209563450             1122.7
+92242     Washington, DC--VA--MD                                   3933920       2996009340             3400.8
+92485     Waterbury, CT                                             189026        253506573             1931.2
+92593     Waterloo, IA                                              108298        136632729             2052.9
+92890     Watsonville, CA                                            66500         49512247             3478.6
+93025     Wausau, WI                                                 68221         96735017             1826.6
+93592     Weirton, WV--Steubenville, OH--PA                          73710        130905880             1458.4
+93862     Wenatchee, WA                                              55425         68985534             2080.9
+94294     Westminster, MD                                            65034        138384379             1217.2
+94726     Wheeling, WV--OH                                           87613        140628820             1613.6
+95077     Wichita, KS                                               422301        464939329             2352.5
+95104     Wichita Falls, TX                                          99396        134519373             1913.7
+95293     Wildwood--North Wildwood--Cape May, NJ                     52550        100416190             1355.4
+95455     Williamsport, PA                                           58693         69863178             2175.9
+95833     Wilmington, NC                                            161149        308007268             1355.1
+96103     Winchester, VA                                             53559         85823094             1616.3
+96670     Winston-Salem, NC                                         299290        651059087             1190.6
+96697     Winter Haven, FL                                          153924        269780707             1477.7
+97291     Worcester, MA--CT                                         429882        648328105             1717.3
+97507     Yakima, WA                                                112816        130420370             2240.4
+97561     Yauco, PR                                                 108024        165483899             1690.7
+97750     York, PA                                                  192903        307108851             1626.8
+97831     Youngstown, OH--PA                                        417437        591224290             1828.7
+97939     Yuba City, CA                                              97645         91599143             2760.9
+98020     Yuma, AZ--CA                                               94950         97134104             2531.8
+98182     Zephyrhills, FL                                            53979        106784775             1309.2
+

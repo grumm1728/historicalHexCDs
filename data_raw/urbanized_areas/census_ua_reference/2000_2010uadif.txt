@@ -1,0 +1,140 @@
+Differences between the Final 2010 Census Urban Area Criteria and the Census 2000 Urban Area Criteria
+
+The following table summarizes the critical differences between the final 2010 Census urban 
+area criteria described in the August 24, 2011 Federal Register (76 FR 53030) and the Census 2000 
+urban area criteria.
+
+Criteria	Census 2000 Criteria	Final 2010 Census Criteria
+Identification of Initial Urban Area Cores	Census block group and block population density, count, and size thresholds.	Census tract and block population density, count, and size thresholds.  Use of National Land Cover Database to identify territory with a high degree of impervious land cover.
+Inclusion of Noncontiguous Territory Separated by Exempted Territory	Bodies of water, national parks and monuments.	Bodies of water.
+Inclusion of Noncontiguous Territory via Hops and Jumps	Maximum hop distance 0.5 miles, maximum jump distance 2.5 miles, and hops after jumps allowed.	Maximum hop distance 0.5 miles, maximum jump distance 2.5 miles, and no hops after jumps.
+Splitting Large Urban  Agglomerations	The agglomeration contains at least 50,000 people in different metropolitan areas (metropolitan statistical areas, consolidated metropolitan statistical areas, or primary metropolitan statistical areas).  Split locations guided by metropolitan area boundaries.  Splits allowed within metropolitan areas if urban territories encompass at least 50,000 people and are connected via hop, jump, or point connection.	The agglomeration consists of urbanized areas defined separately for Census 2000.  Split location is guided by location of Census 2000 urbanized area boundaries.  Potential split locations will also consider metropolitan statistical area, county, incorporated place, census designated place, and/or minor civil division boundaries as well as distance from each component urbanized area.
+Merging Individual Urban Areas	N/A	Merge qualifying territory from separately defined 2010 Census urban cores that share territory contained within the boundaries of the same Census 2000 urban area.  Merge only occurs if an area is at risk of losing urbanized area or urban status and is preventable by the merge.
+Inclusion of Airports	Airport with an annual enplanement of at least 10,000 passengers and is adjacent to the urban area.	Currently functioning airport with an annual enplanement of at least 2,500 passengers and is within 0.5 miles of the urban area.
+Additional Nonresidential Urban Territory	N/A	Inclusion of groups of census blocks with a high degree of impervious surface and are within 0.25 miles of an urban area.
+Assigning Urban Area Titles	Clear, unambiguous title based on commonly recognized place names derived from incorporated places, census designated places, minor civil divisions, and the Geographic Names Information System.  Priority for potential titles begins with the name of the most populous incorporated place with at least 2,500 people in the urban area.	Clear, unambiguous title based on commonly recognized place names derived from incorporated places, census designated places, minor civil divisions, and the Geographic Names Information System.  Priority for potential titles begins with the most populous incorporated place of at least 10,000 people followed by the most populous incorporated place or census designated place with at least 2,500 people in the urban area.
+Minimum Population Residing Outside Institutional Group Quarters	N/A	At least 1,500 persons must reside outside institutional group quarters for the area to qualify as its own urban area.
+Density Criteria for Military Installations	Census blocks on military installations with 2,500 or more persons are automatically given a population density of 1,000 persons per square mile; census blocks between 1,000 and 2,500 population are automatically given a population density of 500 persons per square mile.	Not applicable because multiple census blocks were defined on military installations for the 2010 Census.
+Urban Area Central Place Criteria	Any incorporated or census designated place that has its name in the urban area title and any other incorporated or census designated place with at least 50,000 people within the urban area.	Central places are no longer identified.
+Extended Place Criteria	Any incorporated or census designated place that is split by an urban area boundary.	Incorporated and census designated places can still be split by an urban area boundary, but “extended places” are not specifically identified.
+
+
+Use of Census Tracts as Analysis Units in the Initial Phase of Delineation
+
+The Census Bureau replaced census block groups with census tracts as the analysis unit during the 
+delineation of the initial urban area core for the 2010 Census urban area delineation.  Changing the 
+urban area core delineation analysis unit to the census tract offers advantages of increased 
+consistency and comparability, since census tracts are more likely to retain their boundaries over the 
+decades than census blocks and block groups.  However, the maximum size threshold for qualifying 
+census tracts is three square miles compared to the two square mile threshold adopted for block 
+groups for Census 2000.  Research by the Census Bureau based on Census 2000 data indicated that the 
+initial urban cores tended to experience slight decreases in territory and only slight increases in 
+population qualifying as urban when the initial analysis unit is changed from the block group to the 
+census tract.  The small reduction in initial urban area core territory is due to the use of census tracts, 
+which are larger geographic units and therefore less likely than block groups to qualify under the 
+density requirements.  Similar to the way block groups were used for Census 2000, if a census tract 
+does not meet specified area measurement and density criteria, the focus of analysis shifts to 
+individual census blocks within the tract, and delineation continues at the block level.  As a result, 
+when using census tracts, the delineation process shifts to census block-level analysis sooner than 
+would be the case when using block groups.  This methodology is iterative as additional qualifying 
+census tracts and blocks are added to the initial urban core until no such qualifying territory exists 
+during this phase of the delineation.
+
+Qualifying Territory Containing a High Degree of Impervious Surface Land Cover
+
+The Census Bureau uses impervious surface data when delineating urban areas as a means to identify 
+business districts, commercial, and industrial zones, located both on the edge and in the interior of an 
+urban area that would not qualify as urban based on residential population measures alone.
+
+Identification of Exempted Territory 
+
+For the 2010 Census urban area delineation, bodies of water included in the Census Bureau’s Master 
+Address File/Topologically Integrated Geographic Encoding and Referencing Database are the only 
+specific class of territory identified as exempted.  The 2010 Census urban area criteria differ from the 
+Census 2000 criteria by not considering national parks and national monuments as exempted territory 
+because of concerns regarding the data quality and vintage.   The Census Bureau did not add additional 
+classes of exempted territory until a larger and more robust category of land cover/land use types 
+acting as barriers to urban development can be identified consistently and uniformly for the entire 
+United States and Puerto Rico.  Further, the presence of large expanses of exempted territory 
+coupled with a maximum jump distance threshold of 2.5 miles would facilitate the over extension of 
+urban territory in certain locations around the nation.
+
+Inclusion of Noncontiguous Territory via Hops and Jumps
+
+The Census Bureau continues to use the maximum jump distance of 2.5 miles, as well as the maximum 
+hop distance of 0.5 miles.  However, the Census Bureau is not allowing for a second iteration of hops 
+after a jump to mitigate the overextension of urban areas into rural territory.
+
+Splitting Large Agglomerations and Merging Individual Urban Areas
+
+The Census Bureau applies split and merge criteria guided by the Census 2000 urbanized area 
+boundaries to ensure, to the greatest extent possible, the continued recognition of all urbanized areas 
+defined for the Census 2000.  All territory subject to either the splitting or merging criteria must first 
+qualify as urban according to the 2010 Census delineation criteria.
+
+Qualification of Airports for Inclusion in Urban Areas
+
+The Census Bureau includes whole census blocks representing airports in urban areas.  In order to 
+qualify, an airport must report a minimum annual enplanement of 2,500 passengers as reported by the 
+Federal Aviation Administration for at least one calendar year from 2001 to the most current data 
+available for the delineation.  All identified airports must be currently in service and providing services 
+for the urban area in which it is to be included.  The 2,500 passenger threshold was chosen to provide 
+for a more complete coverage of airports, particularly those near smaller initial urban cores.  The 
+Census Bureau also includes qualifying airports within 0.5 miles of the urban area.  This process 
+simulates the connection of noncontiguous qualifying territory via the hop criteria.  
+
+Additional Nonresidential Urban Territory
+
+The Census Bureau identifies and qualifies additional nonresidential urban-related territory that is 
+noncontiguous, yet near the urban area.  The Census Bureau added these criteria in its effort to 
+capture large commercial and/or industrial land uses separated from an urban area by a relatively small 
+amount of undeveloped territory.  As a final review, the Census Bureau examines the territory 
+surrounding the urban areas associated with a high degree of impervious surface land cover and 
+determines whether they should be included in an urban area.
+
+Assigning Urban Area Titles
+
+For the 2010 Census, the first named place remains the largest incorporated place associated with the 
+urban area if the urban area contains at least one incorporated place with a population of 10,000 or 
+more within the urban area.  However, the Census Bureau gives incorporated places and census 
+designated places equal status when the urban area does not contain an incorporated place with a 
+population of 10,000 or more within the urban area and when identifying additional places to be 
+included in the title.  This allows for more equal representation of all local places.
+
+Requirement for Minimum Population Residing Outside Institutional Group Quarters
+
+To qualify as an urban area on its own for the 2010 Census, the territory identified according to the 
+urban area delineation criteria must encompass at least 2,500 people, at least 1,500 of which reside 
+outside institutional group quarters.  This criterion is designed to avoid the delineation of an urban 
+area comprising only a few census blocks in which an institutional group quarters is located.  The 
+Census Bureau recognizes that although the population densities of these areas exceed the minimum 
+thresholds specified in the urban area criteria, and the total populations exceed 2,500, they lack most 
+of the residential, commercial, and infrastructure characteristics typically associated with urban 
+territory.
+
+Density Criteria for Military Installations
+
+The Census Bureau no longer has separate criteria for determining qualification of territory on military 
+installations.  For Census 2000, due to imposed restrictions on the selection of features that could be 
+used as census block boundaries within military installations, blocks on military installations that had a 
+population of 2,500 or more were treated as having a population density of 1,000 ppsm even if the 
+density was less than 1,000 ppsm.  Census blocks that had a population greater than 1,000 and less 
+than 2,500 were treated as having a population density of 500 ppsm.  The Census Bureau removed 
+these criteria as the restrictions on the selection of features for census block boundaries within 
+military installations is no longer in effect for the 2010 Census.
+
+Urban Area Central Place Criteria
+
+The Census Bureau is discontinuing the identification of central places as part of the 2010 Census urban 
+area delineation process.  The identification of central places is no longer necessary for the process of 
+delineating urban areas and can result in some central places being split between urban and rural 
+territory.  The Office of Management and Budget issues criteria to identify principal cities as part of the 
+metropolitan and micropolitan statistical areas program.  This list of principal cities is similar to what 
+would emerge if the urban area process created a list of central places.  The Census Bureau no longer 
+sees a need for a second representation of the same concept in its statistical and geographic data 
+products.
+
+Extended Place Criteria
+
+The Census Bureau will no longer specifically identify an incorporated place or census designated place 
+split by an urban area boundary as an “extended place.”  
