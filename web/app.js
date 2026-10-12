@@ -7,6 +7,7 @@ const tooltip = document.getElementById("tooltip");
 const outlineOnlyToggle = document.getElementById("outlineOnlyToggle");
 const showDistrictsToggle = document.getElementById("showDistrictsToggle");
 const autoZoomToggle = document.getElementById("autoZoomToggle");
+const urbanRuralToggle = document.getElementById("urbanRuralToggle");
 const civilWarBanner = document.getElementById("civilWarBanner");
 const readoutCongress = document.getElementById("readoutCongress");
 const readoutYears = document.getElementById("readoutYears");
@@ -83,6 +84,45 @@ function cdColor(props) {
   } catch {
     return base;
   }
+}
+
+// Urban/rural encoding (#20, issue #29): reuses cdColor's lightness-blend channel, but the
+// blend is driven by the tiler's metro labels instead of the arbitrary cd_index. State hue
+// is untouched. Metro tiles run 0.00 (cluster anchor, metro_rank 0) -> 0.30 (outermost
+// claimed tile); rural tiles sit at a flat 0.75 — checked against the palette's palest hue
+// (yellow) on the near-white page background, so don't raise it without re-checking.
+// A state with no metro seats has no clusters, so all its tiles fall to the rural shade.
+const URBAN_BLEND_MAX = 0.30;
+const RURAL_BLEND = 0.75;
+
+function blendWithWhite(base, mix) {
+  const c = d3.color(base);
+  if (!c) return base;
+  c.r = Math.round(c.r + (255 - c.r) * mix);
+  c.g = Math.round(c.g + (255 - c.g) * mix);
+  c.b = Math.round(c.b + (255 - c.b) * mix);
+  return c.formatRgb();
+}
+
+// Highest metro_rank actually drawn per state+cluster, so the gradient spans each cluster's
+// real extent. metro_cluster_seats can overstate it when a walled-in cluster spills seats.
+function clusterMaxRanks(features) {
+  const maxRank = new Map();
+  for (const f of features) {
+    const p = f.properties;
+    if (!p.is_metro || p.metro_rank == null) continue;
+    const key = `${p.state_abbr}|${p.metro_cluster}`;
+    maxRank.set(key, Math.max(maxRank.get(key) ?? 0, Number(p.metro_rank)));
+  }
+  return maxRank;
+}
+
+function urbanRuralColor(props, maxRank) {
+  const base = stateColor(props.state_abbr || "unknown");
+  if (!props.is_metro) return blendWithWhite(base, RURAL_BLEND);
+  const span = maxRank.get(`${props.state_abbr}|${props.metro_cluster}`) ?? 0;
+  const t = span > 0 ? Number(props.metro_rank) / span : 0;
+  return blendWithWhite(base, URBAN_BLEND_MAX * t);
 }
 const outlineGeometryCache = new Map();
 
@@ -452,12 +492,14 @@ async function drawFrame(entry) {
 
   // Layer 2: per-CD pentahex tiles when toggled (v5 only).
   if (showDistricts && cdGeo && cdGeo.features?.length) {
+    const urbanRural = Boolean(urbanRuralToggle?.checked);
+    const maxRank = urbanRural ? clusterMaxRanks(cdGeo.features) : null;
     g.selectAll("path.cd-tile")
       .data(cdGeo.features)
       .join("path")
       .attr("class", "cd-tile")
       .attr("d", path)
-      .attr("fill", (d) => cdColor(d.properties))
+      .attr("fill", (d) => (urbanRural ? urbanRuralColor(d.properties, maxRank) : cdColor(d.properties)))
       .on("mousemove", (event, d) => {
         tooltip.hidden = false;
         tooltip.style.left = `${event.offsetX + 16}px`;
@@ -466,6 +508,9 @@ async function drawFrame(entry) {
           `<strong>${d.properties.state_name || "Unknown"}</strong>`,
           `CD ${d.properties.cd_index ?? "?"} of ${d.properties.house_seats ?? "?"}`,
           `Hexes: ${d.properties.hex_count ?? 5}${d.properties.is_boundary_tile ? " (boundary)" : ""}`,
+          ...(urbanRural
+            ? [d.properties.is_metro ? `Metro: ${d.properties.metro_cluster ?? "?"}` : "Rural"]
+            : []),
           `Congress: ${entry.congress_number}`,
         ].join("<br>");
       })
@@ -581,6 +626,11 @@ function setupControls() {
   }
   if (autoZoomToggle) {
     autoZoomToggle.addEventListener("change", async () => {
+      await setFrame(frameIndex);
+    });
+  }
+  if (urbanRuralToggle) {
+    urbanRuralToggle.addEventListener("change", async () => {
       await setFrame(frameIndex);
     });
   }
