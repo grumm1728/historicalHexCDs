@@ -448,28 +448,47 @@ Algorithm (in order):
    tile (`_nearest_tile_split`, a Voronoi of adjacent tiles' boundary seeds).
 8. **Urban/rural labels** (label-only; never touches geometry) — see below.
 
-## Urban/rural district labels (issue #7)
+## Metro (urban/rural) district labels (issues #7, #36)
 
-Each CD feature carries `is_urban`, `urban_cluster`, `urban_rank`, `urban_cluster_seats`.
-Three modules, decided on wayfinder map #12:
-- `scripts/urban_seats.py` — per state/Congress count: `round-half-up(urban_share × seats)`,
-  census data spliced across four eras, stepped on the apportionment cutover; composite
-  outline states (NC/GA) sum predecessor-territory rows; the pre-statehood Maine block is 0%.
-- `scripts/urban_clusters.py` — top `min(5, urban_seats)` CESTA cities projected through the
-  state's **live** layout record (AK/HI via the shared `inset_lonlat`), single-linkage at
-  2.9R, seats by population share. Then `label_urban_tiles`: nearest-first contiguous BFS
-  from each anchor over **rendered**-tile adjacency (cell adjacency lies where the outline
+Each CD feature carries `is_metro`, `metro_cluster`, `metro_rank`, `metro_cluster_seats`
+(the #28 label), plus `state_census_urban_seats` (the #26 Census-urban count, kept for a
+possible two-tier encoding). "Metro" = part of a **nationally significant big metro**
+(decided in #33, linking amended by #34 option A′):
+- `scripts/metro_seats.py` — the seat counts and anchors the labels use:
+  - **Before 1950:** single-linkage chains of *all* CESTA places within 13 km (haversine).
+  - **From 1950:** official urbanized areas (`data_raw/urbanized_areas/ua_state_portions.csv`).
+    Only areas ≥ 500k link, and small areas never bridge: 1990–2020 boundary gap ≤ 5 km
+    (precomputed by `scripts/build_ua_large_area_gaps.py` → `ua_large_area_gaps.csv`, so the
+    tiler never needs geopandas); 1950–1980 first-named cities ≤ 100 km.
+  - **Importance:** top `floor(states admitted by census day / 2)` metros nationally, ranked
+    across the whole census (unseated states, DC, territories included; only seated drawn).
+  - **Seats:** per in-state metro portion `round-half-up(portion_pop / state_pop × seats)`.
+    From 1950, linking decides only ranking and rounding: anchors are per *original* area
+    portion, splitting the merged portion's seats by largest remainder (Bay Area ranks as one,
+    labels from SF–Oakland and San Jose). Pre-1950: one anchor per chain portion.
+  - Places count toward the state drawing them (unseated child → `PREDECESSOR_PARENT`, Maine
+    → MA through C16; the Maine block gets 0). 1950–1980 portions outside the first-named
+    city's state have no published point; they anchor on that state's CESTA places within
+    60 km of the area's point (e.g. New York's NJ part ≈ Newark/Jersey City).
+  - **Expected chains of large areas** under the decided rule: 1970/80 Boston+Providence
+    (+Springfield, +Hartford), 2000–2020 NY+Bridgeport+New Haven+Hartford(+Springfield) and
+    LA+Riverside+Mission Viejo(+San Diego in 2000). Anchors stay per area, so these only
+    shift rounding.
+- `scripts/urban_seats.py` — the #26 Census-urban count (`round-half-up(urban_share × seats)`)
+  and the shared census→Congress step function / per-outline state totals metro reuses.
+- `scripts/urban_clusters.py` — `to_hex_space` (anchors projected through the state's **live**
+  layout record, AK/HI via `inset_lonlat`) and `label_urban_tiles`: nearest-first contiguous
+  BFS from each anchor over **rendered**-tile adjacency (cell adjacency lies where the outline
   clip removed the shared cells), growing clusters **round-robin** (largest first within a
-  round) with a preference for tiles in the cluster's own anchor-Voronoi cell.
+  round) with a preference for tiles in the cluster's own anchor-Voronoi cell. (Its old
+  top-5/2.9R `urban_clusters` is superseded by metro anchors.)
 - **Why round-robin, not #19's largest-first-to-completion:** growing the biggest cluster to
   completion swallowed smaller clusters' cities (C119 San Diego seeded in the Central Valley,
   Austin out west; 839 seeds >4R from their anchor, up to 30R). Round-robin: 20, max 5R.
 - **Spill-over:** a cluster can be walled in by neighbours' regions before reaching its seats.
   Regions stay contiguous, so it stops short and its leftover seats go to clusters that can
-  still grow (state total stays exact). ~100 state-Congresses; each event is written to
+  still grow (state total stays exact). Each event is written to
   `data_processed/urban_label_notes.json` for a future map-footnotes section.
-- The merge radius is deliberately 2.9R: SF–San Jose (3.07R) stays separate because no radius
-  can merge it while keeping San Antonio–Austin (3.05R) apart. Don't retune it to fix one pair.
 - Tests: `python -m pytest tests` (not run in CI).
 
 ## Invariants & gotchas
