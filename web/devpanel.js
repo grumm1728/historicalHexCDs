@@ -4,13 +4,16 @@
 (() => {
   const api = window.hexDesign;
   if (!api) return;
-  const { DESIGN, DESIGN_DEFAULTS, PALETTES, redraw } = api;
+  const { DESIGN, DESIGN_DEFAULTS, PALETTES, METRO_PALETTES, redraw } = api;
   const STORE_KEY = "hexcd.design.v1";
 
-  // [key, label, kind, min, max, step]  — kind: range | color | palette. Strings are headings/hints.
+  // [key, label, kind, ...]  — kind: range (min, max, step) | color | select (options). Strings are headings/hints.
   const SCHEMA = [
     "Color scheme",
-    ["palette", "State palette", "palette"],
+    ["colorBy", "Color by", "select", ["state", "metro"]],
+    ["palette", "State palette", "select", Object.keys(PALETTES)],
+    ["metroPalette", "Metro palette", "select", METRO_PALETTES],
+    ["metroRural", "Rural (metro mode)", "select", ["faded state", "grey"]],
     ["mapBackground", "Map background", "color"],
     "Districts (plain mode)",
     ["cdBlendMin", "Lightest-first blend", "range", 0, 1, 0.01],
@@ -91,6 +94,7 @@
       }
       sawHeading = false;
       const [key, label, kind, min, max, step] = item;
+      const options = min;
       const row = document.createElement("div");
       row.className = "row";
       const id = `dp-${key}`;
@@ -99,9 +103,9 @@
       lab.textContent = label;
       const out = document.createElement("output");
       let input;
-      if (kind === "palette") {
+      if (kind === "select") {
         input = document.createElement("select");
-        for (const name of Object.keys(PALETTES)) {
+        for (const name of options) {
           const o = document.createElement("option");
           o.value = o.textContent = name;
           input.append(o);

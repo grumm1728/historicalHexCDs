@@ -36,6 +36,9 @@ let stablePath = null;
 // (web/devpanel.js, experimental) edits this object in place and calls redraw().
 const DESIGN_DEFAULTS = Object.freeze({
   palette: "Tableau10",
+  colorBy: "state",       // "state" | "metro" (metro: each metro gets its own hue across state lines)
+  metroPalette: "Hashed hues",
+  metroRural: "faded state", // metro mode: rural tiles as "faded state" hue or flat "grey"
   cdBlendMin: 0.10,       // plain mode: lightness blend for a state's first CD...
   cdBlendMax: 0.55,       // ...and its last (blend toward white)
   urbanAnchorBlend: 0.0,  // urban mode: blend at the metro anchor tile (0 = full state hue)
@@ -70,6 +73,25 @@ const PALETTES = {
   Paired: () => d3.schemePaired,
   Accent: () => d3.schemeAccent,
 };
+// Metro hues are keyed by a hash of the metro name, not first-seen order, so a metro keeps
+// its color in every Congress and every session (Boston is the same hue in 1813 and 2025).
+// Cross-state portions share a name post-1950 (NY/NJ "New York--Jersey City--Newark");
+// linked-but-separately-anchored areas (SF–Oakland vs San Jose) get distinct hues.
+const METRO_PALETTES = ["Hashed hues", ...Object.keys(PALETTES)];
+function hashString(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i += 1) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
+function metroKey(props) {
+  return String(props.metro_cluster || "").replace(/ \([A-Z]{2}\)$/, "");
+}
+function metroColor(props) {
+  const h = hashString(metroKey(props));
+  if (DESIGN.metroPalette === "Hashed hues") return d3.hcl((h % 3600) / 10, 62, 52).formatRgb();
+  const scheme = (PALETTES[DESIGN.metroPalette] || PALETTES.Tableau10)();
+  return scheme[h % scheme.length];
+}
 function buildStateColor() {
   stateColor = d3.scaleOrdinal((PALETTES[DESIGN.palette] || PALETTES.Tableau10)());
 }
@@ -160,9 +182,11 @@ function urbanPosition(props, maxRank) {
 }
 
 function urbanRuralColor(props, maxRank) {
-  const base = stateColor(props.state_abbr || "unknown");
+  const byMetro = DESIGN.colorBy === "metro";
   const t = urbanPosition(props, maxRank);
+  const base = byMetro && t != null ? metroColor(props) : stateColor(props.state_abbr || "unknown");
   if (t == null) {
+    if (byMetro && DESIGN.metroRural === "grey") return blendWithWhite("#6b7378", DESIGN.ruralBlend);
     let c = base;
     if (DESIGN.ruralDesat > 0) {
       const h = d3.hcl(base);
@@ -542,7 +566,8 @@ async function drawFrame(entry) {
 
   // Layer 2: per-CD pentahex tiles when toggled (v5 only).
   if (showDistricts && cdGeo && cdGeo.features?.length) {
-    const urbanRural = Boolean(urbanRuralToggle?.checked);
+    // Coloring by metro needs the metro labels, so it implies the urban/rural encoding.
+    const urbanRural = Boolean(urbanRuralToggle?.checked) || DESIGN.colorBy === "metro";
     const maxRank = urbanRural ? clusterMaxRanks(cdGeo.features) : null;
     g.selectAll("path.cd-tile")
       .data(cdGeo.features)
@@ -665,7 +690,7 @@ function redraw({ palette = false } = {}) {
     await setFrame(frameIndex);
   });
 }
-window.hexDesign = { DESIGN, DESIGN_DEFAULTS, PALETTES, redraw };
+window.hexDesign = { DESIGN, DESIGN_DEFAULTS, PALETTES, METRO_PALETTES, redraw };
 
 async function setFrame(i) {
   frameIndex = i;
