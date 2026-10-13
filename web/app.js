@@ -32,8 +32,47 @@ let stablePath = null;
 // and transitions are animated so a frame change reads as a camera move, not states
 // moving. Because the layout is frozen across seat-identical Congresses, the fitted view
 // is identical there too: a stable era has a perfectly still camera.
-const VIEW_PAD = 0.04;  // fractional padding around the fitted Congress bbox
-const VIEW_KMAX = 3;    // max zoom factor (C1 is height-constrained at ~1.5)
+// Tunable design parameters. Defaults reproduce the shipped look; the dev panel
+// (web/devpanel.js, experimental) edits this object in place and calls redraw().
+const DESIGN_DEFAULTS = Object.freeze({
+  palette: "Tableau10",
+  cdBlendMin: 0.10,       // plain mode: lightness blend for a state's first CD...
+  cdBlendMax: 0.55,       // ...and its last (blend toward white)
+  urbanAnchorBlend: 0.0,  // urban mode: blend at the metro anchor tile (0 = full state hue)
+  urbanEdgeBlend: 0.30,   // blend at the outermost claimed metro tile
+  urbanCurve: 1.0,        // gamma on the anchor->edge ramp (<1 lightens fast, >1 keeps the core dark longer)
+  ruralBlend: 0.75,       // flat blend for rural tiles
+  ruralDesat: 0.0,        // 0..1 desaturate rural tiles toward grey
+  minMetroTiles: 1,       // a metro cluster drawing fewer tiles than this counts as rural
+  metroDepth: 1.0,        // fraction of each cluster's outward depth counted as urban (1 = all)
+  tileOpacity: 0.88,
+  tileStroke: "#192328",
+  tileStrokeOpacity: 0.75,
+  tileStrokeWidth: 0.6,
+  stateBorderWidth: 0,    // 0 = off; >0 draws state outlines over the district tiles
+  stateBorderColor: "#192328",
+  mapBackground: "#f9f8f3",
+  playMs: 1300,
+  zoomMs: 700,
+  viewPad: 0.04,          // fractional padding around the fitted Congress bbox
+  viewKmax: 3,            // max zoom factor (C1 is height-constrained at ~1.5)
+});
+const DESIGN = { ...DESIGN_DEFAULTS };
+const PALETTES = {
+  Tableau10: () => d3.schemeTableau10,
+  Observable10: () => d3.schemeObservable10,
+  Category10: () => d3.schemeCategory10,
+  Set2: () => d3.schemeSet2,
+  Set3: () => d3.schemeSet3,
+  Pastel1: () => d3.schemePastel1,
+  Pastel2: () => d3.schemePastel2,
+  Dark2: () => d3.schemeDark2,
+  Paired: () => d3.schemePaired,
+  Accent: () => d3.schemeAccent,
+};
+function buildStateColor() {
+  stateColor = d3.scaleOrdinal((PALETTES[DESIGN.palette] || PALETTES.Tableau10)());
+}
 let currentView = { k: 1, x: 0, y: 0 };
 
 function viewTransform(v) {
@@ -54,12 +93,12 @@ function computeTargetView(fitGeo) {
   const x1 = Math.max(p0[0], p1[0]);
   const y0 = Math.min(p0[1], p1[1]);
   const y1 = Math.max(p0[1], p1[1]);
-  const bw = (x1 - x0) * (1 + 2 * VIEW_PAD);
-  const bh = (y1 - y0) * (1 + 2 * VIEW_PAD);
+  const bw = (x1 - x0) * (1 + 2 * DESIGN.viewPad);
+  const bh = (y1 - y0) * (1 + 2 * DESIGN.viewPad);
   if (bw <= 0 || bh <= 0) return identity;
   // No lower clamp: a frame whose footprint exceeds the base projection's reference frame
   // (or whose padding pushes past it) zooms OUT slightly so it always fits the viewport.
-  const k = Math.min(VIEW_KMAX, Math.min(width / bw, height / bh));
+  const k = Math.min(DESIGN.viewKmax, Math.min(width / bw, height / bh));
   const cx = (x0 + x1) / 2;
   const cy = (y0 + y1) / 2;
   return { k, x: width / 2 - k * cx, y: height / 2 - k * cy };
@@ -72,18 +111,8 @@ function cdColor(props) {
   const idx = Number(props.cd_index) || 1;
   const total = Math.max(1, Number(props.house_seats) || 1);
   const t = (idx - 1) / total;
-  // Blend base with white by 0..0.45 across CDs.
-  try {
-    const c = d3.color(base);
-    if (!c) return base;
-    const mix = 0.10 + 0.45 * t;
-    c.r = Math.round(c.r + (255 - c.r) * mix);
-    c.g = Math.round(c.g + (255 - c.g) * mix);
-    c.b = Math.round(c.b + (255 - c.b) * mix);
-    return c.formatRgb();
-  } catch {
-    return base;
-  }
+  // Blend base with white across CDs (cdBlendMin..cdBlendMax).
+  return blendWithWhite(base, DESIGN.cdBlendMin + (DESIGN.cdBlendMax - DESIGN.cdBlendMin) * t);
 }
 
 // Urban/rural encoding (#20, issue #29): reuses cdColor's lightness-blend channel, but the
@@ -92,8 +121,7 @@ function cdColor(props) {
 // claimed tile); rural tiles sit at a flat 0.75 — checked against the palette's palest hue
 // (yellow) on the near-white page background, so don't raise it without re-checking.
 // A state with no metro seats has no clusters, so all its tiles fall to the rural shade.
-const URBAN_BLEND_MAX = 0.30;
-const RURAL_BLEND = 0.75;
+// (These are now DESIGN.urbanEdgeBlend / DESIGN.ruralBlend.)
 
 function blendWithWhite(base, mix) {
   const c = d3.color(base);
@@ -117,12 +145,34 @@ function clusterMaxRanks(features) {
   return maxRank;
 }
 
+// Where this tile falls on the metro gradient (0 = anchor .. 1 = edge), or null when it
+// counts as rural under the current thresholds. Thresholds only ever demote metro tiles
+// to rural (the tiler's labels are the most inclusive definition), so the result is
+// nested: raising minMetroTiles or lowering metroDepth peels off small metros / suburbs.
+function urbanPosition(props, maxRank) {
+  if (!props.is_metro) return null;
+  const span = maxRank.get(`${props.state_abbr}|${props.metro_cluster}`) ?? 0;
+  if (span + 1 < DESIGN.minMetroTiles) return null;
+  const t = span > 0 ? Number(props.metro_rank) / span : 0;
+  if (DESIGN.metroDepth < 1 && t > DESIGN.metroDepth) return null;
+  const keptSpan = Math.max(DESIGN.metroDepth, 1e-9);
+  return Math.min(1, t / keptSpan);
+}
+
 function urbanRuralColor(props, maxRank) {
   const base = stateColor(props.state_abbr || "unknown");
-  if (!props.is_metro) return blendWithWhite(base, RURAL_BLEND);
-  const span = maxRank.get(`${props.state_abbr}|${props.metro_cluster}`) ?? 0;
-  const t = span > 0 ? Number(props.metro_rank) / span : 0;
-  return blendWithWhite(base, URBAN_BLEND_MAX * t);
+  const t = urbanPosition(props, maxRank);
+  if (t == null) {
+    let c = base;
+    if (DESIGN.ruralDesat > 0) {
+      const h = d3.hcl(base);
+      h.c *= 1 - DESIGN.ruralDesat;
+      c = h.formatRgb();
+    }
+    return blendWithWhite(c, DESIGN.ruralBlend);
+  }
+  const ramp = Math.pow(t, DESIGN.urbanCurve);
+  return blendWithWhite(base, DESIGN.urbanAnchorBlend + (DESIGN.urbanEdgeBlend - DESIGN.urbanAnchorBlend) * ramp);
 }
 const outlineGeometryCache = new Map();
 
@@ -338,7 +388,7 @@ function togglePlayback() {
   timer = setInterval(() => {
     const next = (frameIndex + 1) % timeline.length;
     setFrame(next);
-  }, 1300);
+  }, DESIGN.playMs);
 }
 
 async function loadIndex() {
@@ -471,7 +521,7 @@ async function drawFrame(entry) {
     Math.abs(targetView.x - currentView.x) +
     Math.abs(targetView.y - currentView.y);
   if (viewDelta > 1) {
-    g.transition().duration(700).ease(d3.easeCubicInOut).attr("transform", viewTransform(targetView));
+    g.transition().duration(DESIGN.zoomMs).ease(d3.easeCubicInOut).attr("transform", viewTransform(targetView));
   } else if (viewDelta > 0) {
     g.attr("transform", viewTransform(targetView));
   }
@@ -509,12 +559,21 @@ async function drawFrame(entry) {
           `CD ${d.properties.cd_index ?? "?"} of ${d.properties.house_seats ?? "?"}`,
           `Hexes: ${d.properties.hex_count ?? 5}${d.properties.is_boundary_tile ? " (boundary)" : ""}`,
           ...(urbanRural
-            ? [d.properties.is_metro ? `Metro: ${d.properties.metro_cluster ?? "?"}` : "Rural"]
+            ? [urbanPosition(d.properties, maxRank) != null
+                ? `Metro: ${d.properties.metro_cluster ?? "?"}`
+                : d.properties.is_metro ? `Rural (below threshold; metro: ${d.properties.metro_cluster ?? "?"})` : "Rural"]
             : []),
           `Congress: ${entry.congress_number}`,
         ].join("<br>");
       })
       .on("mouseleave", () => { tooltip.hidden = true; });
+    if (DESIGN.stateBorderWidth > 0) {
+      g.selectAll("path.state-border")
+        .data(geo.features)
+        .join("path")
+        .attr("class", "state-border")
+        .attr("d", path);
+    }
   } else {
     // Layer 2 fallback: state-level polyhex fill.
     g.selectAll("path.cell")
@@ -578,6 +637,35 @@ function updateReadout(entry, features) {
       : "-";
   }
 }
+
+// Push the CSS-side design parameters onto the map's custom properties.
+function applyDesignStyles() {
+  const el = document.getElementById("mapSvg");
+  if (!el) return;
+  const set = (k, v) => el.style.setProperty(k, String(v));
+  set("--tile-opacity", DESIGN.tileOpacity);
+  set("--tile-stroke", DESIGN.tileStroke);
+  set("--tile-stroke-opacity", DESIGN.tileStrokeOpacity);
+  set("--tile-stroke-width", DESIGN.tileStrokeWidth);
+  set("--state-border", DESIGN.stateBorderColor);
+  set("--state-border-width", DESIGN.stateBorderWidth);
+  el.style.background = DESIGN.mapBackground;
+}
+
+// Re-render the current frame after DESIGN changed. Coalesced to one draw per animation
+// frame so dragging a slider doesn't queue dozens of redraws.
+let redrawPending = false;
+function redraw({ palette = false } = {}) {
+  if (palette) buildStateColor();
+  applyDesignStyles();
+  if (redrawPending || !timeline.length) return;
+  redrawPending = true;
+  requestAnimationFrame(async () => {
+    redrawPending = false;
+    await setFrame(frameIndex);
+  });
+}
+window.hexDesign = { DESIGN, DESIGN_DEFAULTS, PALETTES, redraw };
 
 async function setFrame(i) {
   frameIndex = i;
@@ -652,7 +740,8 @@ async function main() {
   }
 
   svg = d3.select("#mapSvg");
-  stateColor = d3.scaleOrdinal(d3.schemeTableau10);
+  buildStateColor();
+  applyDesignStyles();
 
   try {
     await loadIndex();

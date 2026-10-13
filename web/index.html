@@ -21,6 +21,7 @@
       <label><input id="showDistrictsToggle" type="checkbox" checked /> Show Districts</label>
       <label><input id="autoZoomToggle" type="checkbox" checked /> Auto-zoom</label>
       <label title="Darker = big-metro districts, shading lighter outward from the city; pale = rural"><input id="urbanRuralToggle" type="checkbox" /> Urban / Rural</label>
+      <button id="devPanelBtn" type="button" title="Experimental design tuning panel (also: press `)">Design…</button>
       <label for="congressRange">Congress</label>
       <input id="congressRange" type="range" min="0" max="0" value="0" step="1" />
     </section>
@@ -65,5 +66,6 @@
 
   <script src="./vendor/d3.min.js"></script>
   <script src="./app.js"></script>
+  <script src="./devpanel.js"></script>
 </body>
 </html>
