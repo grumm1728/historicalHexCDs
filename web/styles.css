@@ -217,7 +217,7 @@ body {
 }
 .devpanel h2 { font-size: 0.95rem; margin: 0 0 0.4rem; display: flex; justify-content: space-between; align-items: center; }
 .devpanel h3 { font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: #5b6e72; margin: 0.8rem 0 0.3rem; }
-.devpanel .row { display: grid; grid-template-columns: 1fr 120px 38px; gap: 0.35rem; align-items: center; margin: 0.2rem 0; }
+.devpanel .row { display: grid; grid-template-columns: 1fr 112px 52px; gap: 0.35rem; align-items: center; margin: 0.2rem 0; }
 .devpanel .row input[type="range"], .devpanel .row select { width: 100%; }
 .devpanel .row output { font-variant-numeric: tabular-nums; text-align: right; color: #20343a; }
 .devpanel .row.changed label { font-weight: 600; color: var(--accent); }

@@ -25,7 +25,8 @@
     ["ruralBlend", "Rural blend", "range", 0, 1, 0.01],
     ["ruralDesat", "Rural desaturate", "range", 0, 1, 0.01],
     "Urban definition (thresholds)",
-    "Only demotes tiles the tiler labeled metro — the tiler's top-N metro rule is the outer bound.",
+    "Metro cutoff picks how many metros count nationally (the decided rule is 1.0× = half the states). The other two only peel tiles off the chosen cutoff.",
+    ["metroTier", "Metro cutoff", "range", 0, 5, 1],
     ["minMetroTiles", "Min metro size (CDs)", "range", 1, 20, 1],
     ["metroDepth", "Suburb depth kept", "range", 0, 1, 0.05],
     "Lines",
@@ -55,6 +56,13 @@
   }
 
   const fmt = (v, step) => (step >= 1 ? String(v) : Number(v).toFixed(step < 0.1 ? 2 : 1));
+  // Live label for the metro cutoff: "1×·25" = 1.0x the rule, top 25 metros this Congress.
+  const FORMATTERS = {
+    metroTier: (v) => {
+      const t = api.metroTiers?.()?.[v];
+      return t ? `${t.scale}×·${t.top_n}` : String(v);
+    },
+  };
 
   const panel = document.createElement("aside");
   panel.className = "devpanel";
@@ -158,7 +166,8 @@
     const r = rows.get(key);
     if (!r) return;
     if (document.activeElement !== r.input) r.input.value = DESIGN[key];
-    r.out.textContent = r.kind === "range" ? fmt(DESIGN[key], r.step) : "";
+    r.out.textContent = FORMATTERS[key] ? FORMATTERS[key](DESIGN[key])
+      : r.kind === "range" ? fmt(DESIGN[key], r.step) : "";
     r.row.classList.toggle("changed", DESIGN[key] !== DESIGN_DEFAULTS[key]);
   }
 
@@ -167,6 +176,8 @@
   for (const k of rows.keys()) sync(k);
   document.body.append(panel);
   redraw({ palette: true });
+
+  window.addEventListener("hexdesign:frame", () => sync("metroTier"));
 
   const toggle = () => { panel.hidden = !panel.hidden; };
   document.getElementById("devPanelBtn")?.addEventListener("click", toggle);

@@ -46,6 +46,7 @@ const DESIGN_DEFAULTS = Object.freeze({
   urbanCurve: 1.0,        // gamma on the anchor->edge ramp (<1 lightens fast, >1 keeps the core dark longer)
   ruralBlend: 0.75,       // flat blend for rural tiles
   ruralDesat: 0.0,        // 0..1 desaturate rural tiles toward grey
+  metroTier: 2,           // index into the tiler's metro_tiers (0.5x..3x of top-N = states/2); 2 = 1.0x
   minMetroTiles: 1,       // a metro cluster drawing fewer tiles than this counts as rural
   metroDepth: 1.0,        // fraction of each cluster's outward depth counted as urban (1 = all)
   tileOpacity: 0.88,
@@ -83,11 +84,24 @@ function hashString(str) {
   for (let i = 0; i < str.length; i += 1) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
   return h >>> 0;
 }
-function metroKey(props) {
-  return String(props.metro_cluster || "").replace(/ \([A-Z]{2}\)$/, "");
+// Metro tiers (tiler METRO_TIER_SCALES): the CD file lists [{scale, top_n}] and each tile
+// carries metro_tiers[i] = null | [cluster, rank, cluster_tiles, metro_name, national_rank].
+// Files from before the tiers existed fall back to the flat 1.0x fields.
+let currentMetroTiers = null;  // FeatureCollection-level tier table of the drawn frame
+function tileMetro(props) {
+  const tiers = props.metro_tiers;
+  if (Array.isArray(tiers)) {
+    const t = tiers[Math.min(Math.max(0, DESIGN.metroTier), tiers.length - 1)];
+    return t ? { cluster: t[0], rank: Number(t[1]), metro: t[3] || t[0], nationalRank: t[4] } : null;
+  }
+  if (!props.is_metro || props.metro_rank == null) return null;
+  return { cluster: props.metro_cluster, rank: Number(props.metro_rank), metro: props.metro_name || props.metro_cluster, nationalRank: props.metro_national_rank };
 }
-function metroColor(props) {
-  const h = hashString(metroKey(props));
+function metroKey(m) {
+  return String(m.metro || "").replace(/ \([A-Z]{2}\)$/, "");
+}
+function metroColor(m) {
+  const h = hashString(metroKey(m));
   if (DESIGN.metroPalette === "Hashed hues") return d3.hcl((h % 3600) / 10, 62, 52).formatRgb();
   const scheme = (PALETTES[DESIGN.metroPalette] || PALETTES.Tableau10)();
   return scheme[h % scheme.length];
@@ -154,15 +168,25 @@ function blendWithWhite(base, mix) {
   return c.formatRgb();
 }
 
+function metroTooltip(props, maxRank) {
+  const m = tileMetro(props);
+  if (!m) return "Rural";
+  const where = m.metro && m.metro !== m.cluster ? `${m.cluster} (${m.metro})` : m.cluster;
+  const rank = m.nationalRank ? ` · #${m.nationalRank} nationally` : "";
+  return urbanPosition(props, maxRank) != null
+    ? `Metro: ${where}${rank}`
+    : `Rural (below threshold; metro: ${where}${rank})`;
+}
+
 // Highest metro_rank actually drawn per state+cluster, so the gradient spans each cluster's
 // real extent. metro_cluster_seats can overstate it when a walled-in cluster spills seats.
 function clusterMaxRanks(features) {
   const maxRank = new Map();
   for (const f of features) {
-    const p = f.properties;
-    if (!p.is_metro || p.metro_rank == null) continue;
-    const key = `${p.state_abbr}|${p.metro_cluster}`;
-    maxRank.set(key, Math.max(maxRank.get(key) ?? 0, Number(p.metro_rank)));
+    const m = tileMetro(f.properties);
+    if (!m) continue;
+    const key = `${f.properties.state_abbr}|${m.cluster}`;
+    maxRank.set(key, Math.max(maxRank.get(key) ?? 0, m.rank));
   }
   return maxRank;
 }
@@ -172,10 +196,11 @@ function clusterMaxRanks(features) {
 // to rural (the tiler's labels are the most inclusive definition), so the result is
 // nested: raising minMetroTiles or lowering metroDepth peels off small metros / suburbs.
 function urbanPosition(props, maxRank) {
-  if (!props.is_metro) return null;
-  const span = maxRank.get(`${props.state_abbr}|${props.metro_cluster}`) ?? 0;
+  const m = tileMetro(props);
+  if (!m) return null;
+  const span = maxRank.get(`${props.state_abbr}|${m.cluster}`) ?? 0;
   if (span + 1 < DESIGN.minMetroTiles) return null;
-  const t = span > 0 ? Number(props.metro_rank) / span : 0;
+  const t = span > 0 ? m.rank / span : 0;
   if (DESIGN.metroDepth < 1 && t > DESIGN.metroDepth) return null;
   const keptSpan = Math.max(DESIGN.metroDepth, 1e-9);
   return Math.min(1, t / keptSpan);
@@ -184,7 +209,7 @@ function urbanPosition(props, maxRank) {
 function urbanRuralColor(props, maxRank) {
   const byMetro = DESIGN.colorBy === "metro";
   const t = urbanPosition(props, maxRank);
-  const base = byMetro && t != null ? metroColor(props) : stateColor(props.state_abbr || "unknown");
+  const base = byMetro && t != null ? metroColor(tileMetro(props)) : stateColor(props.state_abbr || "unknown");
   if (t == null) {
     if (byMetro && DESIGN.metroRural === "grey") return blendWithWhite("#6b7378", DESIGN.ruralBlend);
     let c = base;
@@ -500,6 +525,8 @@ async function drawFrame(entry) {
   if (rawOutlineGeo && Array.isArray(rawOutlineGeo.features)) {
     rawOutlineGeo.features = rawOutlineGeo.features.filter((f) => !hiddenSet.has(String(f?.properties?.state_abbr || "").toUpperCase()));
   }
+  currentMetroTiers = cdGeo?.properties?.metro_tiers || null;
+  window.dispatchEvent(new Event("hexdesign:frame"));
   if (cdGeo && Array.isArray(cdGeo.features)) {
     cdGeo.features = cdGeo.features.filter((f) => !hiddenSet.has(String(f?.properties?.state_abbr || "").toUpperCase()));
   }
@@ -584,9 +611,7 @@ async function drawFrame(entry) {
           `CD ${d.properties.cd_index ?? "?"} of ${d.properties.house_seats ?? "?"}`,
           `Hexes: ${d.properties.hex_count ?? 5}${d.properties.is_boundary_tile ? " (boundary)" : ""}`,
           ...(urbanRural
-            ? [urbanPosition(d.properties, maxRank) != null
-                ? `Metro: ${d.properties.metro_cluster ?? "?"}`
-                : d.properties.is_metro ? `Rural (below threshold; metro: ${d.properties.metro_cluster ?? "?"})` : "Rural"]
+            ? [metroTooltip(d.properties, maxRank)]
             : []),
           `Congress: ${entry.congress_number}`,
         ].join("<br>");
@@ -677,20 +702,24 @@ function applyDesignStyles() {
   el.style.background = DESIGN.mapBackground;
 }
 
-// Re-render the current frame after DESIGN changed. Coalesced to one draw per animation
-// frame so dragging a slider doesn't queue dozens of redraws.
+// Re-render the current frame after DESIGN changed. Coalesced to one draw per ~frame so
+// dragging a slider doesn't queue dozens of redraws (a timer, not requestAnimationFrame,
+// which never fires in a hidden tab).
 let redrawPending = false;
 function redraw({ palette = false } = {}) {
   if (palette) buildStateColor();
   applyDesignStyles();
   if (redrawPending || !timeline.length) return;
   redrawPending = true;
-  requestAnimationFrame(async () => {
+  setTimeout(async () => {
     redrawPending = false;
     await setFrame(frameIndex);
-  });
+  }, 16);
 }
-window.hexDesign = { DESIGN, DESIGN_DEFAULTS, PALETTES, METRO_PALETTES, redraw };
+window.hexDesign = {
+  DESIGN, DESIGN_DEFAULTS, PALETTES, METRO_PALETTES, redraw,
+  metroTiers: () => currentMetroTiers,
+};
 
 async function setFrame(i) {
   frameIndex = i;

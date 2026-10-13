@@ -489,6 +489,15 @@ possible two-tier encoding). "Metro" = part of a **nationally significant big me
   Regions stay contiguous, so it stops short and its leftover seats go to clusters that can
   still grow (state total stays exact). Each event is written to
   `data_processed/urban_label_notes.json` for a future map-footnotes section.
+- **Cutoff tiers (experimental, `exp/dev-panel`):** the tiler labels every state at each
+  `METRO_TIER_SCALES` multiple of the top-N rule (`top_n(year, scale)`, 0.5×…3×) and writes
+  `metro_tiers` per tile (`null | [cluster, rank, cluster_tiles, metro_name, national_rank]`)
+  plus a FeatureCollection-level `metro_tiers` table (`{scale, top_n}`). The flat
+  `is_metro`/`metro_*` fields stay the 1.0× tier, now with `metro_name` (the national metro,
+  shared across state lines — pre-1950 Newark's tiles carry "New York City") and
+  `metro_national_rank`. Each tier is labelled independently (not nested geographically);
+  only the 1.0× tier's spill-overs go to `urban_label_notes.json`. The viewer's Design panel
+  slides between tiers.
 - Tests: `python -m pytest tests` (not run in CI).
 
 ## Invariants & gotchas
