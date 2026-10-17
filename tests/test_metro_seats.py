@@ -75,6 +75,19 @@ def test_top_n_is_half_the_states_in_the_census_year():
     assert m.top_n(2020) == 25
 
 
+def test_top_n_scale_widens_or_narrows_the_cutoff_as_a_prefix():
+    assert m.top_n(2020, 0.5) == 12 and m.top_n(2020, 2.0) == 50
+    assert m.top_n(1790, 0.1) == 1  # never zero metros
+    wide = [x.name for x in m.qualifying_metros(2020, 2.0)]
+    assert wide[: m.top_n(2020)] == _names(2020)  # tiers are nested in national rank
+
+
+def test_wider_cutoff_adds_metro_seats_and_clusters_carry_metro_names():
+    assert m.metro_seats("TX", 119, scale=2.0) >= m.metro_seats("TX", 119)
+    nj = {a.metro for a in m.metro_anchors("NJ", 119)}
+    assert any(name.startswith("New York--Jersey City--Newark") for name in nj)
+
+
 def test_1790_top_six():
     assert _names(1790) == ["Philadelphia", "New York City", "Boston", "Charleston", "Salem", "Baltimore"]
 
@@ -105,7 +118,7 @@ def test_largest_remainder_keeps_total():
 
 
 def _fake(monkeypatch, metros, state_pop):
-    monkeypatch.setattr(m, "qualifying_metros", lambda year: tuple(metros))
+    monkeypatch.setattr(m, "qualifying_metros", lambda year, scale=1.0: tuple(metros))
     monkeypatch.setattr(m, "_state_counts", lambda fips, c: (state_pop, 0))
 
 

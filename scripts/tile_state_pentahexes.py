@@ -46,12 +46,18 @@ from shapely.geometry import MultiPoint, MultiPolygon, Point, Polygon, mapping, 
 from shapely.ops import unary_union, voronoi_diagram
 from shapely.strtree import STRtree
 
-from metro_seats import metro_clusters
+from metro_seats import congress_to_census_year, metro_clusters, top_n
 from urban_clusters import label_urban_tiles
 from urban_seats import urban_seats
 
 ROOT = Path(__file__).resolve().parent.parent
 GENERATOR_VERSION = "v6-pentahex-scaled-outlines"
+# Metro cutoff tiers: multiples of the decided top-N rule (#33: half the states). Each tile
+# carries a label per tier in `metro_tiers` so the viewer can slide the cutoff; the 1.0
+# tier is also written to the flat is_metro/metro_* fields (and is the only tier whose
+# spill-overs go to urban_label_notes.json).
+METRO_TIER_SCALES = (0.5, 0.75, 1.0, 1.5, 2.0, 3.0)
+DEFAULT_METRO_TIER = METRO_TIER_SCALES.index(1.0)
 
 NEIGHBOR_OFFSETS = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1)]
 
@@ -2055,35 +2061,52 @@ def main() -> None:
             # the final tiles — geometry is already fixed. Anchors are projected through this
             # Congress's live layout record. The pre-statehood Maine block gets 0 metro seats.
             # The #26 Census-urban count is exported alongside (two-tier option).
-            urban_labels = [None] * len(tiles)
             census_urban = urban_seats(fips, congress_number, seats)
-            clusters = metro_clusters(fips, congress_number, layout_rec, seats) if layout_rec is not None else []
-            if clusters and tiles:
-                # Adjacency from the RENDERED tiles, not hex cells: two tiles can share cells
-                # only in overshoot the outline clip removed, leaving the drawn districts apart.
-                grown = [g.buffer(1.0) for g in tile_geoms]
-                tree = STRtree(grown)
-                tile_adj = [
-                    {int(j) for j in tree.query(g, predicate="intersects")} - {i}
-                    for i, g in enumerate(grown)
-                ]
-                centers = [(g.centroid.x, g.centroid.y) for g in tile_geoms]
-                urban_labels, spills = label_urban_tiles(centers, tile_adj, clusters)
+            tile_adj = centers = None
+            # tier_labels[t][i] = (UrbanLabel, UrbanCluster) or None, per METRO_TIER_SCALES[t]
+            tier_labels: list[list] = []
+            for tier, scale in enumerate(METRO_TIER_SCALES):
+                labels_t = [None] * len(tiles)
+                clusters = (metro_clusters(fips, congress_number, layout_rec, seats, scale=scale)
+                            if layout_rec is not None else [])
+                if clusters and tiles:
+                    if tile_adj is None:
+                        # Adjacency from the RENDERED tiles, not hex cells: two tiles can share
+                        # cells only in overshoot the outline clip removed, leaving the drawn
+                        # districts apart.
+                        grown = [g.buffer(1.0) for g in tile_geoms]
+                        tree = STRtree(grown)
+                        tile_adj = [
+                            {int(j) for j in tree.query(g, predicate="intersects")} - {i}
+                            for i, g in enumerate(grown)
+                        ]
+                        centers = [(g.centroid.x, g.centroid.y) for g in tile_geoms]
+                    raw, spills = label_urban_tiles(centers, tile_adj, clusters)
+                    by_name = {cl.name: cl for cl in clusters}
+                    labels_t = [(lb, by_name[lb.cluster]) if lb else None for lb in raw]
+                    if tier != DEFAULT_METRO_TIER:
+                        spills = []
+                else:
+                    spills = []
+                tier_labels.append(labels_t)
                 for sp in spills:
-                    urban_notes.append({
-                        "congress": congress_number,
-                        "state_fips": fips,
-                        "state_abbr": str(meta_by_fips[fips]["state_abbr"]).strip().upper(),
-                        "kind": "spill",
-                        "cluster": sp.cluster,
-                        "allocated_seats": sp.allocated,
-                        "placed_seats": sp.placed,
-                        "recipients": [{"cluster": name, "seats": n} for name, n in sp.recipients],
-                        "detached_seats": sp.detached,
-                    })
+                        urban_notes.append({
+                            "congress": congress_number,
+                            "state_fips": fips,
+                            "state_abbr": str(meta_by_fips[fips]["state_abbr"]).strip().upper(),
+                            "kind": "spill",
+                            "cluster": sp.cluster,
+                            "allocated_seats": sp.allocated,
+                            "placed_seats": sp.placed,
+                            "recipients": [{"cluster": name, "seats": n} for name, n in sp.recipients],
+                            "detached_seats": sp.detached,
+                        })
 
             cd_feats_for_state: list[dict] = []
+            urban_labels = [x[0] if x else None for x in tier_labels[DEFAULT_METRO_TIER]]
             for idx, (tile, geom, urban) in enumerate(zip(tiles, tile_geoms, urban_labels), start=1):
+                default_cl = tier_labels[DEFAULT_METRO_TIER][idx - 1]
+                default_cl = default_cl[1] if default_cl else None
                 touches_boundary = any(qr in boundary_cells for qr in tile)
                 ratio = geom.area / (5.0 * hex_area) if hex_area > 0 else 0.0
                 cd_feats_for_state.append(
@@ -2105,6 +2128,13 @@ def main() -> None:
                             "metro_cluster": urban.cluster if urban else None,
                             "metro_rank": urban.rank if urban else None,
                             "metro_cluster_seats": urban.seats if urban else None,
+                            "metro_name": default_cl.metro if default_cl else None,
+                            "metro_national_rank": default_cl.national_rank if default_cl else None,
+                            # per tier: null or [cluster, rank, cluster_tiles, metro_name, national_rank]
+                            "metro_tiers": [
+                                [t[0].cluster, t[0].rank, t[0].seats, t[1].metro, t[1].national_rank] if t else None
+                                for t in (labels[idx - 1] for labels in tier_labels)
+                            ],
                             "state_census_urban_seats": census_urban,
                             "source_seat_version": str(row.get("source_seat_version", "unknown")),
                             "generator_version": GENERATOR_VERSION,
@@ -2258,7 +2288,13 @@ def main() -> None:
             "hex_grid_R": R,
         }
 
-        write_geojson_with_retry(cds_root / f"{congress_number}.geojson", common_props, cd_features)
+        census_year = congress_to_census_year(congress_number)
+        cd_props = {
+            **common_props,
+            "metro_tiers": [{"scale": sc, "top_n": top_n(census_year, sc)} for sc in METRO_TIER_SCALES],
+            "metro_default_tier": DEFAULT_METRO_TIER,
+        }
+        write_geojson_with_retry(cds_root / f"{congress_number}.geojson", cd_props, cd_features)
         write_geojson_with_retry(states_root / f"{congress_number}.geojson", common_props, state_features)
         write_geojson_with_retry(outlines_root / f"{congress_number}.geojson", common_props, outline_features)
 

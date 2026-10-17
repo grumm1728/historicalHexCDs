@@ -155,8 +155,11 @@ def states_in_census(year: int) -> int:
         return sum(date.fromisoformat(r["admission_date_iso"]) <= day for r in csv.DictReader(f))
 
 
-def top_n(year: int) -> int:
-    return states_in_census(year) // 2
+def top_n(year: int, scale: float = 1.0) -> int:
+    """How many metros count as nationally significant. `scale` multiplies the decided
+    rule (#33: half the states); the tiler labels several scales so the viewer can slide
+    the cutoff. scale=1.0 is exactly floor(states / 2)."""
+    return max(1, math.floor(scale * states_in_census(year) / 2))
 
 
 @lru_cache(maxsize=None)
@@ -299,11 +302,15 @@ def _ua_metros(year: int) -> list[Metro]:
 # ---------------------------------------------------------------- national ranking
 
 @lru_cache(maxsize=None)
-def qualifying_metros(census_year: int) -> tuple[Metro, ...]:
-    """The census's top-N metros nationally, largest first."""
+def _ranked_metros(census_year: int) -> tuple[Metro, ...]:
     metros = _ua_metros(census_year) if census_year >= FIRST_UA_YEAR else _chain_metros(census_year)
     metros.sort(key=lambda m: (-m.population, m.name))
-    return tuple(metros[: top_n(census_year)])
+    return tuple(metros)
+
+
+def qualifying_metros(census_year: int, scale: float = 1.0) -> tuple[Metro, ...]:
+    """The census's top-N metros nationally, largest first (N = `top_n(year, scale)`)."""
+    return _ranked_metros(census_year)[: top_n(census_year, scale)]
 
 
 # ---------------------------------------------------------------- per state / Congress
@@ -325,9 +332,11 @@ def _drawing_fips(st: str, congress_number: int) -> str | None:
     return fips
 
 
-def metro_anchors(state: str, congress_number: int, seats: int | None = None) -> list[MetroAnchor]:
+def metro_anchors(state: str, congress_number: int, seats: int | None = None,
+                  scale: float = 1.0) -> list[MetroAnchor]:
     """A drawn state's metro anchors for one Congress, most seats first; seats sum to
-    `metro_seats(...)`. `seats` defaults to the tiler's (post-Maine-split) seat count."""
+    `metro_seats(...)`. `seats` defaults to the tiler's (post-Maine-split) seat count;
+    `scale` widens/narrows the national cutoff (see `top_n`)."""
     fips = _resolve_fips(state)
     _, maine_in_ma, _, me_fips = _lineage()
     if seats is None:
@@ -340,7 +349,7 @@ def metro_anchors(state: str, congress_number: int, seats: int | None = None) ->
     census_year = congress_to_census_year(congress_number)
 
     anchors: list[MetroAnchor] = []
-    for rank, metro in enumerate(qualifying_metros(census_year), start=1):
+    for rank, metro in enumerate(qualifying_metros(census_year, scale), start=1):
         mine = [p for p in metro.portions if _drawing_fips(p.st, congress_number) == fips]
         if not mine:
             continue
@@ -383,21 +392,22 @@ def _dedupe_names(anchors: list[MetroAnchor]) -> list[MetroAnchor]:
     return out
 
 
-def metro_seats(state: str, congress_number: int, seats: int | None = None) -> int:
-    return sum(a.seats for a in metro_anchors(state, congress_number, seats))
+def metro_seats(state: str, congress_number: int, seats: int | None = None, scale: float = 1.0) -> int:
+    return sum(a.seats for a in metro_anchors(state, congress_number, seats, scale))
 
 
-def metro_clusters(state: str, congress_number: int, layout_rec: dict, seats: int | None = None) -> list[UrbanCluster]:
+def metro_clusters(state: str, congress_number: int, layout_rec: dict, seats: int | None = None,
+                   scale: float = 1.0) -> list[UrbanCluster]:
     """`metro_anchors` projected through the state's LIVE layout record (AK/HI inset
     included), as the `UrbanCluster`s `label_urban_tiles` consumes."""
     abbr = _state_names()[_resolve_fips(state)][0]
     out = []
-    for a in metro_anchors(state, congress_number, seats):
+    for a in metro_anchors(state, congress_number, seats, scale):
         projected = [(to_hex_space(abbr, lon, lat, layout_rec), w) for lon, lat, w in a.points]
         w = sum(wt for _, wt in projected)
         x = sum(p[0] * wt for p, wt in projected) / w
         y = sum(p[1] * wt for p, wt in projected) / w
-        out.append(UrbanCluster(a.name, (x, y), a.population, a.seats, (a.name,)))
+        out.append(UrbanCluster(a.name, (x, y), a.population, a.seats, (a.name,), a.metro, a.national_rank))
     return out
 
 

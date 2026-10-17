@@ -55,6 +55,8 @@ class UrbanCluster:
     population: int
     seats: int
     cities: tuple[str, ...]
+    metro: str = ""           # national metro this anchor belongs to (metro_seats only)
+    national_rank: int = 0    # 1 = largest metro in the census; 0 = not ranked
 
 
 # ---------------------------------------------------------------- city candidates

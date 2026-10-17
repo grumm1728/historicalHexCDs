@@ -489,6 +489,23 @@ possible two-tier encoding). "Metro" = part of a **nationally significant big me
   Regions stay contiguous, so it stops short and its leftover seats go to clusters that can
   still grow (state total stays exact). Each event is written to
   `data_processed/urban_label_notes.json` for a future map-footnotes section.
+- **Cutoff tiers (experimental, `exp/dev-panel`):** the tiler labels every state at each
+  `METRO_TIER_SCALES` multiple of the top-N rule (`top_n(year, scale)`, 0.5×…3×) and writes
+  `metro_tiers` per tile (`null | [cluster, rank, cluster_tiles, metro_name, national_rank]`)
+  plus a FeatureCollection-level `metro_tiers` table (`{scale, top_n}`). The flat
+  `is_metro`/`metro_*` fields stay the 1.0× tier, now with `metro_name` (the national metro,
+  shared across state lines — pre-1950 Newark's tiles carry "New York City") and
+  `metro_national_rank`. Each tier is labelled independently (not nested geographically);
+  only the 1.0× tier's spill-overs go to `urban_label_notes.json`. The viewer's Design panel (open `index.html?dev`)
+  slides between tiers.
+- **Fixed metro colors:** `scripts/build_metro_colors.py` (run by `build_all_historical.py`
+  after the tiler) writes `data_processed/metro_colors.json`: one color index (of 8, the
+  smallest viewer palette) per metro identity = leading city of the first-named (largest)
+  area, aliased across renames, so a metro keeps its color in every Congress and a merged
+  metro takes its larger partner's (Boston+Providence → Boston). Indices are a graph
+  coloring of every metro pair whose tiles ever touch (≤0.6R, any Congress, any tier), so
+  touching metros never share a color. The viewer's Min-metro-size threshold counts the
+  whole national metro's tiles (a 1-seat Temecula area of LA is not a "small metro").
 - Tests: `python -m pytest tests` (not run in CI).
 
 ## Invariants & gotchas
