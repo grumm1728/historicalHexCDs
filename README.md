@@ -93,6 +93,16 @@ Set `Settings -> Pages -> Source` to `GitHub Actions`.
 
 See `docs/data_spec.md`.
 
+## Modern metro validation
+
+After generating the district maps, run `python scripts/validate_metro_counts.py`.
+This compares exported `is_metro` counts against issue #35's chosen real-district
+population-share benchmark for all 50 states in C113–C119, exiting nonzero if any
+Congress has fewer than 90% of states within ±1 seat. Missing or stale inputs also
+fail. See [the full report](docs/metro_validation_c113_c119.md) and its
+[350-row CSV](docs/metro_validation_c113_c119.csv). The report includes the separate
+density comparison, method limitations, and the Texas follow-up diagnosis.
+
 ## License
 
 [![CC BY-SA 4.0](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-sa/4.0/)
