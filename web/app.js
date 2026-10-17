@@ -36,24 +36,24 @@ let stablePath = null;
 // (web/devpanel.js, experimental) edits this object in place and calls redraw().
 const DESIGN_DEFAULTS = Object.freeze({
   palette: "Tableau10",
-  colorBy: "state",       // "state" | "metro" (metro: each metro gets its own hue across state lines)
-  metroPalette: "Assigned hues",
+  colorBy: "metro",       // "state" | "metro" (metro: each metro gets its own hue across state lines)
+  metroPalette: "Tableau10",
   metroRural: "faded state", // metro mode: rural tiles as "faded state" hue or flat "grey"
-  cdBlendMin: 0.10,       // plain mode: lightness blend for a state's first CD...
+  cdBlendMin: 0.13,       // plain mode: lightness blend for a state's first CD...
   cdBlendMax: 0.55,       // ...and its last (blend toward white)
   urbanAnchorBlend: 0.0,  // urban mode: blend at the metro anchor tile (0 = full state hue)
-  urbanEdgeBlend: 0.30,   // blend at the outermost claimed metro tile
-  urbanCurve: 1.0,        // gamma on the anchor->edge ramp (<1 lightens fast, >1 keeps the core dark longer)
-  ruralBlend: 0.75,       // flat blend for rural tiles
+  urbanEdgeBlend: 0.35,   // blend at the outermost claimed metro tile
+  urbanCurve: 3,          // gamma on the anchor->edge ramp (<1 lightens fast, >1 keeps the core dark longer)
+  ruralBlend: 1,          // flat blend for rural tiles (1 = white)
   ruralDesat: 0.0,        // 0..1 desaturate rural tiles toward grey
-  metroTier: 2,           // index into the tiler's metro_tiers (0.5x..3x of top-N = states/2); 2 = 1.0x
+  metroTier: 4,           // index into the tiler's metro_tiers (0.5x..3x of top-N = states/2); 2 = 1.0x, 4 = 2.0x
   minMetroTiles: 1,       // a metro drawing fewer tiles than this (whole metro, all states) counts as rural
   metroDepth: 1.0,        // fraction of each cluster's outward depth counted as urban (1 = all)
-  tileOpacity: 0.88,
+  tileOpacity: 1,
   tileStroke: "#192328",
-  tileStrokeOpacity: 0.75,
-  tileStrokeWidth: 0.6,
-  stateBorderWidth: 0,    // 0 = off; >0 draws state outlines over the district tiles
+  tileStrokeOpacity: 0.36,
+  tileStrokeWidth: 0.5,
+  stateBorderWidth: 0.8,  // 0 = off; >0 draws state outlines over the district tiles
   stateBorderColor: "#192328",
   mapBackground: "#f9f8f3",
   playMs: 1300,
