@@ -1,9 +1,13 @@
 // Experimental design dev panel (exp/dev-panel). Edits window.hexDesign.DESIGN in place
 // and asks app.js to redraw. Settings persist per browser in localStorage; "Copy JSON"
 // exports them so a tuned look can be pasted back into DESIGN_DEFAULTS.
+// Only active with ?dev in the URL: the public viewer gets no button, no shortcut, and
+// none of this browser's saved settings (DESIGN_DEFAULTS is the shipped look).
 (() => {
   const api = window.hexDesign;
-  if (!api) return;
+  if (!api || !new URLSearchParams(location.search).has("dev")) return;
+  const devPanelBtn = document.getElementById("devPanelBtn");
+  if (devPanelBtn) devPanelBtn.hidden = false;
   const { DESIGN, DESIGN_DEFAULTS, PALETTES, METRO_PALETTES, redraw } = api;
   const STORE_KEY = "hexcd.design.v1";
 
@@ -180,9 +184,9 @@
   window.addEventListener("hexdesign:frame", () => sync("metroTier"));
 
   const toggle = () => { panel.hidden = !panel.hidden; };
-  document.getElementById("devPanelBtn")?.addEventListener("click", toggle);
+  devPanelBtn?.addEventListener("click", toggle);
   document.addEventListener("keydown", (e) => {
     if (e.key === "`" && !/input|select|textarea/i.test(e.target.tagName)) toggle();
   });
-  if (new URLSearchParams(location.search).has("dev")) panel.hidden = false;
+  panel.hidden = false;
 })();

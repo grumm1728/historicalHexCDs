@@ -496,7 +496,7 @@ possible two-tier encoding). "Metro" = part of a **nationally significant big me
   `is_metro`/`metro_*` fields stay the 1.0× tier, now with `metro_name` (the national metro,
   shared across state lines — pre-1950 Newark's tiles carry "New York City") and
   `metro_national_rank`. Each tier is labelled independently (not nested geographically);
-  only the 1.0× tier's spill-overs go to `urban_label_notes.json`. The viewer's Design panel
+  only the 1.0× tier's spill-overs go to `urban_label_notes.json`. The viewer's Design panel (open `index.html?dev`)
   slides between tiers.
 - **Fixed metro colors:** `scripts/build_metro_colors.py` (run by `build_all_historical.py`
   after the tiler) writes `data_processed/metro_colors.json`: one color index (of 8, the
