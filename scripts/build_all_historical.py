@@ -103,6 +103,7 @@ def main() -> None:
             run("fetch_modern_state_outlines.py")
         run("build_hex_grid.py", "--R", str(args.hex_grid_R), "--ymin", "2500000")
         run("tile_state_pentahexes.py")
+        run("build_metro_colors.py")
 
     run("export_shapefiles.py", "--template-prj", str(TEMPLATE_PRJ))
     build_congress_index(args.max_congress)

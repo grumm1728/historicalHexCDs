@@ -37,7 +37,7 @@ let stablePath = null;
 const DESIGN_DEFAULTS = Object.freeze({
   palette: "Tableau10",
   colorBy: "state",       // "state" | "metro" (metro: each metro gets its own hue across state lines)
-  metroPalette: "Hashed hues",
+  metroPalette: "Assigned hues",
   metroRural: "faded state", // metro mode: rural tiles as "faded state" hue or flat "grey"
   cdBlendMin: 0.10,       // plain mode: lightness blend for a state's first CD...
   cdBlendMax: 0.55,       // ...and its last (blend toward white)
@@ -47,7 +47,7 @@ const DESIGN_DEFAULTS = Object.freeze({
   ruralBlend: 0.75,       // flat blend for rural tiles
   ruralDesat: 0.0,        // 0..1 desaturate rural tiles toward grey
   metroTier: 2,           // index into the tiler's metro_tiers (0.5x..3x of top-N = states/2); 2 = 1.0x
-  minMetroTiles: 1,       // a metro cluster drawing fewer tiles than this counts as rural
+  minMetroTiles: 1,       // a metro drawing fewer tiles than this (whole metro, all states) counts as rural
   metroDepth: 1.0,        // fraction of each cluster's outward depth counted as urban (1 = all)
   tileOpacity: 0.88,
   tileStroke: "#192328",
@@ -74,11 +74,15 @@ const PALETTES = {
   Paired: () => d3.schemePaired,
   Accent: () => d3.schemeAccent,
 };
-// Metro hues are keyed by a hash of the metro name, not first-seen order, so a metro keeps
-// its color in every Congress and every session (Boston is the same hue in 1813 and 2025).
-// Cross-state portions share a name post-1950 (NY/NJ "New York--Jersey City--Newark");
-// linked-but-separately-anchored areas (SF–Oakland vs San Jose) get distinct hues.
-const METRO_PALETTES = ["Hashed hues", ...Object.keys(PALETTES)];
+// Metro colors come from data_processed/metro_colors.json (scripts/build_metro_colors.py):
+// one color index per metro identity (its largest area's leading city), fixed for all
+// Congresses and chosen so metros whose tiles ever touch never share a color. A merged
+// metro takes its larger partner's color (Boston+Providence is Boston's). "Assigned hues"
+// spaces the indices evenly around the hue wheel; named palettes use the same indices.
+// "Hashed hues" is the old name-hash coloring, kept for comparison and as the fallback
+// for a metro missing from the JSON.
+const METRO_PALETTES = ["Assigned hues", "Hashed hues", ...Object.keys(PALETTES)];
+let metroColors = null;  // {colors, identities: {id: index}, lookup: {"name|ST": id}}
 function hashString(str) {
   let h = 2166136261;
   for (let i = 0; i < str.length; i += 1) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
@@ -100,11 +104,29 @@ function tileMetro(props) {
 function metroKey(m) {
   return String(m.metro || "").replace(/ \([A-Z]{2}\)$/, "");
 }
-function metroColor(m) {
+function metroColor(m, stateAbbr) {
+  const id = metroColors?.lookup[`${metroKey(m)}|${stateAbbr}`];
+  const idx = id != null ? metroColors.identities[id] : null;
   const h = hashString(metroKey(m));
-  if (DESIGN.metroPalette === "Hashed hues") return d3.hcl((h % 3600) / 10, 62, 52).formatRgb();
+  if (DESIGN.metroPalette === "Hashed hues" || (idx == null && DESIGN.metroPalette === "Assigned hues")) {
+    return d3.hcl((h % 3600) / 10, 62, 52).formatRgb();
+  }
+  if (DESIGN.metroPalette === "Assigned hues") {
+    // Step 3/8 of the wheel per index (all 8 hues, consecutive indices 135° apart) and
+    // alternate lightness, so the two indices nearest in hue (45° apart) differ in lightness.
+    const n = metroColors.colors;
+    return d3.hcl(20 + ((idx * 3) % n) * (360 / n), 62, idx % 2 ? 66 : 46).formatRgb();
+  }
   const scheme = (PALETTES[DESIGN.metroPalette] || PALETTES.Tableau10)();
-  return scheme[h % scheme.length];
+  return scheme[(idx ?? h) % scheme.length];
+}
+async function loadMetroColors() {
+  try {
+    const resp = await fetch("./data_processed/metro_colors.json");
+    if (resp.ok) metroColors = await resp.json();
+  } catch {
+    metroColors = null;  // optional: metro mode falls back to hashed hues
+  }
 }
 function buildStateColor() {
   stateColor = d3.scaleOrdinal((PALETTES[DESIGN.palette] || PALETTES.Tableau10)());
@@ -180,13 +202,17 @@ function metroTooltip(props, maxRank) {
 
 // Highest metro_rank actually drawn per state+cluster, so the gradient spans each cluster's
 // real extent. metro_cluster_seats can overstate it when a walled-in cluster spills seats.
+// .metroTiles counts each national metro's drawn tiles for the min-size threshold, so a
+// one-seat area of a big metro (Temecula in LA) isn't peeled off as a "small metro".
 function clusterMaxRanks(features) {
   const maxRank = new Map();
+  maxRank.metroTiles = new Map();
   for (const f of features) {
     const m = tileMetro(f.properties);
     if (!m) continue;
     const key = `${f.properties.state_abbr}|${m.cluster}`;
     maxRank.set(key, Math.max(maxRank.get(key) ?? 0, m.rank));
+    maxRank.metroTiles.set(metroKey(m), (maxRank.metroTiles.get(metroKey(m)) ?? 0) + 1);
   }
   return maxRank;
 }
@@ -199,7 +225,7 @@ function urbanPosition(props, maxRank) {
   const m = tileMetro(props);
   if (!m) return null;
   const span = maxRank.get(`${props.state_abbr}|${m.cluster}`) ?? 0;
-  if (span + 1 < DESIGN.minMetroTiles) return null;
+  if ((maxRank.metroTiles?.get(metroKey(m)) ?? span + 1) < DESIGN.minMetroTiles) return null;
   const t = span > 0 ? m.rank / span : 0;
   if (DESIGN.metroDepth < 1 && t > DESIGN.metroDepth) return null;
   const keptSpan = Math.max(DESIGN.metroDepth, 1e-9);
@@ -209,7 +235,7 @@ function urbanPosition(props, maxRank) {
 function urbanRuralColor(props, maxRank) {
   const byMetro = DESIGN.colorBy === "metro";
   const t = urbanPosition(props, maxRank);
-  const base = byMetro && t != null ? metroColor(tileMetro(props)) : stateColor(props.state_abbr || "unknown");
+  const base = byMetro && t != null ? metroColor(tileMetro(props), props.state_abbr) : stateColor(props.state_abbr || "unknown");
   if (t == null) {
     if (byMetro && DESIGN.metroRural === "grey") return blendWithWhite("#6b7378", DESIGN.ruralBlend);
     let c = base;
@@ -798,7 +824,7 @@ async function main() {
   applyDesignStyles();
 
   try {
-    await loadIndex();
+    await Promise.all([loadIndex(), loadMetroColors()]);
     await buildStableProjection();
     setupControls();
     await setFrame(0);
