@@ -140,10 +140,13 @@ function viewTransform(v) {
 // Fit `fitGeo` (data-space features) into the viewport as a {k,x,y} transform over the
 // stable projection. Identity when auto-zoom is off or anything needed is unavailable.
 function computeTargetView(fitGeo) {
+  if (!fitGeo) return { k: 1, x: 0, y: 0 };
+  return computeTargetViewFromBounds(geometryBounds(fitGeo));
+}
+function computeTargetViewFromBounds(b) {
   const identity = { k: 1, x: 0, y: 0 };
-  if (!stableProjection || !fitGeo) return identity;
+  if (!stableProjection) return identity;
   if (autoZoomToggle && !autoZoomToggle.checked) return identity;
-  const b = geometryBounds(fitGeo);
   if (!Number.isFinite(b.minX) || b.maxX <= b.minX || b.maxY <= b.minY) return identity;
   const p0 = stableProjection([b.minX, b.minY]);
   const p1 = stableProjection([b.maxX, b.maxY]);
@@ -492,11 +495,22 @@ async function buildStableProjection() {
     : timeline[timeline.length - 1];
   const path = ref.cd_feature_path || ref.state_feature_path;
   try {
-    const resp = await fetch(`./${path}`);
-    if (!resp.ok) return;
-    const geo = await resp.json();
-    if (!geo?.features?.length) return;
-    const b = geometryBounds(geo);
+    let b;
+    if (ref.web_frame_path) {
+      // Same bounds from the compact bundle (quantized to 100 m: far below a pixel).
+      const meta = await (await fetch(`./${ref.web_frame_path}`)).json();
+      const geomPath = (meta.cd || meta.state).geom;
+      const json = await (await fetch(`./data_processed/frames/${geomPath}`)).json();
+      b = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
+      for (const coords of decodeGeom(json)) coordsBounds(coords, b);
+    } else {
+      const resp = await fetch(`./${path}`);
+      if (!resp.ok) return;
+      const geo = await resp.json();
+      if (!geo?.features?.length) return;
+      b = geometryBounds(geo);
+    }
+    if (!Number.isFinite(b.minX)) return;
     // Add small padding so boundary tiles aren't flush against the SVG edge.
     const padX = (b.maxX - b.minX) * 0.02;
     const padY = (b.maxY - b.minY) * 0.02;
@@ -533,7 +547,321 @@ function isCartogramFrame(entry) {
   return v.startsWith("v5") || v.startsWith("v6");
 }
 
+// ---- Fast path: memoized compact frames drawn into persistent SVG layers ----------------
+// Scrubbing used to fetch + parse ~7.5 MB of GeoJSON per Congress, keep every parsed file
+// (~3 GB heap after one pass), and rebuild ~1,000 <path>s from scratch each frame. Now each
+// Congress loads once into a small Frame — per layer, items {key, properties, d, b} with the
+// SVG path string precomputed in the stable projection and the geometry dropped — preferably
+// from the compact bundle written by scripts/build_web_frames.py (shared, deduplicated
+// geometry files, so seat-identical Congresses reuse the very same path strings). Drawing a
+// Frame is a keyed join that only touches attributes that changed.
+const frameCache = new Map();  // timeline index -> Promise<Frame>
+const geomCache = new Map();   // bundle geom path -> Promise<{d: string[], b: bounds[]}>
+let designVersion = 0;         // bumped by redraw(); invalidates memoized fills
+let layers = null;             // persistent <g> layers (created on first fast draw)
+let drawn = null;              // {frame, urbanRural, maxRank, showOutline} of the shown frame
+let drawGen = 0;               // latest-wins token: a superseded async draw is dropped
+
+function coordsBounds(coords, b = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }) {
+  for (const poly of coords) {
+    for (const ring of poly) {
+      for (const [x, y] of ring) {
+        if (x < b.minX) b.minX = x;
+        if (y < b.minY) b.minY = y;
+        if (x > b.maxX) b.maxX = x;
+        if (y > b.maxY) b.maxY = y;
+      }
+    }
+  }
+  return b;
+}
+
+// Decode a bundle geom file (quantized, delta-encoded; see build_web_frames.py) into
+// MultiPolygon coordinate arrays, one per feature.
+function decodeGeom(json) {
+  const q = json.q;
+  let cx = 0;
+  let cy = 0;
+  return json.f.map((polys) =>
+    polys.map((rings) =>
+      rings.map((flat) => {
+        const ring = new Array(flat.length / 2);
+        for (let i = 0, k = 0; i < flat.length; i += 2, k += 1) {
+          cx += flat[i];
+          cy += flat[i + 1];
+          ring[k] = [cx * q, cy * q];
+        }
+        return ring;
+      })));
+}
+
+function loadGeom(path) {
+  if (!geomCache.has(path)) {
+    const p = fetch(`./data_processed/frames/${path}`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}: ${path}`);
+        return r.json();
+      })
+      .then((json) => {
+        const d = [];
+        const b = [];
+        for (const coords of decodeGeom(json)) {
+          d.push(stablePath({ type: "MultiPolygon", coordinates: coords }) || "");
+          b.push(coordsBounds(coords));
+        }
+        return { d, b };
+      })
+      .catch((err) => {
+        geomCache.delete(path);
+        throw err;
+      });
+    geomCache.set(path, p);
+  }
+  return geomCache.get(path);
+}
+
+function makeItems(propsList, d, b, keyOf, hiddenSet) {
+  const items = [];
+  propsList.forEach((properties, j) => {
+    if (hiddenSet.has(String(properties.state_abbr || "").toUpperCase())) return;
+    items.push({ key: keyOf(properties), properties, d: d[j], b: b[j], i: items.length });
+  });
+  return items;
+}
+const cdKey = (p) => `${p.state_fips}-${p.cd_index}`;
+const stateKey = (p) => String(p.state_fips ?? p.state_abbr);
+
+// One layer of a Frame from the bundle: rows -> property objects, geometry from the shared file.
+async function bundleLayer(layer, hiddenSet, keyOf) {
+  if (!layer) return null;
+  const { d, b } = await loadGeom(layer.geom);
+  const props = layer.rows.map((row) => Object.fromEntries(layer.keys.map((k, j) => [k, row[j]])));
+  return makeItems(props, d, b, keyOf, hiddenSet);
+}
+
+// Fallback without a bundle: same Frame shape from the GeoJSON (parsed, converted, released).
+async function geojsonLayer(path, hiddenSet, keyOf) {
+  if (!path) return null;
+  const resp = await fetch(`./${path}`);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${path}`);
+  const fc = await resp.json();
+  const feats = fc.features || [];
+  const d = feats.map((f) => (f.geometry ? stablePath(f) || "" : ""));
+  const b = feats.map((f) => featureBounds(f));
+  const items = makeItems(feats.map((f) => f.properties || {}), d, b, keyOf, hiddenSet);
+  items.collectionProps = fc.properties || {};
+  return items;
+}
+
+function loadFrame(i) {
+  if (!frameCache.has(i)) {
+    const entry = timeline[i];
+    const hiddenSet = CIVIL_WAR_HIDDEN_BY_CONGRESS.get(Number(entry.congress_number)) || new Set();
+    let p;
+    if (entry.web_frame_path) {
+      p = cachedFetchJson(`./${entry.web_frame_path}`).then(async (meta) => {
+        fetchCache.delete(`./${entry.web_frame_path}`);
+        const [state, cd] = await Promise.all([
+          bundleLayer(meta.state, hiddenSet, stateKey),
+          bundleLayer(meta.cd, hiddenSet, cdKey),
+        ]);
+        // Outlines are only drawn with the silhouette toggle, so their geometry loads lazily.
+        let outline = null;
+        const loadOutline = () => (outline ??= bundleLayer(meta.outline, hiddenSet, stateKey).catch(() => null));
+        return { entry, state, cd, cdProps: meta.cd_props || {}, loadOutline, fills: null };
+      });
+    } else {
+      p = Promise.all([
+        geojsonLayer(entry.state_feature_path || entry.feature_path, hiddenSet, stateKey),
+        entry.cd_feature_path ? geojsonLayer(entry.cd_feature_path, hiddenSet, cdKey).catch(() => null) : null,
+      ]).then(([state, cd]) => {
+        let outline = null;
+        const loadOutline = () => (outline ??= entry.state_outline_path
+          ? geojsonLayer(entry.state_outline_path, hiddenSet, stateKey).catch(() => null)
+          : Promise.resolve(null));
+        return { entry, state, cd, cdProps: cd?.collectionProps || {}, loadOutline, fills: null };
+      });
+    }
+    p = p.catch((err) => {
+      frameCache.delete(i);
+      throw err;
+    });
+    frameCache.set(i, p);
+  }
+  return frameCache.get(i);
+}
+
+function prefetchAround(i) {
+  for (const j of [i + 1, i - 1, i + 2, i - 2, i + 3, i - 3]) {
+    if (j >= 0 && j < timeline.length) loadFrame(j).catch(() => {});
+  }
+}
+
+// Once the first frame is up, quietly load the whole (compact) timeline one Congress at a
+// time, yielding between them, so scrubbing anywhere later is a pure redraw. Skipped
+// without a bundle: that would mean pulling every full GeoJSON.
+let preloadStarted = false;
+async function preloadAll() {
+  if (preloadStarted || !timeline.every((e) => e.web_frame_path)) return;
+  preloadStarted = true;
+  for (let j = 0; j < timeline.length; j += 1) {
+    try {
+      await loadFrame(j);
+    } catch {
+      // a frame that fails here retries on demand
+    }
+    await new Promise((r) => setTimeout(r, 0));
+  }
+  window.dispatchEvent(new Event("hexperf:preloaded"));
+}
+
+function unionBounds(items) {
+  const b = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
+  for (const it of items) {
+    if (it.b.minX < b.minX) b.minX = it.b.minX;
+    if (it.b.minY < b.minY) b.minY = it.b.minY;
+    if (it.b.maxX > b.maxX) b.maxX = it.b.maxX;
+    if (it.b.maxY > b.maxY) b.maxY = it.b.maxY;
+  }
+  return b;
+}
+
+function ensureLayers() {
+  if (layers) return layers;
+  svg.selectAll("g").remove();
+  const root = svg.append("g").attr("transform", viewTransform(currentView));
+  layers = {
+    root,
+    outline: root.append("g"),
+    tiles: root.append("g"),
+    borders: root.append("g"),
+    cells: root.append("g"),
+  };
+  const showTip = (event, lines) => {
+    tooltip.hidden = false;
+    tooltip.style.left = `${event.offsetX + 16}px`;
+    tooltip.style.top = `${event.offsetY + 16}px`;
+    tooltip.innerHTML = lines.join("<br>");
+  };
+  layers.tiles.on("mousemove", (event) => {
+    const d = event.target.__data__;
+    if (!d || !drawn) return;
+    const p = d.properties;
+    showTip(event, [
+      `<strong>${p.state_name || "Unknown"}</strong>`,
+      `CD ${p.cd_index ?? "?"} of ${p.house_seats ?? "?"}`,
+      `Hexes: ${p.hex_count ?? 5}${p.is_boundary_tile ? " (boundary)" : ""}`,
+      ...(drawn.urbanRural ? [metroTooltip(p, drawn.maxRank)] : []),
+      `Congress: ${drawn.frame.entry.congress_number}`,
+    ]);
+  });
+  layers.cells.on("mousemove", (event) => {
+    const d = event.target.__data__;
+    if (!d || !drawn) return;
+    const p = d.properties;
+    showTip(event, [
+      `<strong>${p.state_name || "Unknown"}</strong>`,
+      `State: ${p.state_abbr || "N/A"}`,
+      `Seats: ${p.house_seats ?? "N/A"}`,
+      `Cells: ${p.cell_count ?? "N/A"}`,
+      `Congress: ${drawn.frame.entry.congress_number}`,
+    ]);
+  });
+  for (const g of [layers.tiles, layers.cells]) g.on("mouseleave", () => { tooltip.hidden = true; });
+  return layers;
+}
+
+// Keyed join that reuses <path> nodes across Congresses and writes `d` / `fill` only when
+// they actually changed (seat-identical Congresses share path strings, so `d` is skipped).
+function joinPaths(layer, items, cls, fills) {
+  layer
+    .selectAll("path")
+    .data(items, (d) => d.key)
+    .join((enter) => enter.append("path").attr("class", cls))
+    .each(function (d) {
+      if (this._d !== d.d) {
+        this.setAttribute("d", d.d);
+        this._d = d.d;
+      }
+      const f = fills ? fills[d.i] : null;
+      if (fills && this._f !== f) {
+        this.setAttribute("fill", f);
+        this._f = f;
+      }
+    });
+}
+
+function renderFrame(frame, outlineItems) {
+  const { entry, state, cd } = frame;
+  const L = ensureLayers();
+  const showDistricts = Boolean(showDistrictsToggle?.checked) && Boolean(cd);
+  const urbanRural = showDistricts && (Boolean(urbanRuralToggle?.checked) || DESIGN.colorBy === "metro");
+
+  currentMetroTiers = showDistricts ? frame.cdProps.metro_tiers || null : null;
+  window.dispatchEvent(new Event("hexdesign:frame"));
+  updateReadout(entry, state);
+
+  // Camera: ease from wherever the camera is now (mid-move if still animating) to this
+  // Congress's fitted view; identical layouts give an identical target and no move.
+  const targetView = computeTargetViewFromBounds(unionBounds(state));
+  const viewDelta =
+    Math.abs(targetView.k - currentView.k) * Math.max(width, height) +
+    Math.abs(targetView.x - currentView.x) +
+    Math.abs(targetView.y - currentView.y);
+  if (viewDelta > 1) {
+    L.root.interrupt().transition().duration(DESIGN.zoomMs).ease(d3.easeCubicInOut).attr("transform", viewTransform(targetView));
+  } else if (viewDelta > 0) {
+    L.root.interrupt().attr("transform", viewTransform(targetView));
+  }
+  currentView = targetView;
+
+  // Fills are memoized per frame for the current design + toggles. They are computed in the
+  // same layer order as before (outlines, then tiles), so the ordinal state palette assigns
+  // colors in the same sequence.
+  const fillKey = `${designVersion}|${showDistricts}|${urbanRural}|${Boolean(outlineItems)}`;
+  if (!frame.fills || frame.fills.key !== fillKey) {
+    const maxRank = urbanRural ? clusterMaxRanks(cd) : null;
+    frame.fills = {
+      key: fillKey,
+      maxRank,
+      outline: outlineItems ? outlineItems.map((it) => stateColor(it.properties.state_abbr || "unknown")) : null,
+      cd: showDistricts
+        ? cd.map((it) => (urbanRural ? urbanRuralColor(it.properties, maxRank) : cdColor(it.properties)))
+        : null,
+      state: showDistricts ? null : state.map((it) => stateColor(it.properties.state_abbr || "unknown")),
+    };
+  }
+  const fills = frame.fills;
+
+  joinPaths(L.outline, outlineItems ? outlineItems.filter((it) => it.d) : [], "state-outline", fills.outline);
+  joinPaths(L.tiles, showDistricts ? cd : [], "cd-tile", fills.cd);
+  joinPaths(L.borders, showDistricts && DESIGN.stateBorderWidth > 0 ? state : [], "state-border", null);
+  joinPaths(L.cells, showDistricts ? [] : state, "cell", fills.state);
+
+  drawn = { frame, urbanRural, maxRank: fills.maxRank };
+  clearStatus();
+  setCivilWarBanner("");
+}
+
 async function drawFrame(entry) {
+  // The fast path needs the stable projection (all v5/v6 cartogram data has one).
+  if (!stablePath || !isCartogramFrame(entry)) {
+    layers = null;
+    await drawFrameLegacy(entry);
+    return;
+  }
+  const gen = ++drawGen;
+  const i = timeline.indexOf(entry);
+  const frame = await loadFrame(i);
+  const outlineItems = outlineOnlyToggle?.checked ? await frame.loadOutline() : null;
+  if (gen !== drawGen) return false;  // a newer frame was requested meanwhile
+  renderFrame(frame, outlineItems);
+  prefetchAround(i);
+  preloadAll();
+  return true;
+}
+
+async function drawFrameLegacy(entry) {
   const featurePath = entry.state_feature_path || entry.feature_path;
   const cdPath = entry.cd_feature_path;
   const showDistricts = Boolean(showDistrictsToggle?.checked) && Boolean(cdPath);
@@ -734,6 +1062,7 @@ function applyDesignStyles() {
 let redrawPending = false;
 function redraw({ palette = false } = {}) {
   if (palette) buildStateColor();
+  designVersion += 1;
   applyDesignStyles();
   if (redrawPending || !timeline.length) return;
   redrawPending = true;
@@ -746,12 +1075,65 @@ window.hexDesign = {
   DESIGN, DESIGN_DEFAULTS, PALETTES, METRO_PALETTES, redraw,
   metroTiers: () => currentMetroTiers,
 };
+// Hooks for web/perf.js (the ?perf benchmark harness); not part of the design contract.
+let lastDrawn = { index: -1, t: 0 };
+window.hexPerfHooks = {
+  timeline: () => timeline,
+  lastDrawn: () => lastDrawn,
+  setFrame: (i) => setFrame(i),
+  scrubTo: (i) => {
+    range.value = String(i);
+    range.dispatchEvent(new Event("input"));
+  },
+  // The pre-fast-path renderer, for parity checks against the new one.
+  drawLegacy: async (i) => {
+    layers = null;
+    drawn = null;
+    frameIndex = i;
+    await drawFrameLegacy(timeline[i]);
+  },
+  // Cold = nothing loaded and no background preload (worst case: every frame on demand).
+  clearCaches: () => {
+    fetchCache.clear();
+    frameCache.clear();
+    geomCache.clear();
+    preloadStarted = true;
+  },
+  // Time to load the whole timeline from scratch the way the background preload does.
+  preload: async () => {
+    window.hexPerfHooks.clearCaches();
+    preloadStarted = false;
+    const t0 = performance.now();
+    await preloadAll();
+    return performance.now() - t0;
+  },
+};
 
 async function setFrame(i) {
   frameIndex = i;
   range.value = String(i);
   const entry = timeline[i];
-  await drawFrame(entry);
+  const shown = await drawFrame(entry);
+  if (shown !== false) lastDrawn = { index: i, t: performance.now() };
+}
+
+// Slider drags fire `input` far faster than frames can be shown, so coalesce them: keep only
+// the latest requested Congress and draw it on the next animation frame (a timer in a hidden
+// tab, where rAF never fires). Combined with drawFrame's latest-wins token, the map always
+// converges on where the thumb is instead of replaying every Congress it passed.
+let scrubPending = null;
+function scheduleScrub(i) {
+  const first = scrubPending == null;
+  scrubPending = i;
+  frameIndex = i;
+  if (!first) return;
+  const run = () => {
+    const j = scrubPending;
+    scrubPending = null;
+    setFrame(j).catch((err) => console.error(err));
+  };
+  if (document.hidden) setTimeout(run, 0);
+  else requestAnimationFrame(run);
 }
 
 function setupControls() {
@@ -759,9 +1141,9 @@ function setupControls() {
   range.max = String(timeline.length - 1);
   range.value = "0";
 
-  range.addEventListener("input", async (e) => {
+  range.addEventListener("input", (e) => {
     stopPlayback();
-    await setFrame(Number(e.target.value));
+    scheduleScrub(Number(e.target.value));
   });
 
   playBtn.addEventListener("click", () => {
