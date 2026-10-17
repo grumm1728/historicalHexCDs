@@ -6,6 +6,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8011", "--directory", "web"],
       "port": 8011
+    },
+    {
+      "name": "web-perf",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8012", "--directory", "web"],
+      "port": 8012
     }
   ]
 }

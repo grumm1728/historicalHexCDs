@@ -26,9 +26,16 @@ def stage_data_for_web() -> None:
     shutil.copytree(PROCESSED_ROOT, target)
 
 
+def build_web_frames() -> None:
+    # Compact per-Congress bundle the viewer scrubs from (the staged GeoJSON stays as-is).
+    cmd = [sys.executable, str(ROOT / "scripts" / "build_web_frames.py")]
+    subprocess.run(cmd, check=True, cwd=str(ROOT))
+
+
 def main() -> None:
     run_build_timeline()
     stage_data_for_web()
+    build_web_frames()
     print("Staged web assets at", WEB_ROOT)
 
 
