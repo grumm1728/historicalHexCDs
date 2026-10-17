@@ -42,11 +42,12 @@ The benchmark's 40% sensitivity count is 17 in all five Congresses. This support
 threshold sensitivity to district drawing, rather than evidence of a population
 undercount or linkage error. The C118–C119 plan agrees at 19 seats.
 
-Recommended follow-up: quantify near-threshold Texas districts and choose whether
-to retain the majority rule with this documented exception or add an allocation-aware
-comparison. Do not silently change UA data, linking, rounding, or the threshold.
-
-Filed follow-up: [#42](https://github.com/grumm1728/historicalHexCDs/issues/42).
+Treatment ([#42](https://github.com/grumm1728/historicalHexCDs/issues/42)): keep the
+majority rule and this comparison unchanged; Texas C113–C117 is a **documented
+exception**. Tract assignment and coverage are clean, no near-threshold district
+crosses 50% under a 1 km urbanized-area edge perturbation, and Texas has 16.5
+population-equivalent metro seats under the 2011 plan (model: 17). See the
+[Texas investigation](texas_metro_threshold_c113_c117.md).
 
 ## Every state and Congress
 
@@ -94,7 +95,7 @@ Filed follow-up: [#42](https://github.com/grumm1728/historicalHexCDs/issues/42).
 | C113 | SC | 0 | 0 | +0 | yes |
 | C113 | SD | 0 | 0 | +0 | yes |
 | C113 | TN | 0 | 0 | +0 | yes |
-| C113 | TX | 17 | 15 | +2 | **NO** |
+| C113 | TX | 17 | 15 | +2 | **NO** (documented) |
 | C113 | UT | 0 | 0 | +0 | yes |
 | C113 | VT | 0 | 0 | +0 | yes |
 | C113 | VA | 3 | 3 | +0 | yes |
@@ -144,7 +145,7 @@ Filed follow-up: [#42](https://github.com/grumm1728/historicalHexCDs/issues/42).
 | C114 | SC | 0 | 0 | +0 | yes |
 | C114 | SD | 0 | 0 | +0 | yes |
 | C114 | TN | 0 | 0 | +0 | yes |
-| C114 | TX | 17 | 15 | +2 | **NO** |
+| C114 | TX | 17 | 15 | +2 | **NO** (documented) |
 | C114 | UT | 0 | 0 | +0 | yes |
 | C114 | VT | 0 | 0 | +0 | yes |
 | C114 | VA | 3 | 3 | +0 | yes |
@@ -194,7 +195,7 @@ Filed follow-up: [#42](https://github.com/grumm1728/historicalHexCDs/issues/42).
 | C115 | SC | 0 | 0 | +0 | yes |
 | C115 | SD | 0 | 0 | +0 | yes |
 | C115 | TN | 0 | 0 | +0 | yes |
-| C115 | TX | 17 | 15 | +2 | **NO** |
+| C115 | TX | 17 | 15 | +2 | **NO** (documented) |
 | C115 | UT | 0 | 0 | +0 | yes |
 | C115 | VT | 0 | 0 | +0 | yes |
 | C115 | VA | 3 | 3 | +0 | yes |
@@ -244,7 +245,7 @@ Filed follow-up: [#42](https://github.com/grumm1728/historicalHexCDs/issues/42).
 | C116 | SC | 0 | 0 | +0 | yes |
 | C116 | SD | 0 | 0 | +0 | yes |
 | C116 | TN | 0 | 0 | +0 | yes |
-| C116 | TX | 17 | 15 | +2 | **NO** |
+| C116 | TX | 17 | 15 | +2 | **NO** (documented) |
 | C116 | UT | 0 | 0 | +0 | yes |
 | C116 | VT | 0 | 0 | +0 | yes |
 | C116 | VA | 3 | 3 | +0 | yes |
@@ -294,7 +295,7 @@ Filed follow-up: [#42](https://github.com/grumm1728/historicalHexCDs/issues/42).
 | C117 | SC | 0 | 0 | +0 | yes |
 | C117 | SD | 0 | 0 | +0 | yes |
 | C117 | TN | 0 | 0 | +0 | yes |
-| C117 | TX | 17 | 15 | +2 | **NO** |
+| C117 | TX | 17 | 15 | +2 | **NO** (documented) |
 | C117 | UT | 0 | 0 | +0 | yes |
 | C117 | VT | 0 | 0 | +0 | yes |
 | C117 | VA | 3 | 3 | +0 | yes |

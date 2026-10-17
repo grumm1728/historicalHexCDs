@@ -46,3 +46,10 @@ def test_rejects_incomplete_benchmark(tmp_path):
     rows = [dict(congress=c, state_fips="48", seats=38) for c in v.CONGRESSES]
     with pytest.raises(ValueError, match="50 states"):
         v.compare(rows, tmp_path)
+
+
+def test_documented_exception_is_labelled_but_still_counts_as_a_miss():
+    tx = dict(congress=113, state="TX", within_one=False)
+    assert v.within_label(tx) == "**NO** (documented)"
+    assert v.within_label(dict(tx, congress=118)) == "**NO**"
+    assert v.summary([dict(congress=c, within_one=False) for c in v.CONGRESSES])[0][1] == 0
