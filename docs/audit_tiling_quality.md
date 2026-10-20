@@ -114,13 +114,15 @@ The sensitivity shows up on this branch too: after the tiling changes, C118's SF
 instead grows north up the coast, and LA no longer climbs the valley. A sturdier labeller
 would assign tiles to clusters jointly (e.g. a min-cost assignment of tiles to anchors
 weighted by distance, or growing each national metro as one region and splitting it
-afterwards) rather than greedily. Suggested as a follow-up; nothing on this branch changes
-the metro labeller itself.
+afterwards) rather than greedily. Done in
+[metro_joint_assignment.md](metro_joint_assignment.md) — better geography, but only a small
+stability gain: most of the change between Congresses comes from the inputs.
 
 ## Follow-ups
 
 - A guard for whole-tile-outside-outline districts (MA C63–72 was one; gone for now, but
   nothing prevents a recurrence — e.g. flag it in `tiling_warnings.json`).
-- Joint (non-greedy) metro cluster assignment, for stable Bay Area / LA labels.
+- ~~Joint (non-greedy) metro cluster assignment~~ — done, see
+  [metro_joint_assignment.md](metro_joint_assignment.md).
 - Needle-thin *coastal* parts (~90 per modern Congress under 1e-3 hex): mostly real
   islands carried over from the outline; worth a look if they render as specks.

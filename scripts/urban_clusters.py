@@ -222,6 +222,65 @@ class UrbanSpill:
     detached: int = 0  # seats no region could reach, placed as a detached piece of the largest
 
 
+def _min_cost_assignment(cost: list[list[float]]) -> list[int]:
+    """Hungarian algorithm (shortest augmenting paths) for a rows <= cols cost matrix:
+    returns, per row, the column it is assigned to, minimising the total cost. Pure Python
+    — matrices here are at most ~40 seats x ~53 tiles."""
+    n, m = len(cost), len(cost[0]) if cost else 0
+    u, v = [0.0] * (n + 1), [0.0] * (m + 1)
+    p, way = [0] * (m + 1), [0] * (m + 1)  # p[j] = row (1-based) holding column j
+    for i in range(1, n + 1):
+        p[0], j0 = i, 0
+        minv, used = [math.inf] * (m + 1), [False] * (m + 1)
+        while True:
+            used[j0] = True
+            i0, delta, j1 = p[j0], math.inf, 0
+            row = cost[i0 - 1]
+            for j in range(1, m + 1):
+                if not used[j]:
+                    cur = row[j - 1] - u[i0] - v[j]
+                    if cur < minv[j]:
+                        minv[j], way[j] = cur, j0
+                    if minv[j] < delta:
+                        delta, j1 = minv[j], j
+            for j in range(m + 1):
+                if used[j]:
+                    u[p[j]] += delta
+                    v[j] -= delta
+                else:
+                    minv[j] -= delta
+            j0 = j1
+            if p[j0] == 0:
+                break
+        while j0:
+            j1 = way[j0]
+            p[j0] = p[j1]
+            j0 = j1
+    out = [0] * n
+    for j in range(1, m + 1):
+        if p[j]:
+            out[p[j] - 1] = j - 1
+    return out
+
+
+def _components(tiles: list[int], adjacency: list[set[int]]) -> list[list[int]]:
+    """Connected components of `tiles` under `adjacency`, in first-seen order."""
+    left, comps = set(tiles), []
+    for t in tiles:
+        if t not in left:
+            continue
+        left.discard(t)
+        comp, stack = [t], [t]
+        while stack:
+            for nb in adjacency[stack.pop()]:
+                if nb in left:
+                    left.discard(nb)
+                    comp.append(nb)
+                    stack.append(nb)
+        comps.append(comp)
+    return comps
+
+
 def label_urban_tiles(
     centers: list[tuple[float, float]],
     adjacency: list[set[int]],
@@ -229,66 +288,143 @@ def label_urban_tiles(
 ) -> tuple[list[UrbanLabel | None], list[UrbanSpill]]:
     """Post-hoc urban labels for a state's final tiles (never touches geometry).
 
-    Each cluster grows a contiguous region by nearest-first BFS from its anchor: seed at
-    the unclaimed tile nearest the anchor, then repeatedly claim the unclaimed tile
-    adjacent to the region that is nearest the anchor. Unclaimed tiles are rural.
+    Seeds, then a joint assignment (docs/metro_joint_assignment.md):
 
-    Round-robin: clusters grow one tile per round (largest first within a round) rather
-    than each growing to completion in turn. Largest-first-to-completion (#19 as first
-    written) let a big cluster swallow a smaller cluster's city, which then seeded far
-    away — C119 San Diego landed in the Central Valley, Austin out west; 839 cluster seeds
-    ended >4R from their anchor (up to 30R). Round-robin cuts that to 20 (max 5R).
-    Voronoi preference: among frontier tiles, a cluster first takes those nearer its own
-    anchor than any other cluster's, so neighbours don't cut across each other's cities.
+    0. Seeds: each national metro (`UrbanCluster.metro`, largest first) takes the free tile
+       nearest its principal area's anchor, preferring that anchor's Voronoi cell — every
+       metro sits on its own city. Without this a big metro takes a small one's city tile
+       (1850s-1900s New York swallowed Albany's). Seeding every *area* instead was measured
+       too: near-coincident anchors (SF / San Jose / Concord) then flip seeds on tiny input
+       changes and California got less stable.
+    1. The remaining seats of each metro (SF-Oakland + San Jose + Concord, LA + Riverside
+       + ...) are placed at once by a min-cost assignment of tiles (pure Python Hungarian;
+       unassigned tiles stay rural) minimising total SQUARED distance to the metro's seat-weighted anchor centroid. Squared distance makes
+       the optimum a capacitated (power-diagram) Voronoi partition: compact blobs meeting
+       along straight-ish lines whose positions are set by seat counts, independent of any
+       growth order.
+    2. Each metro's footprint is split among its own anchors with cost squared distance /
+       seats, so satellite areas (San Jose, McKinney) stay round blobs on their own city and
+       the principal area takes the rest. (A one-level assignment pushed satellites to the
+       far side of the state: C118 Temecula on the Arizona line, McKinney in the corner.)
 
-    Spill-over: a region can be walled in (no unclaimed neighbour left) before it reaches
-    its seat count. Regions stay contiguous, so it stops short and its leftover seats go,
-    largest cluster first, to clusters that can still grow; the state's urban total stays
-    exact. Over all 119 Congresses this moves ~380 seats in ~100 state-Congresses; each
-    event is returned as an `UrbanSpill` for map footnotes.
+    It replaces the greedy round-robin BFS (#19/#28), whose growth order decided which way a
+    crowded cluster spread. Measured over all 119 Congresses it cuts the worst tile-to-anchor
+    distance from 31R to 24R and spilled seats from 25 to 10, but cross-Congress stability
+    is only slightly better: most label change between Congresses comes from the inputs
+    (re-partitioned tiles, new census anchors and seats), not the labeller.
 
-    Detached last resort: if every region is walled in and seats remain (only Michigan,
-    C83-87/C93-97 — the Lower Peninsula fills and the rest of the state is the separate
-    Upper Peninsula), the largest cluster reseeds at the unclaimed tile nearest its anchor
-    so the state total stays exact; recorded as `UrbanSpill.detached`.
+    Contiguity repair: the assignment ignores adjacency, so a cluster can come out in
+    pieces (a tile across water, or a neighbour's blob cutting through). The piece holding
+    its metro's seed (else its largest) is kept, the strays are released, and the cluster
+    regrows from that piece by nearest-first BFS over unclaimed tiles (clusters with more
+    seats first).
+
+    Spill-over: a cluster walled in during repair stops short; its leftover seats go,
+    largest cluster first, to clusters that can still grow, so the state's urban total stays
+    exact. Each event is returned as an `UrbanSpill` for map footnotes.
+
+    Detached last resort: if every region is walled in and seats remain (e.g. Michigan,
+    when the Lower Peninsula fills and the rest of the state is the separate Upper
+    Peninsula), the largest cluster reseeds at the unclaimed tile nearest its anchor;
+    recorded as `UrbanSpill.detached`.
+
+    `rank` orders a cluster's tiles by distance from its anchor (0 = nearest).
     """
-    owner: list[int | None] = [None] * len(centers)
+    n = len(centers)
+    owner: list[int | None] = [None] * n
     regions: list[list[int]] = [[] for _ in clusters]
-    frontiers: list[set[int]] = [set() for _ in clusters]
 
-    def dist(k: int, i: int) -> float:
+    def dist2(k: int, i: int) -> float:
         ax, ay = clusters[k].xy
-        return math.hypot(centers[i][0] - ax, centers[i][1] - ay)
+        return (centers[i][0] - ax) ** 2 + (centers[i][1] - ay) ** 2
 
-    # nearest anchor per tile (ties -> larger cluster) for the Voronoi preference
-    nearest = [min(range(len(clusters)), key=lambda k: (dist(k, i), k)) for i in range(len(centers))]
+    # one assignment row per seat; on a partial tiling (fewer tiles than seats) the smallest
+    # clusters' last seats are dropped so every tile is still claimed
+    slots = [k for k, cl in enumerate(clusters) for _ in range(cl.seats)][:n]
+    target = [0] * len(clusters)
+    for k in slots:
+        target[k] += 1
+
+    def assign(tiles: list[int], groups: list[tuple[tuple[float, float], int]], weighted: bool) -> dict[int, int]:
+        """Min-cost assignment of `tiles` to `groups` [(anchor, seats)] -> {tile: group}.
+        Cost = squared distance to the group's anchor, divided by the group's seats when
+        `weighted` (so a small group stays a round blob around its own anchor)."""
+        rows = [g for g, (_, s) in enumerate(groups) for _ in range(s)]
+        if not rows:
+            return {}
+        cost = []
+        for g in rows:
+            (ax, ay), s = groups[g]
+            w = s if weighted else 1
+            cost.append([((centers[i][0] - ax) ** 2 + (centers[i][1] - ay) ** 2) / w for i in tiles])
+        return {tiles[j]: g for g, j in zip(rows, _min_cost_assignment(cost))}
+
+    metros = list(dict.fromkeys(cl.metro or cl.name for cl in clusters))
+    members = [[k for k, cl in enumerate(clusters) if (cl.metro or cl.name) == m and target[k]] for m in metros]
+    members = [ks for ks in members if ks]
+
+    # seeds: each metro (largest first) owns the free tile nearest its principal (largest)
+    # area's anchor, preferring tiles in that anchor's Voronoi cell among the metros'
+    heads = [ks[0] for ks in members]
+    nearest = [min(range(len(heads)), key=lambda g: (dist2(heads[g], i), g)) for i in range(n)]
+    seeds: list[int] = []
+    for g, k in enumerate(heads):
+        free = [i for i in range(n) if i not in seeds]
+        seeds.append(min([i for i in free if nearest[i] == g] or free, key=lambda i: (dist2(k, i), i)))
+    pool_tiles = [i for i in range(n) if i not in seeds]
+
+    # level 1: national metros as wholes, anchored at their seat-weighted anchor centroid
+    groups = []
+    for ks in members:
+        s = sum(target[k] for k in ks)
+        x = sum(clusters[k].xy[0] * target[k] for k in ks) / s
+        y = sum(clusters[k].xy[1] * target[k] for k in ks) / s
+        groups.append(((x, y), s - 1))
+    top = assign(pool_tiles, groups, weighted=False)
+    for g, i in enumerate(seeds):
+        top[i] = g
+    # level 2: split each metro's footprint among its own anchors
+    for g, ks in enumerate(members):
+        tiles = sorted(i for i, gg in top.items() if gg == g)
+        for i, kk in assign(tiles, [(clusters[k].xy, target[k]) for k in ks], weighted=True).items():
+            owner[i] = ks[kk]
+            regions[ks[kk]].append(i)
+
+    # contiguity repair: keep the piece holding the metro seed (else the largest; ties ->
+    # nearest the anchor), release the strays
+    seed = dict(zip(heads, seeds))
+    for k in range(len(clusters)):
+        comps = _components(regions[k], adjacency)
+        if len(comps) > 1:
+            keep = min(comps, key=lambda c: (seed.get(k) not in c, -len(c), min(dist2(k, i) for i in c), min(c)))
+            for c in comps:
+                if c is not keep:
+                    for i in c:
+                        owner[i] = None
+            regions[k] = keep
 
     def claim_next(k: int, detach: bool = False) -> bool:
-        candidates = [i for i in frontiers[k] if owner[i] is None]
-        candidates = [i for i in candidates if nearest[i] == k] or candidates
-        if not candidates:
+        frontier = {j for i in regions[k] for j in adjacency[i] if owner[j] is None}
+        if not frontier:
             if regions[k] and not detach:
                 return False  # walled in
-            candidates = [i for i in range(len(centers)) if owner[i] is None]
-            if not candidates:
+            frontier = {i for i in range(n) if owner[i] is None}
+            if not frontier:
                 return False  # state has fewer tiles than urban seats (partial tiling)
-        # ties broken by tile index so the labelling is deterministic
-        pick = min(candidates, key=lambda i: (dist(k, i), i))
+        pick = min(frontier, key=lambda i: (dist2(k, i), i))
         owner[pick] = k
         regions[k].append(pick)
-        frontiers[k] |= adjacency[pick]
         return True
 
-    growing = True
-    while growing:
-        growing = False
-        for k, cl in enumerate(clusters):
-            if len(regions[k]) < cl.seats and claim_next(k):
-                growing = True
+    short = []
+    for k in range(len(clusters)):
+        while len(regions[k]) < target[k] and claim_next(k):
+            pass
+        if len(regions[k]) < clusters[k].seats:
+            short.append((k, clusters[k].seats - len(regions[k])))
 
-    short = [(k, cl.seats - len(regions[k])) for k, cl in enumerate(clusters) if len(regions[k]) < cl.seats]
     extra = [0] * len(clusters)
-    pool = sum(n for _, n in short)
+    pool = sum(s for _, s in short)
     for k in range(len(clusters)):
         while pool and claim_next(k):
             extra[k] += 1
@@ -298,14 +434,15 @@ def label_urban_tiles(
         extra[0] += 1
         detached += 1
         pool -= 1
-    recipients = tuple((clusters[k].name, n) for k, n in enumerate(extra) if n)
+    recipients = tuple((clusters[k].name, s) for k, s in enumerate(extra) if s)
+    # only regions that ended short report a spill (a partial tiling has no room to spill into)
     spills = [
-        UrbanSpill(clusters[k].name, clusters[k].seats, clusters[k].seats - n, recipients, detached)
-        for k, n in short
+        UrbanSpill(clusters[k].name, clusters[k].seats, clusters[k].seats - s, recipients, detached)
+        for k, s in short if recipients
     ]
 
-    labels: list[UrbanLabel | None] = [None] * len(centers)
+    labels: list[UrbanLabel | None] = [None] * n
     for k, region in enumerate(regions):
-        for rank, i in enumerate(region):
+        for rank, i in enumerate(sorted(region, key=lambda i: (dist2(k, i), i))):
             labels[i] = UrbanLabel(clusters[k].name, rank, len(region))
     return labels, spills

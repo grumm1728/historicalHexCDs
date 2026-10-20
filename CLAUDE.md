@@ -493,15 +493,26 @@ possible two-tier encoding). "Metro" = part of a **nationally significant big me
 - `scripts/urban_seats.py` — the #26 Census-urban count (`round-half-up(urban_share × seats)`)
   and the shared census→Congress step function / per-outline state totals metro reuses.
 - `scripts/urban_clusters.py` — `to_hex_space` (anchors projected through the state's **live**
-  layout record, AK/HI via `inset_lonlat`) and `label_urban_tiles`: nearest-first contiguous
-  BFS from each anchor over **rendered**-tile adjacency (cell adjacency lies where the outline
-  clip removed the shared cells), growing clusters **round-robin** (largest first within a
-  round) with a preference for tiles in the cluster's own anchor-Voronoi cell. (Its old
-  top-5/2.9R `urban_clusters` is superseded by metro anchors.)
-- **Why round-robin, not #19's largest-first-to-completion:** growing the biggest cluster to
-  completion swallowed smaller clusters' cities (C119 San Diego seeded in the Central Valley,
-  Austin out west; 839 seeds >4R from their anchor, up to 30R). Round-robin: 20, max 5R.
-- **Spill-over:** a cluster can be walled in by neighbours' regions before reaching its seats.
+  layout record, AK/HI via `inset_lonlat`) and `label_urban_tiles`, a **joint assignment**
+  over the final tiles: (0) each national metro seeds on the free tile nearest its principal
+  area's anchor (largest first, Voronoi cell preferred); (1) each metro's remaining seats are
+  placed by one min-cost assignment (pure-Python Hungarian) minimising squared distance to
+  the metro's seat-weighted anchor centroid — a capacitated Voronoi, independent of growth
+  order; (2) each metro's footprint is split among its own anchors by squared distance /
+  seats (satellites stay round on their city). Pieces cut off from the seed are released
+  and regrown by nearest-first BFS over **rendered**-tile adjacency (cell adjacency lies
+  where the outline clip removed the shared cells). (Its old top-5/2.9R `urban_clusters` is
+  superseded by metro anchors.)
+- **History / measured:** #19's largest-first-to-completion swallowed small clusters' cities;
+  the round-robin BFS that replaced it was order-dependent (C118 LA climbed the San Joaquin
+  Valley). The joint assignment (docs/metro_joint_assignment.md) cuts the worst tile-to-anchor
+  distance 31R → 24R and spilled seats 25 → 10 over C1–C119, but cross-Congress stability is
+  only slightly better than round-robin — most label change between Congresses comes from
+  the inputs (re-partitioned tiles, new census anchors/seats), not the labeller. Don't drop
+  the metro seed step (without it New York swallowed Albany's city tile, C33–C57), and
+  don't seed per *area* (near-coincident SF/San Jose/Concord anchors then flip seeds and CA
+  got less stable).
+- **Spill-over:** a cluster can be walled in during contiguity repair before reaching its seats.
   Regions stay contiguous, so it stops short and its leftover seats go to clusters that can
   still grow (state total stays exact). Each event is written to
   `data_processed/urban_label_notes.json` for a future map-footnotes section.
