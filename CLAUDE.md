@@ -77,9 +77,15 @@ tiebreak can occasionally dead-end the greedy heuristic on a *tileable* shape, s
 in `place_pentahex_tiles` retries `partition_into_pentahexes(..., use_compact=False)` — the
 original anti-stranding-only growth — whenever the compact pass fails to fully tile a state.
 The fallback is byte-for-byte the proven heuristic, so the `warnings: 0` invariant holds.
-A separate interior-only swap pass (`refine_tiles_compactness`) then trades cells between
-adjacent tiles to reduce sticks further; it never moves a *territory-edge* cell, so the
-state's clipped silhouette (and thus the option-3 snap) is unchanged and no slivers appear.
+A separate swap pass (`refine_tiles_compactness`) then trades single cells between adjacent
+tiles to raise `_tile_score` = internal edges − `STRAIGHT_PENALTY` (2) for a straight 5×1 bar
+− `STARVED_PENALTY` (4) per cell a tile is short of `STARVED_INSIDE` (3) cells inside the
+outline. It may move *territory-edge* cells (the greedy growth's sticks mostly run along the
+edge, where interior-only swaps can't reach — measured: 48 of 159 straights were all-edge),
+but a swap may never lower the pair's minimum inside-outline cell count, so outside cells
+(clipped away at render) are spread out rather than concentrated into a sliver. Swaps never
+change the state's cell set, so tileability/status is unaffected. Effect on a 16-Congress
+sample: straights 159 → 3, 4-internal-edge sticks 429 → 105, slivers (<0.4) 7 → 2.
 
 **Limitations:** The greedy heuristic can reach dead ends on pathological shapes (long
 tendrils, narrow necks). For this project those are handled upstream by the allocator's
@@ -139,7 +145,7 @@ failing states are added to `steal_exempt` and the whole allocation is redone wi
 allowed for them. Converges within a few passes; worst case = the original theft-allowed
 allocation with 0 warnings.
 
-## Great Lakes clip & multi-component states (Michigan)
+## Great Lakes clip & multi-component states (Michigan, IL/WI/OH/NY/MN/PA/IN)
 
 **The problem:** Cells are allocated center-in-polygon against each state's outline. A
 state whose administrative outline runs out over open lake water (Michigan, whose outline
@@ -149,8 +155,13 @@ lakes with hexes — districts floating in open water.
 **The fix (two parts):**
 1. **`fetch_modern_state_outlines.py` land-clips the outline.** It downloads Natural Earth
    `ne_10m_lakes`, unions the named Great Lakes, and subtracts them from each state in
-   `GREAT_LAKES_CLIP_ABBRS` (today just `MI`), dropping tiny islands (`clip_to_land`,
-   `min_part_frac`). Michigan becomes a 2-part MultiPolygon (UP + LP). Only the pipeline
+   `GREAT_LAKES_CLIP_ABBRS` (every state whose NE outline holds lake water: MI 40%, WI 14%,
+   OH 8%, NY 8%, MN 3%, IL 3%, PA 2%, IN 0.6%), dropping tiny *lake-touching* parts
+   (`clip_to_land`, `min_part_frac`; parts away from the lakes — NY's Long Island Sound
+   islands — are kept). Michigan becomes a 2-part MultiPolygon (UP + LP); the others just
+   lose their lake lobes (IL's wedge off Chicago). Re-fitting the reference anchors to the
+   land outlines raised every lake state's reference IoU but OH's (WI 0.86 → 0.95), so the
+   hand-drawn reference was evidently drawn on land too. Only the pipeline
    outputs (`*_modern.geojson` deg + `*_modern_wm.geojson`) are clipped; the raw NE export
    (`state_outlines_natural_earth.geojson`) stays the full admin outline. Provenance is
    tagged `natural-earth-10m-lakeclip-*`.
@@ -441,11 +452,16 @@ Algorithm (in order):
    added to `steal_exempt` and the whole thing re-allocated (theft-allowed growth yields a
    compact, tileable blob). Converges; worst case = original theft-allowed allocation.
 6. **`partition_into_pentahexes`** — greedy region-grow into connected groups of 5.
-7. **`render_state_tiles`** (the "option-3" snap) — boundary tiles are clipped to the
-   scaled outline (`render_tile(clip_geom=...)`); the leftover gap (outline − union of
+7. **`render_state_tiles`** (the "option-3" snap) — *every* tile is clipped to the
+   scaled outline (`render_tile(clip_geom=...)`; interior tiles too — cells over water
+   inside the outline's envelope, e.g. the Chesapeake, used to draw as raw hexes); the
+   leftover gap (outline − union of
    tiles) is redistributed so the **state union equals the outline**: tiny slivers merge
    into the best-adjacent tile, larger components split across adjacent tiles by nearest
-   tile (`_nearest_tile_split`, a Voronoi of adjacent tiles' boundary seeds).
+   tile (`_nearest_tile_split`, a Voronoi of adjacent tiles' boundary seeds). Merged tiles
+   pass through `_drop_hairlines`: the floating-point re-union leaves zero-area interior
+   rings along the old hex zigzag, which the viewer drew as dashed "ticks" inside straight
+   state edges (3,223 of them across C1–C119 before the fix).
 8. **Urban/rural labels** (label-only; never touches geometry) — see below.
 
 ## Metro (urban/rural) district labels (issues #7, #36)
@@ -477,15 +493,26 @@ possible two-tier encoding). "Metro" = part of a **nationally significant big me
 - `scripts/urban_seats.py` — the #26 Census-urban count (`round-half-up(urban_share × seats)`)
   and the shared census→Congress step function / per-outline state totals metro reuses.
 - `scripts/urban_clusters.py` — `to_hex_space` (anchors projected through the state's **live**
-  layout record, AK/HI via `inset_lonlat`) and `label_urban_tiles`: nearest-first contiguous
-  BFS from each anchor over **rendered**-tile adjacency (cell adjacency lies where the outline
-  clip removed the shared cells), growing clusters **round-robin** (largest first within a
-  round) with a preference for tiles in the cluster's own anchor-Voronoi cell. (Its old
-  top-5/2.9R `urban_clusters` is superseded by metro anchors.)
-- **Why round-robin, not #19's largest-first-to-completion:** growing the biggest cluster to
-  completion swallowed smaller clusters' cities (C119 San Diego seeded in the Central Valley,
-  Austin out west; 839 seeds >4R from their anchor, up to 30R). Round-robin: 20, max 5R.
-- **Spill-over:** a cluster can be walled in by neighbours' regions before reaching its seats.
+  layout record, AK/HI via `inset_lonlat`) and `label_urban_tiles`, a **joint assignment**
+  over the final tiles: (0) each national metro seeds on the free tile nearest its principal
+  area's anchor (largest first, Voronoi cell preferred); (1) each metro's remaining seats are
+  placed by one min-cost assignment (pure-Python Hungarian) minimising squared distance to
+  the metro's seat-weighted anchor centroid — a capacitated Voronoi, independent of growth
+  order; (2) each metro's footprint is split among its own anchors by squared distance /
+  seats (satellites stay round on their city). Pieces cut off from the seed are released
+  and regrown by nearest-first BFS over **rendered**-tile adjacency (cell adjacency lies
+  where the outline clip removed the shared cells). (Its old top-5/2.9R `urban_clusters` is
+  superseded by metro anchors.)
+- **History / measured:** #19's largest-first-to-completion swallowed small clusters' cities;
+  the round-robin BFS that replaced it was order-dependent (C118 LA climbed the San Joaquin
+  Valley). The joint assignment (docs/metro_joint_assignment.md) cuts the worst tile-to-anchor
+  distance 31R → 24R and spilled seats 25 → 10 over C1–C119, but cross-Congress stability is
+  only slightly better than round-robin — most label change between Congresses comes from
+  the inputs (re-partitioned tiles, new census anchors/seats), not the labeller. Don't drop
+  the metro seed step (without it New York swallowed Albany's city tile, C33–C57), and
+  don't seed per *area* (near-coincident SF/San Jose/Concord anchors then flip seeds and CA
+  got less stable).
+- **Spill-over:** a cluster can be walled in during contiguity repair before reaching its seats.
   Regions stay contiguous, so it stops short and its leftover seats go to clusters that can
   still grow (state total stays exact). Each event is written to
   `data_processed/urban_label_notes.json` for a future map-footnotes section.

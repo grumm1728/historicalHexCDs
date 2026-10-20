@@ -34,15 +34,15 @@ def test_bfs_only_claims_adjacent_tiles():
 
 
 def test_small_cluster_keeps_its_city_next_to_a_big_one():
-    # Big (5 seats) would swallow tile 6 growing to completion first; round-robin lets
-    # Small seed on its own city tile
+    # Big (5 seats) would swallow tile 6 growing to completion first; seeding first lets
+    # Small (its own metro) sit on its own city tile
     centers, adj = _row(10)
     labels, spills = label_urban_tiles(centers, adj, [_cluster("Big", 3.0, 5), _cluster("Small", 6.0, 1)])
     assert labels[6].cluster == "Small" and labels[6].rank == 0
     assert sum(1 for l in labels if l and l.cluster == "Big") == 5 and spills == []
 
 
-def test_round_robin_larger_cluster_wins_contested_tile():
+def test_larger_cluster_wins_contested_tile():
     centers, adj = _row(3)
     labels, _ = label_urban_tiles(centers, adj, [_cluster("Big", 0.0, 2), _cluster("Small", 2.0, 1)])
     assert [l.cluster for l in labels] == ["Big", "Big", "Small"]
@@ -64,14 +64,41 @@ def test_rural_when_unclaimed_and_counts_exact():
     assert labels[7].cluster == "B" and labels[7].seats == 1
 
 
-def test_walled_in_cluster_spills_to_larger_and_stays_contiguous():
-    # Big claims the middle; Small's anchor sits at the left end with only 1 free tile there
+def test_joint_assignment_shares_a_row_instead_of_walling_in():
+    # greedy round-robin let Big take tile 1 and walled Small in at the left end; the joint
+    # assignment gives each cluster the tiles nearest its own anchor
     centers, adj = _row(5)
     labels, spills = label_urban_tiles(centers, adj, [_cluster("Big", 2.0, 3), _cluster("Small", 0.0, 2)])
-    assert [l.cluster if l else None for l in labels] == ["Small", "Big", "Big", "Big", "Big"]
+    assert [l.cluster for l in labels] == ["Small", "Small", "Big", "Big", "Big"] and spills == []
+
+
+def test_walled_in_cluster_spills_to_larger_and_stays_contiguous():
+    # Small's two nearest tiles are 0 and 4, which only touch through Big's hub tile 1:
+    # the stray tile is released, Small is walled in, and its seat spills to Big
+    centers = [(0.0, 0.0), (1.0, 0.0), (2.0, 0.0), (3.0, 0.0), (0.2, -0.9)]
+    adj = [{1}, {0, 2, 4}, {1, 3}, {2}, {1}]
+    labels, spills = label_urban_tiles(centers, adj, [_cluster("Big", 1.5, 3), _cluster("Small", 0.0, 2)])
+    assert [l.cluster for l in labels] == ["Small", "Big", "Big", "Big", "Big"]
     assert labels[4].seats == 4 and labels[0].seats == 1  # seats = tiles actually held
     [sp] = spills
     assert (sp.cluster, sp.allocated, sp.placed, sp.recipients) == ("Small", 2, 1, (("Big", 1),))
+
+
+def test_crowded_clusters_split_by_seats_not_growth_order():
+    # two clusters whose anchors sit one tile apart on a 3x4 grid: each gets the compact
+    # half nearest its own anchor, whichever is listed first
+    centers = [(float(x), float(y)) for y in range(3) for x in range(4)]
+    adj = [{j for j, (u, v) in enumerate(centers) if abs(u - x) + abs(v - y) == 1} for x, y in centers]
+    a, b = _cluster("A", 1.0, 6, y=1.0), _cluster("B", 2.0, 6, y=1.0)
+    for order in ([a, b], [b, a]):
+        labels, spills = label_urban_tiles(centers, adj, order)
+        assert [l.cluster for l in labels] == ["A", "A", "B", "B"] * 3 and spills == []
+
+
+def test_rank_orders_tiles_by_distance_from_anchor():
+    centers, adj = _row(6)
+    labels, _ = label_urban_tiles(centers, adj, [_cluster("A", 2.2, 4)])
+    assert {i: l.rank for i, l in enumerate(labels) if l} == {2: 0, 3: 1, 1: 2, 4: 3}
 
 
 def test_no_spills_when_clusters_fit():
@@ -93,3 +120,14 @@ def test_detached_last_resort_keeps_state_total():
     labels, [sp] = label_urban_tiles(centers, adj, [_cluster("A", 0.0, 3)])
     assert all(l.cluster == "A" for l in labels) and labels[2].rank == 2
     assert (sp.placed, sp.recipients, sp.detached) == (2, (("A", 1),), 1)
+
+
+def test_small_metro_keeps_its_city_tile_next_to_a_big_one():
+    # Big's anchor sits off the grid (like New York at the state's tip) and needs 16 of 25
+    # tiles; the cheapest unseeded assignment hands it Small's city tile (2,3) and pushes
+    # Small to (2,4). Seeding each metro first keeps it on its own city (C33-C57 Albany).
+    centers = [(float(x), float(y)) for y in range(5) for x in range(5)]
+    adj = [{j for j, (u, v) in enumerate(centers) if abs(u - x) + abs(v - y) == 1} for x, y in centers]
+    labels, spills = label_urban_tiles(centers, adj, [_cluster("Big", 2.0, 16, y=-4.0), _cluster("Small", 2.0, 1, y=3.2)])
+    assert labels[17].cluster == "Small" and labels[22] is None
+    assert sum(1 for l in labels if l and l.cluster == "Big") == 16 and spills == []

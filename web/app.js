@@ -749,8 +749,6 @@ function ensureLayers() {
     const p = d.properties;
     showTip(event, [
       `<strong>${p.state_name || "Unknown"}</strong>`,
-      `CD ${p.cd_index ?? "?"} of ${p.house_seats ?? "?"}`,
-      `Hexes: ${p.hex_count ?? 5}${p.is_boundary_tile ? " (boundary)" : ""}`,
       ...(drawn.urbanRural ? [metroTooltip(p, drawn.maxRank)] : []),
       `Congress: ${drawn.frame.entry.congress_number}`,
     ]);
@@ -767,7 +765,17 @@ function ensureLayers() {
       `Congress: ${drawn.frame.entry.congress_number}`,
     ]);
   });
-  for (const g of [layers.tiles, layers.cells]) g.on("mouseleave", () => { tooltip.hidden = true; });
+  layers.outline.on("mousemove", (event) => {
+    const d = event.target.__data__;
+    if (!d || !drawn) return;
+    const p = d.properties;
+    showTip(event, [
+      `<strong>${p.state_name || "Unknown"}</strong>`,
+      `Seats: ${p.house_seats ?? "N/A"}`,
+      `Congress: ${drawn.frame.entry.congress_number}`,
+    ]);
+  });
+  for (const g of [layers.outline, layers.tiles, layers.cells]) g.on("mouseleave", () => { tooltip.hidden = true; });
   return layers;
 }
 
@@ -794,8 +802,10 @@ function joinPaths(layer, items, cls, fills) {
 function renderFrame(frame, outlineItems) {
   const { entry, state, cd } = frame;
   const L = ensureLayers();
-  const showDistricts = Boolean(showDistrictsToggle?.checked) && Boolean(cd);
-  const urbanRural = showDistricts && (Boolean(urbanRuralToggle?.checked) || DESIGN.colorBy === "metro");
+  // State Silhouettes is its own plain view: faint outlines only, districts hidden.
+  const silhouettes = Boolean(outlineItems);
+  const showDistricts = Boolean(showDistrictsToggle?.checked) && Boolean(cd) && !silhouettes;
+  const urbanRural = showDistricts && Boolean(urbanRuralToggle?.checked);
 
   currentMetroTiers = showDistricts ? frame.cdProps.metro_tiers || null : null;
   window.dispatchEvent(new Event("hexdesign:frame"));
@@ -835,8 +845,8 @@ function renderFrame(frame, outlineItems) {
 
   joinPaths(L.outline, outlineItems ? outlineItems.filter((it) => it.d) : [], "state-outline", fills.outline);
   joinPaths(L.tiles, showDistricts ? cd : [], "cd-tile", fills.cd);
-  joinPaths(L.borders, showDistricts && DESIGN.stateBorderWidth > 0 ? state : [], "state-border", null);
-  joinPaths(L.cells, showDistricts ? [] : state, "cell", fills.state);
+  joinPaths(L.borders, (showDistricts || silhouettes) && DESIGN.stateBorderWidth > 0 ? state : [], "state-border", null);
+  joinPaths(L.cells, showDistricts || silhouettes ? [] : state, "cell", fills.state);
 
   drawn = { frame, urbanRural, maxRank: fills.maxRank };
   clearStatus();
@@ -864,7 +874,8 @@ async function drawFrame(entry) {
 async function drawFrameLegacy(entry) {
   const featurePath = entry.state_feature_path || entry.feature_path;
   const cdPath = entry.cd_feature_path;
-  const showDistricts = Boolean(showDistrictsToggle?.checked) && Boolean(cdPath);
+  const silhouetteMode = Boolean(outlineOnlyToggle?.checked) && Boolean(entry.state_outline_path);
+  const showDistricts = Boolean(showDistrictsToggle?.checked) && Boolean(cdPath) && !silhouetteMode;
   const cartogram = isCartogramFrame(entry);
 
   const [geo, rawOutlineGeo, cdGeo] = await Promise.all([
@@ -947,8 +958,7 @@ async function drawFrameLegacy(entry) {
 
   // Layer 2: per-CD pentahex tiles when toggled (v5 only).
   if (showDistricts && cdGeo && cdGeo.features?.length) {
-    // Coloring by metro needs the metro labels, so it implies the urban/rural encoding.
-    const urbanRural = Boolean(urbanRuralToggle?.checked) || DESIGN.colorBy === "metro";
+    const urbanRural = Boolean(urbanRuralToggle?.checked);
     const maxRank = urbanRural ? clusterMaxRanks(cdGeo.features) : null;
     g.selectAll("path.cd-tile")
       .data(cdGeo.features)
@@ -962,8 +972,6 @@ async function drawFrameLegacy(entry) {
         tooltip.style.top = `${event.offsetY + 16}px`;
         tooltip.innerHTML = [
           `<strong>${d.properties.state_name || "Unknown"}</strong>`,
-          `CD ${d.properties.cd_index ?? "?"} of ${d.properties.house_seats ?? "?"}`,
-          `Hexes: ${d.properties.hex_count ?? 5}${d.properties.is_boundary_tile ? " (boundary)" : ""}`,
           ...(urbanRural
             ? [metroTooltip(d.properties, maxRank)]
             : []),
@@ -978,7 +986,7 @@ async function drawFrameLegacy(entry) {
         .attr("class", "state-border")
         .attr("d", path);
     }
-  } else {
+  } else if (!(showSilhouettes && outlineAvailable)) {
     // Layer 2 fallback: state-level polyhex fill.
     g.selectAll("path.cell")
       .data(geo.features)
