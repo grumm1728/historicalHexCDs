@@ -31,9 +31,11 @@ NE_LAKES_URL = "https://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes.zip"
 
 # States whose administrative outline runs through open Great Lakes water, so a
 # center-in-polygon hex allocation would fill the lakes. We subtract the Great Lakes
-# from these states' outlines to leave land only. Scope today: Michigan (splits into
-# Upper + Lower Peninsula). Add WI/MN/OH/PA/NY here later if desired.
-GREAT_LAKES_CLIP_ABBRS = {"MI"}
+# from these states' outlines to leave land only: every state whose Natural Earth outline
+# contains Great Lakes water (MI 40%, WI 14%, OH 8%, NY 8%, MN 3%, IL 3%, PA 2%, IN 0.6%).
+# Michigan splits into Upper + Lower Peninsula; the rest just lose their lake lobes
+# (IL's Lake Michigan wedge off Chicago, WI's Superior/Michigan water, OH/PA/NY's Erie).
+GREAT_LAKES_CLIP_ABBRS = {"IL", "IN", "MI", "MN", "NY", "OH", "PA", "WI"}
 
 # ne_10m_lakes `name` values for the Great Lakes (matched case-insensitively, substring).
 GREAT_LAKE_NAMES = (
@@ -119,8 +121,10 @@ def load_great_lakes(cache_dir: Path):
 
 
 def clip_to_land(geom, lakes, min_part_frac: float = 0.02):
-    """Subtract `lakes` from `geom`, then drop parts smaller than `min_part_frac` of the
-    largest remaining part (removes tiny islands, keeps the major peninsulas)."""
+    """Subtract `lakes` from `geom`, then drop lake-touching parts smaller than
+    `min_part_frac` of the largest remaining part (removes tiny lake islands and clip
+    slivers, keeps the major peninsulas). Small parts away from the lakes are the state's
+    own islands (NY's Long Island Sound islands) and are kept untouched."""
     clipped = geom.difference(lakes)
     if not clipped.is_valid:
         clipped = clipped.buffer(0)
@@ -129,7 +133,7 @@ def clip_to_land(geom, lakes, min_part_frac: float = 0.02):
     if not parts:
         return geom  # clip wiped everything; fall back to original
     max_area = max(p.area for p in parts)
-    kept = [p for p in parts if p.area >= max_area * min_part_frac]
+    kept = [p for p in parts if p.area >= max_area * min_part_frac or p.distance(lakes) > 0]
     return MultiPolygon(kept) if len(kept) > 1 else kept[0]
 
 

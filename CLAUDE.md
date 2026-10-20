@@ -77,9 +77,15 @@ tiebreak can occasionally dead-end the greedy heuristic on a *tileable* shape, s
 in `place_pentahex_tiles` retries `partition_into_pentahexes(..., use_compact=False)` — the
 original anti-stranding-only growth — whenever the compact pass fails to fully tile a state.
 The fallback is byte-for-byte the proven heuristic, so the `warnings: 0` invariant holds.
-A separate interior-only swap pass (`refine_tiles_compactness`) then trades cells between
-adjacent tiles to reduce sticks further; it never moves a *territory-edge* cell, so the
-state's clipped silhouette (and thus the option-3 snap) is unchanged and no slivers appear.
+A separate swap pass (`refine_tiles_compactness`) then trades single cells between adjacent
+tiles to raise `_tile_score` = internal edges − `STRAIGHT_PENALTY` (2) for a straight 5×1 bar
+− `STARVED_PENALTY` (4) per cell a tile is short of `STARVED_INSIDE` (3) cells inside the
+outline. It may move *territory-edge* cells (the greedy growth's sticks mostly run along the
+edge, where interior-only swaps can't reach — measured: 48 of 159 straights were all-edge),
+but a swap may never lower the pair's minimum inside-outline cell count, so outside cells
+(clipped away at render) are spread out rather than concentrated into a sliver. Swaps never
+change the state's cell set, so tileability/status is unaffected. Effect on a 16-Congress
+sample: straights 159 → 3, 4-internal-edge sticks 429 → 105, slivers (<0.4) 7 → 2.
 
 **Limitations:** The greedy heuristic can reach dead ends on pathological shapes (long
 tendrils, narrow necks). For this project those are handled upstream by the allocator's
@@ -139,7 +145,7 @@ failing states are added to `steal_exempt` and the whole allocation is redone wi
 allowed for them. Converges within a few passes; worst case = the original theft-allowed
 allocation with 0 warnings.
 
-## Great Lakes clip & multi-component states (Michigan)
+## Great Lakes clip & multi-component states (Michigan, IL/WI/OH/NY/MN/PA/IN)
 
 **The problem:** Cells are allocated center-in-polygon against each state's outline. A
 state whose administrative outline runs out over open lake water (Michigan, whose outline
@@ -149,8 +155,13 @@ lakes with hexes — districts floating in open water.
 **The fix (two parts):**
 1. **`fetch_modern_state_outlines.py` land-clips the outline.** It downloads Natural Earth
    `ne_10m_lakes`, unions the named Great Lakes, and subtracts them from each state in
-   `GREAT_LAKES_CLIP_ABBRS` (today just `MI`), dropping tiny islands (`clip_to_land`,
-   `min_part_frac`). Michigan becomes a 2-part MultiPolygon (UP + LP). Only the pipeline
+   `GREAT_LAKES_CLIP_ABBRS` (every state whose NE outline holds lake water: MI 40%, WI 14%,
+   OH 8%, NY 8%, MN 3%, IL 3%, PA 2%, IN 0.6%), dropping tiny *lake-touching* parts
+   (`clip_to_land`, `min_part_frac`; parts away from the lakes — NY's Long Island Sound
+   islands — are kept). Michigan becomes a 2-part MultiPolygon (UP + LP); the others just
+   lose their lake lobes (IL's wedge off Chicago). Re-fitting the reference anchors to the
+   land outlines raised every lake state's reference IoU but OH's (WI 0.86 → 0.95), so the
+   hand-drawn reference was evidently drawn on land too. Only the pipeline
    outputs (`*_modern.geojson` deg + `*_modern_wm.geojson`) are clipped; the raw NE export
    (`state_outlines_natural_earth.geojson`) stays the full admin outline. Provenance is
    tagged `natural-earth-10m-lakeclip-*`.
@@ -441,11 +452,16 @@ Algorithm (in order):
    added to `steal_exempt` and the whole thing re-allocated (theft-allowed growth yields a
    compact, tileable blob). Converges; worst case = original theft-allowed allocation.
 6. **`partition_into_pentahexes`** — greedy region-grow into connected groups of 5.
-7. **`render_state_tiles`** (the "option-3" snap) — boundary tiles are clipped to the
-   scaled outline (`render_tile(clip_geom=...)`); the leftover gap (outline − union of
+7. **`render_state_tiles`** (the "option-3" snap) — *every* tile is clipped to the
+   scaled outline (`render_tile(clip_geom=...)`; interior tiles too — cells over water
+   inside the outline's envelope, e.g. the Chesapeake, used to draw as raw hexes); the
+   leftover gap (outline − union of
    tiles) is redistributed so the **state union equals the outline**: tiny slivers merge
    into the best-adjacent tile, larger components split across adjacent tiles by nearest
-   tile (`_nearest_tile_split`, a Voronoi of adjacent tiles' boundary seeds).
+   tile (`_nearest_tile_split`, a Voronoi of adjacent tiles' boundary seeds). Merged tiles
+   pass through `_drop_hairlines`: the floating-point re-union leaves zero-area interior
+   rings along the old hex zigzag, which the viewer drew as dashed "ticks" inside straight
+   state edges (3,223 of them across C1–C119 before the fix).
 8. **Urban/rural labels** (label-only; never touches geometry) — see below.
 
 ## Metro (urban/rural) district labels (issues #7, #36)

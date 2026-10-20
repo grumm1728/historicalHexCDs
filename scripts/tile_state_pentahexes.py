@@ -1153,7 +1153,8 @@ def place_pentahex_tiles(
     # construction (preserves the size-5/connected partition), so it never affects status.
     for fips in need:
         if len(tiles_by_state[fips]) > 1:
-            tiles_by_state[fips] = refine_tiles_compactness(tiles_by_state[fips])
+            inside = {c for c in cells_by_state[fips] if cell_outline_fips.get(c) == fips}
+            tiles_by_state[fips] = refine_tiles_compactness(tiles_by_state[fips], inside)
 
     for fips, seats in seat_by_fips.items():
         if seats <= 0:
@@ -1281,6 +1282,36 @@ def _tile_internal_edges(tile: set[tuple[int, int]]) -> int:
     return edges // 2
 
 
+# Extra compactness penalty for the straight 5x1 pentahex. Every tree-shaped pentahex has
+# 4 internal edges, but the straight bar reads worst on the map (a long thin district),
+# so the swap pass treats it as ~2 edges worse than other sticks and will trade it away
+# even for a merely-equal internal-edge total.
+STRAIGHT_PENALTY = 2
+
+
+def _is_straight(tile: set[tuple[int, int]]) -> bool:
+    """True for the 5x1 bar: all cells on one axial line (constant q, r or s)."""
+    return (
+        len({q for q, _ in tile}) == 1
+        or len({r for _, r in tile}) == 1
+        or len({q + r for q, r in tile}) == 1
+    )
+
+
+# Tiles with fewer than STARVED_INSIDE cells whose centre is inside the state outline render
+# as slivers (the rest is clipped away), so the swap pass pays STARVED_PENALTY per missing
+# cell to spread outside cells (lake/ocean overshoot) across several tiles instead.
+STARVED_INSIDE = 3
+STARVED_PENALTY = 4
+
+
+def _tile_score(tile: set[tuple[int, int]], n_inside: int | None = None) -> int:
+    score = _tile_internal_edges(tile) - (STRAIGHT_PENALTY if _is_straight(tile) else 0)
+    if n_inside is not None:
+        score -= STARVED_PENALTY * max(0, STARVED_INSIDE - n_inside)
+    return score
+
+
 def _cells_connected(cells: set[tuple[int, int]]) -> bool:
     if not cells:
         return True
@@ -1298,24 +1329,37 @@ def _cells_connected(cells: set[tuple[int, int]]) -> bool:
 
 def refine_tiles_compactness(
     tiles: list[list[tuple[int, int]]],
+    inside: set[tuple[int, int]] | None = None,
     max_rounds: int = 8,
 ) -> list[list[tuple[int, int]]]:
     """Improve tile compactness by swapping border cells between adjacent tiles.
 
     Starts from a valid partition and only performs A<->B single-cell exchanges that keep
-    BOTH tiles size-5 and connected while raising total internal-adjacency. Because every
-    move preserves "size-5 + connected" for both tiles, the result is always still a valid
-    pentahex partition: this pass can never make a state un-tileable (warnings stay 0).
+    BOTH tiles size-5 and connected while raising the total `_tile_score` (internal
+    adjacency, with straight 5x1 bars and outline-starved tiles penalised). Because every move preserves
+    "size-5 + connected" for both tiles, the result is always still a valid pentahex
+    partition: this pass can never make a state un-tileable (warnings stay 0).
+
+    `inside` is the set of cells whose centre lies inside the state's scaled outline.
+    Swaps may move territory-edge cells (the greedy partitioner grows sticks *along* the
+    edge, which interior-only swaps can't reach), but a swap must not lower the pair's
+    minimum inside-cell count: the cells outside the outline are clipped away at render
+    time, so concentrating them in one tile would leave a sliver district. Without
+    `inside`, only interior (non-territory-edge) cells are swapped, the older behaviour.
     """
     if len(tiles) < 2:
         return tiles
     tile_sets = [set(t) for t in tiles]
-    # Territory-edge cells are clipped to the state outline at render time, so moving them
-    # between tiles can shove a tile's hexes into clipped-away overshoot and leave a sliver
-    # district. Only swap interior cells: the state's outer silhouette (the clipped union)
-    # is then identical, so no slivers, while interior sticks still get rounded out.
     all_cells = set().union(*tile_sets)
     edge_cells = {c for c in all_cells if any(nb not in all_cells for nb in neighbors(c))}
+    movable = all_cells if inside is not None else all_cells - edge_cells
+
+    def n_inside(ts: set[tuple[int, int]]) -> int:
+        return len(ts & inside) if inside is not None else 0
+
+    def score_of(ts: set[tuple[int, int]]) -> int:
+        return _tile_score(ts, n_inside(ts) if inside is not None else None)
+
     for _ in range(max_rounds):
         # Owner map -> only the tile pairs that actually touch are worth examining
         # (all-pairs is O(tiles^2) and dominates runtime; adjacent pairs are ~linear).
@@ -1331,19 +1375,22 @@ def refine_tiles_compactness(
                     adjacent_pairs.add((idx, j) if idx < j else (j, idx))
 
         improved = False
-        for i, j in adjacent_pairs:
+        for i, j in sorted(adjacent_pairs):
             a_set, b_set = tile_sets[i], tile_sets[j]
-            a_cands = [a for a in a_set if a not in edge_cells and any(nb in b_set for nb in neighbors(a))]
-            b_cands = [b for b in b_set if b not in edge_cells and any(nb in a_set for nb in neighbors(b))]
-            base = _tile_internal_edges(a_set) + _tile_internal_edges(b_set)
+            a_cands = [a for a in a_set if a in movable and any(nb in b_set for nb in neighbors(a))]
+            b_cands = [b for b in b_set if b in movable and any(nb in a_set for nb in neighbors(b))]
+            base = score_of(a_set) + score_of(b_set)
+            min_in = min(n_inside(a_set), n_inside(b_set))
             best = None
             for a in a_cands:
                 for b in b_cands:
                     new_a = (a_set - {a}) | {b}
                     new_b = (b_set - {b}) | {a}
+                    if min(n_inside(new_a), n_inside(new_b)) < min_in:
+                        continue
                     if not _cells_connected(new_a) or not _cells_connected(new_b):
                         continue
-                    score = _tile_internal_edges(new_a) + _tile_internal_edges(new_b)
+                    score = score_of(new_a) + score_of(new_b)
                     if score > base and (best is None or score > best[0]):
                         best = (score, new_a, new_b)
             if best is not None:
@@ -1464,11 +1511,10 @@ def render_state_tiles(
         a wide undershoot strip is shared rather than dumped on one CD.
     Returns one MultiPolygon per input tile (parallel to `tiles`).
     """
-    geoms = []
-    for tile in tiles:
-        touches = any(qr in boundary_cells for qr in tile)
-        clip = scaled_outline if (touches and scaled_outline is not None) else None
-        geoms.append(render_tile(tile, hex_by_qr, clip))
+    # Every tile is clipped, not only those touching the territory edge: a tile can be
+    # interior to the cell territory yet sit over water inside the outline's envelope (the
+    # Chesapeake, Puget Sound, Lake Michigan off Chicago) — unclipped it drew raw hexes there.
+    geoms = [render_tile(tile, hex_by_qr, scaled_outline) for tile in tiles]
     if scaled_outline is None or not geoms:
         return geoms
 
@@ -1512,8 +1558,26 @@ def render_state_tiles(
         merged = unary_union([g, *ex])
         if not merged.is_valid:
             merged = merged.buffer(0)
-        out.append(_as_multipolygon(merged))
+        out.append(_drop_hairlines(_as_multipolygon(merged), 1e-4 * hex_area))
     return out
+
+
+def _drop_hairlines(geom, min_area: float):
+    """Remove zero-width artefacts left by merging residual strips back onto a tile.
+
+    The residual (outline − tiles) is cut against the hex edges with floating-point
+    noding, so re-unioning it with its tile can leave hairline interior rings along the
+    old hex zigzag (visible as dashed "ticks" inside straight state edges — PA's west
+    edge, the TX panhandle's 103°W line, AZ's east edge) and needle-thin parts. Rings and
+    parts under `min_area` are dropped; real holes/islands are orders of magnitude larger.
+    """
+    polys = []
+    for p in getattr(geom, "geoms", [geom]):
+        if p.area < min_area:
+            continue
+        holes = [r for r in p.interiors if Polygon(r).area >= min_area]
+        polys.append(Polygon(p.exterior, holes) if len(holes) != len(p.interiors) else p)
+    return MultiPolygon(polys) if polys else geom
 
 
 # ---- Read-only layout diagnostic (--diagnose) ------------------------------------------
@@ -1703,6 +1767,13 @@ def main() -> None:
         "after the largest one (so a small set is fast). The fixed C119 frame is read from the "
         "committed 119.geojson regardless.",
     )
+    parser.add_argument(
+        "--congresses",
+        default="",
+        help="Comma-separated Congress numbers to tile (default: all). Only meaningful in the "
+        "stateless reference-anchored mode; for fast in-memory-style A/B runs, point the "
+        "--*-out-root/--warnings-out options at a scratch directory.",
+    )
     parser.add_argument("--diagnose-out", default=None, help="Optional path to also write the --diagnose report as JSON.")
     parser.add_argument(
         "--reference-anchors",
@@ -1830,7 +1901,10 @@ def main() -> None:
         diag_set = {int(x) for x in args.diagnose_congresses.split(",") if x.strip()}
         diag_max = max(diag_set) if diag_set else None
 
+    only_congresses = {int(x) for x in args.congresses.split(",") if x.strip()}
     for congress_number in sorted(seats_by_congress):
+        if only_congresses and congress_number not in only_congresses:
+            continue
         seat_rows = seats_by_congress[congress_number]
         seat_by_fips: dict[str, int] = {}
         meta_by_fips: dict[str, dict] = {}
