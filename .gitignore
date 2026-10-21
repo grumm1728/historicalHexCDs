@@ -27,3 +27,4 @@ tiler_run_start.txt
 
 # Local Census API key (never commit)
 census_API_key.txt
+exports/
