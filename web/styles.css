@@ -133,9 +133,22 @@ body {
   background: #9fb1b4;
 }
 
-.tl-tick.decade {
+.tl-tick.census {
   height: 8px;
   background: #4a5b60;
+}
+
+/* 1920: a census the House never reapportioned from. */
+.tl-tick.census.skipped {
+  width: 0;
+  background: none;
+  border-left: 1px dashed #4a5b60;
+}
+
+.tl-tick.offcensus {
+  width: 2px;
+  height: 6px;
+  background: #c98a2b;
 }
 
 .tl-year {
@@ -168,6 +181,10 @@ body {
   height: calc(var(--row) * 15px + 3px);
   border-left: 1px solid currentColor;
   opacity: 0.6;
+}
+
+.timeline .tl-event.civilwar {
+  color: #6a4c93;
 }
 
 .timeline .tl-event:hover,
