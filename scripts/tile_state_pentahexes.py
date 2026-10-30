@@ -1734,6 +1734,19 @@ def _diagnose_format(
     return "\n".join(lines), payload
 
 
+def _merge_by_congress(path: Path, key: str, new_items: list[dict], field: str, congresses: set[int]) -> list[dict]:
+    """`new_items` plus the entries of the existing JSON list `path[key]` for Congresses not
+    in `congresses`, sorted by Congress (stable, so per-Congress order is kept)."""
+    old: list[dict] = []
+    if path.exists():
+        try:
+            old = json.loads(path.read_text(encoding="utf-8")).get(key, [])
+        except (OSError, ValueError):
+            old = []
+    kept = [x for x in old if x.get(field) not in congresses]
+    return sorted(kept + new_items, key=lambda x: x.get(field, 0))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Allocate hex cells to states and tile each as pentahexes")
     parser.add_argument("--seats", default=str(ROOT / "data_processed" / "seats" / "state_seats_by_congress.csv"))
@@ -1771,8 +1784,9 @@ def main() -> None:
         "--congresses",
         default="",
         help="Comma-separated Congress numbers to tile (default: all). Only meaningful in the "
-        "stateless reference-anchored mode; for fast in-memory-style A/B runs, point the "
-        "--*-out-root/--warnings-out options at a scratch directory.",
+        "stateless reference-anchored mode. Their entries are spliced into the existing "
+        "_index.json / warnings / urban-notes files; for A/B runs, point the --*-out-root, "
+        "--warnings-out and --urban-notes-out options at a scratch directory.",
     )
     parser.add_argument("--diagnose-out", default=None, help="Optional path to also write the --diagnose report as JSON.")
     parser.add_argument(
@@ -2136,12 +2150,20 @@ def main() -> None:
             # Congress's live layout record. The pre-statehood Maine block gets 0 metro seats.
             # The #26 Census-urban count is exported alongside (two-tier option).
             census_urban = urban_seats(fips, congress_number, seats)
+            # While MA draws Maine's places, Maine is laid out in its own outline: project
+            # those places through Maine's layout record, not MA's.
+            extra_layouts = (
+                {"ME": layout[ME_FIPS]}
+                if fips == MA_FIPS and congress_number in MAINE_IN_MA and ME_FIPS in layout
+                else None
+            )
             tile_adj = centers = None
             # tier_labels[t][i] = (UrbanLabel, UrbanCluster) or None, per METRO_TIER_SCALES[t]
             tier_labels: list[list] = []
             for tier, scale in enumerate(METRO_TIER_SCALES):
                 labels_t = [None] * len(tiles)
-                clusters = (metro_clusters(fips, congress_number, layout_rec, seats, scale=scale)
+                clusters = (metro_clusters(fips, congress_number, layout_rec, seats, scale=scale,
+                                           extra_layouts=extra_layouts)
                             if layout_rec is not None else [])
                 if clusters and tiles:
                     if tile_adj is None:
@@ -2308,10 +2330,14 @@ def main() -> None:
             # Keep the northernmost `me_labeled` tiles as Maine; relabel the rest to MA.
             me_cds.sort(key=lambda f: shape(f["geometry"]).representative_point().y, reverse=True)
             keep_me = {id(f) for f in me_cds[:me_labeled]}
+            # The Maine block is 0% urban, so MA's state-level Census-urban count is the
+            # MA-proper block's; relabeled tiles take it too, keeping the field uniform per state.
+            ma_urban = urban_seats(MA_FIPS, congress_number, seat_by_fips[MA_FIPS])
             for f in me_cds:
                 if id(f) not in keep_me:
                     p = f["properties"]
                     p["state_fips"], p["state_abbr"], p["state_name"] = MA_FIPS, "MA", "Massachusetts"
+                    p["state_census_urban_seats"] = ma_urban
             counts: dict[str, int] = {}
             for f in cd_features:
                 fp = f["properties"]["state_fips"]
@@ -2353,6 +2379,12 @@ def main() -> None:
                 for of in outline_features:
                     if of["properties"]["state_fips"] == ME_FIPS:
                         of["properties"]["state_fips"], of["properties"]["state_abbr"], of["properties"]["state_name"] = MA_FIPS, "MA", "Massachusetts"
+            # Outlines carry the allocation blocks' sizes (MA-proper, Maine block); report the
+            # drawn delegations instead, matching the CD and state features.
+            for of in outline_features:
+                fp = of["properties"]["state_fips"]
+                if fp in (MA_FIPS, ME_FIPS):
+                    of["properties"]["house_seats"] = counts.get(fp, 0)
 
         common_props = {
             "congress_number": congress_number,
@@ -2404,7 +2436,14 @@ def main() -> None:
             Path(args.diagnose_out).write_text(json.dumps(payload, indent=2), encoding="utf-8")
         return
 
-    (states_root / "_index.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    index_path = states_root / "_index.json"
+    if only_congresses:
+        # A --congresses run rewrote only those Congresses' GeoJSON, so splice its entries into
+        # the existing summary files instead of truncating them to the subset.
+        summary["timeline"] = _merge_by_congress(index_path, "timeline", summary["timeline"], "congress_number", only_congresses)
+        warnings = _merge_by_congress(Path(args.warnings_out), "warnings", warnings, "congress", only_congresses)
+        urban_notes = _merge_by_congress(Path(args.urban_notes_out), "notes", urban_notes, "congress", only_congresses)
+    index_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     Path(args.warnings_out).write_text(json.dumps({"warnings": warnings}, indent=2), encoding="utf-8")
     Path(args.urban_notes_out).write_text(json.dumps({"notes": urban_notes}, indent=2), encoding="utf-8")
     print(f"Urban labels: {len(urban_notes)} spill-over note(s) -> {args.urban_notes_out}")
