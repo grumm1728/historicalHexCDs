@@ -171,7 +171,7 @@ function cdColor(props) {
   // Modulate base luminance by cd_index so adjacent CDs in the same state differ visibly.
   const idx = Number(props.cd_index) || 1;
   const total = Math.max(1, Number(props.house_seats) || 1);
-  const t = (idx - 1) / total;
+  const t = total > 1 ? (idx - 1) / (total - 1) : 0;  // first CD -> cdBlendMin, last -> cdBlendMax
   // Blend base with white across CDs (cdBlendMin..cdBlendMax).
   return blendWithWhite(base, DESIGN.cdBlendMin + (DESIGN.cdBlendMax - DESIGN.cdBlendMin) * t);
 }

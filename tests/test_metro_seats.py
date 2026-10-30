@@ -170,3 +170,20 @@ def test_maine_block_gets_nothing_and_never_exceeds_seats():
     for c in (1, 40, 83, 119):
         for fips, seats in m.seat_table(c).items():
             assert 0 <= m.metro_seats(fips, c, seats) <= seats
+
+
+def test_massachusetts_shares_against_its_whole_delegation_while_maine_is_ma():
+    # MA's census row includes Maine, so metro shares use the full delegation; sharing
+    # against the MA-proper block alone dropped Boston's only seat in C3-C7.
+    for c in range(3, 8):
+        assert m.metro_seats("MA", c, m.seat_table(c)["25"]) == 1
+
+
+def test_points_in_another_drawn_outline_project_through_its_layout(monkeypatch):
+    anchor = m.MetroAnchor("X", "X", 1, 2, 1, "MA", ((-71.0, 42.0, 1), (-70.0, 44.0, 1)), ("MA", "ME"))
+    monkeypatch.setattr(m, "metro_anchors", lambda *a, **k: [anchor])
+    ma = {"anchor": (0.0, 0.0), "scale": 1.0, "displacement": (0.0, 0.0)}
+    me = {"anchor": (0.0, 0.0), "scale": 1.0, "displacement": (1e7, 0.0)}
+    plain = m.metro_clusters("MA", 10, ma)[0].xy
+    split = m.metro_clusters("MA", 10, ma, extra_layouts={"ME": me})[0].xy
+    assert split[0] - plain[0] == 0.5e7  # only the Maine point moved, weight 1 of 2

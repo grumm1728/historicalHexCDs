@@ -37,7 +37,7 @@ from __future__ import annotations
 
 import csv
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from functools import lru_cache
 from pathlib import Path
@@ -104,6 +104,8 @@ class MetroAnchor:
     seats: int
     st: str
     points: tuple[tuple[float, float, int], ...]
+    point_states: tuple[str, ...] = ()  # real state of each point (a pre-1950 piece can span
+                                        # several: Maine's places drawn by MA through C16)
 
 
 # ---------------------------------------------------------------- shared helpers
@@ -338,7 +340,7 @@ def metro_anchors(state: str, congress_number: int, seats: int | None = None,
     `metro_seats(...)`. `seats` defaults to the tiler's (post-Maine-split) seat count;
     `scale` widens/narrows the national cutoff (see `top_n`)."""
     fips = _resolve_fips(state)
-    _, maine_in_ma, _, me_fips = _lineage()
+    _, maine_in_ma, ma_fips, me_fips = _lineage()
     if seats is None:
         seats = seat_table(congress_number).get(fips, 0)
     if seats <= 0 or (fips == me_fips and congress_number in maine_in_ma):
@@ -346,6 +348,14 @@ def metro_anchors(state: str, congress_number: int, seats: int | None = None,
     state_pop = _state_counts(fips, congress_number)[0]
     if state_pop <= 0:
         return []
+    # Shares are of the population the seats represent. During MAINE_IN_MA, MA's census row
+    # (and its drawn places) include Maine, so share against the whole delegation, not just
+    # the MA-proper block `seats` — the Maine block takes no metro seats, so every one lands
+    # on an MA-proper tile (the clamp below still caps the total at `seats`).
+    share_seats = seats
+    if fips == ma_fips and congress_number in maine_in_ma:
+        maine_total, me_labeled = maine_in_ma[congress_number]
+        share_seats = seats + maine_total - me_labeled
     census_year = congress_to_census_year(congress_number)
 
     anchors: list[MetroAnchor] = []
@@ -354,7 +364,7 @@ def metro_anchors(state: str, congress_number: int, seats: int | None = None,
         if not mine:
             continue
         in_state = sum(p.population for p in mine)
-        n = round_half_up(in_state / state_pop * seats)
+        n = round_half_up(in_state / state_pop * share_seats)
         if n <= 0:
             continue
         if census_year < FIRST_UA_YEAR:
@@ -362,19 +372,21 @@ def metro_anchors(state: str, congress_number: int, seats: int | None = None,
             # unseated child or Maine are drawn by this state)
             pieces = [Portion(max(mine, key=lambda p: p.population).name, mine[0].st, in_state,
                               tuple(pt for p in mine for pt in p.points))]
+            piece_states = [tuple(p.st for p in mine for _ in p.points)]
         else:
             pieces = sorted(mine, key=lambda p: (-p.population, p.name))
-        for piece, k in zip(pieces, largest_remainder([p.population for p in pieces], n)):
+            piece_states = [(p.st,) * len(p.points) for p in pieces]
+        for piece, states, k in zip(pieces, piece_states, largest_remainder([p.population for p in pieces], n)):
             if k > 0:
                 if not piece.points:
                     raise RuntimeError(f"C{congress_number} {state}: no location for metro portion {piece.name}")
-                anchors.append(MetroAnchor(piece.name, metro.name, rank, piece.population, k, piece.st, piece.points))
+                anchors.append(MetroAnchor(piece.name, metro.name, rank, piece.population, k, piece.st,
+                                           piece.points, states))
 
     over = sum(a.seats for a in anchors) - seats
     while over > 0:  # rounding up several portions overshot the delegation: trim the smallest
         i = min(range(len(anchors)), key=lambda i: (anchors[i].population, -i))
-        a = anchors[i]
-        anchors[i] = MetroAnchor(a.name, a.metro, a.national_rank, a.population, a.seats - 1, a.st, a.points)
+        anchors[i] = replace(anchors[i], seats=anchors[i].seats - 1)
         anchors = [x for x in anchors if x.seats > 0]
         over -= 1
     anchors.sort(key=lambda a: (-a.seats, -a.population, a.name))
@@ -387,7 +399,7 @@ def _dedupe_names(anchors: list[MetroAnchor]) -> list[MetroAnchor]:
     for a in anchors:
         seen[a.name] = seen.get(a.name, 0) + 1
         if seen[a.name] > 1:
-            a = MetroAnchor(f"{a.name} ({a.st})", a.metro, a.national_rank, a.population, a.seats, a.st, a.points)
+            a = replace(a, name=f"{a.name} ({a.st})")
         out.append(a)
     return out
 
@@ -397,13 +409,21 @@ def metro_seats(state: str, congress_number: int, seats: int | None = None, scal
 
 
 def metro_clusters(state: str, congress_number: int, layout_rec: dict, seats: int | None = None,
-                   scale: float = 1.0) -> list[UrbanCluster]:
+                   scale: float = 1.0, extra_layouts: dict[str, dict] | None = None) -> list[UrbanCluster]:
     """`metro_anchors` projected through the state's LIVE layout record (AK/HI inset
-    included), as the `UrbanCluster`s `label_urban_tiles` consumes."""
+    included), as the `UrbanCluster`s `label_urban_tiles` consumes. `extra_layouts` maps a
+    real state's postal abbr to the layout record that draws it when that is not
+    `layout_rec` (Maine's own outline while MA draws Maine's places, C1-C16)."""
     abbr = _state_names()[_resolve_fips(state)][0]
+    extra_layouts = extra_layouts or {}
     out = []
     for a in metro_anchors(state, congress_number, seats, scale):
-        projected = [(to_hex_space(abbr, lon, lat, layout_rec), w) for lon, lat, w in a.points]
+        projected = []
+        for (lon, lat, w), st in zip(a.points, a.point_states or (abbr,) * len(a.points)):
+            if st in extra_layouts:
+                projected.append((to_hex_space(st, lon, lat, extra_layouts[st]), w))
+            else:
+                projected.append((to_hex_space(abbr, lon, lat, layout_rec), w))
         w = sum(wt for _, wt in projected)
         x = sum(p[0] * wt for p, wt in projected) / w
         y = sum(p[1] * wt for p, wt in projected) / w

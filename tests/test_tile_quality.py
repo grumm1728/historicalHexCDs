@@ -47,3 +47,12 @@ def test_drop_hairlines_keeps_real_holes_and_islands():
     assert len(out.geoms[0].interiors) == 1
     filled = Polygon(hairline).area  # the hairline is filled back in, the needle removed
     assert abs(out.area - (geom.area - needle.area + filled)) < 1.0
+
+
+def test_subset_run_splices_into_existing_summary(tmp_path):
+    path = tmp_path / "warnings.json"
+    path.write_text('{"warnings": [{"congress": 1, "v": "old"}, {"congress": 2, "v": "old"}, '
+                    '{"congress": 3, "v": "old"}]}', encoding="utf-8")
+    merged = T._merge_by_congress(path, "warnings", [{"congress": 2, "v": "new"}], "congress", {2})
+    assert merged == [{"congress": 1, "v": "old"}, {"congress": 2, "v": "new"}, {"congress": 3, "v": "old"}]
+    assert T._merge_by_congress(tmp_path / "missing.json", "warnings", [], "congress", {2}) == []
