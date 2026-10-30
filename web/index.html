@@ -14,38 +14,32 @@
     </header>
 
     <section class="controls">
-      <button id="prevBtn" type="button">Previous</button>
-      <button id="playBtn" type="button">Play</button>
-      <button id="nextBtn" type="button">Next</button>
-      <label><input id="outlineOnlyToggle" type="checkbox" /> State Silhouettes</label>
-      <label><input id="showDistrictsToggle" type="checkbox" checked /> Show Districts</label>
-      <label><input id="autoZoomToggle" type="checkbox" /> Auto-zoom</label>
-      <label title="Darker = big-metro districts, shading lighter outward from the city; pale = rural"><input id="urbanRuralToggle" type="checkbox" checked /> Urban / Rural</label>
-      <button id="devPanelBtn" type="button" hidden title="Experimental design tuning panel (also: press `)">Design…</button>
-      <label for="congressRange">Congress</label>
-      <input id="congressRange" type="range" min="0" max="0" value="0" step="1" />
-    </section>
+      <div class="controls-row">
+        <button id="prevBtn" type="button">Previous</button>
+        <button id="playBtn" type="button">Play</button>
+        <button id="nextBtn" type="button">Next</button>
+        <label><input id="outlineOnlyToggle" type="checkbox" /> State Silhouettes</label>
+        <label><input id="showDistrictsToggle" type="checkbox" checked /> Show Districts</label>
+        <label><input id="autoZoomToggle" type="checkbox" /> Auto-zoom</label>
+        <label title="Darker = big-metro districts, shading lighter outward from the city; pale = rural"><input id="urbanRuralToggle" type="checkbox" checked /> Urban / Rural</label>
+        <button id="devPanelBtn" type="button" hidden title="Experimental design tuning panel (also: press `)">Design…</button>
+      </div>
 
-    <section class="readout" aria-live="polite">
-      <div class="readout-cell">
-        <div class="readout-label">Congress</div>
-        <div class="readout-value" id="readoutCongress">-</div>
+      <div class="readout" aria-live="polite">
+        <span class="readout-congress"><span id="readoutCongress">-</span> Congress</span>
+        <span class="readout-years" id="readoutYears">-</span>
+        <span class="readout-stats">
+          <span><b id="readoutStates">-</b> states</span>
+          <span><b id="readoutSeats">-</b> House seats</span>
+          <span>largest: <b id="readoutLargest">-</b></span>
+        </span>
       </div>
-      <div class="readout-cell">
-        <div class="readout-label">Years</div>
-        <div class="readout-value" id="readoutYears">-</div>
-      </div>
-      <div class="readout-cell">
-        <div class="readout-label">States</div>
-        <div class="readout-value" id="readoutStates">-</div>
-      </div>
-      <div class="readout-cell">
-        <div class="readout-label">House Seats</div>
-        <div class="readout-value" id="readoutSeats">-</div>
-      </div>
-      <div class="readout-cell">
-        <div class="readout-label">Largest Delegation</div>
-        <div class="readout-value" id="readoutLargest">-</div>
+
+      <div class="timeline">
+        <div class="timeline-events" id="timelineEvents" aria-hidden="true"></div>
+        <input id="congressRange" type="range" min="0" max="0" value="0" step="1" aria-label="Congress" />
+        <div class="timeline-ticks" id="timelineTicks" aria-hidden="true"></div>
+        <div class="timeline-years" id="timelineYears" aria-hidden="true"></div>
       </div>
     </section>
 

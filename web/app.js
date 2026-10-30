@@ -14,6 +14,9 @@ const readoutYears = document.getElementById("readoutYears");
 const readoutStates = document.getElementById("readoutStates");
 const readoutSeats = document.getElementById("readoutSeats");
 const readoutLargest = document.getElementById("readoutLargest");
+const timelineEvents = document.getElementById("timelineEvents");
+const timelineTicks = document.getElementById("timelineTicks");
+const timelineYears = document.getElementById("timelineYears");
 
 const width = 960;
 const height = 600;
@@ -479,6 +482,136 @@ async function loadIndex() {
   if (!timeline.length) {
     throw new Error("Timeline index is empty. Populate data_raw/seats and data_raw/nhgis inputs, then rebuild.");
   }
+}
+
+// Timeline annotations under/over the slider. Years are placed by interpolating each
+// Congress's start year, so a mark lands between Congresses when it falls mid-term.
+const TIMELINE_YEARS = [1800, 1850, 1900, 1950, 2000];
+// The Apportionment Act of 1911 fixed the House at 435 seats from the 63rd Congress (1913);
+// the 1929 act made the cap permanent.
+const SEAT_CAP = { congress: 63, label: "435-seat cap", title: "Apportionment Act of 1911: House fixed at 435 seats from the 63rd Congress (1913)" };
+
+let timelineEventEls = [];
+
+// First Congress each state holds seats in (what the map shows), grouped by Congress.
+async function loadStateFirstSeated() {
+  const resp = await fetch("./data_processed/seats/state_seats_by_congress.csv");
+  if (!resp.ok) return new Map();
+  const rows = d3.csvParse(await resp.text());
+  const first = new Map();
+  for (const r of rows) {
+    if (Number(r.house_seats) <= 0) continue;
+    const c = Number(r.congress_number);
+    const prev = first.get(r.state_abbr);
+    if (prev == null || c < prev.c) first.set(r.state_abbr, { c, name: r.state_name });
+  }
+  const byCongress = new Map();
+  for (const [abbr, { c, name }] of first) {
+    if (!byCongress.has(c)) byCongress.set(c, []);
+    byCongress.get(c).push({ abbr, name });
+  }
+  return byCongress;
+}
+
+function timelinePct(i) {
+  return timeline.length > 1 ? (100 * i) / (timeline.length - 1) : 0;
+}
+
+function yearToIndex(year) {
+  const starts = timeline.map((e) => Number(String(e.start_date || "").slice(0, 4)));
+  for (let i = 0; i < starts.length - 1; i += 1) {
+    if (year >= starts[i] && year < starts[i + 1]) {
+      return i + (year - starts[i]) / (starts[i + 1] - starts[i]);
+    }
+  }
+  return null;
+}
+
+function addMark(parent, cls, pct, text) {
+  const el = document.createElement(cls.startsWith("tl-event") ? "button" : "div");
+  el.className = `tl-mark ${cls}`;
+  el.style.left = `${pct}%`;
+  if (text != null) el.textContent = text;
+  parent.appendChild(el);
+  return el;
+}
+
+async function buildTimeline() {
+  if (!timelineTicks) return;
+  timelineTicks.replaceChildren();
+  timelineYears.replaceChildren();
+  timelineEvents.replaceChildren();
+  timelineEventEls = [];
+
+  timeline.forEach((e, i) => {
+    const decade = Number(e.congress_number) % 10 === 0;
+    const t = addMark(timelineTicks, decade ? "tl-tick decade" : "tl-tick", timelinePct(i));
+    t.title = `${ordinal(Number(e.congress_number))} Congress`;
+  });
+
+  for (const y of TIMELINE_YEARS) {
+    const i = yearToIndex(y);
+    if (i == null) continue;
+    addMark(timelineYears, "tl-year", timelinePct(i), String(y));
+  }
+
+  const capIdx = timeline.findIndex((e) => Number(e.congress_number) === SEAT_CAP.congress);
+  if (capIdx >= 0) {
+    addMark(timelineTicks, "tl-tick cap", timelinePct(capIdx)).title = SEAT_CAP.title;
+    const lab = addMark(timelineYears, "tl-cap-label", timelinePct(capIdx), SEAT_CAP.label);
+    lab.title = SEAT_CAP.title;
+  }
+
+  let firstSeated;
+  try {
+    firstSeated = await loadStateFirstSeated();
+  } catch (err) {
+    console.warn("Timeline: state additions unavailable", err);
+    return;
+  }
+  timeline.forEach((e, i) => {
+    const added = firstSeated.get(Number(e.congress_number));
+    // The original 13 states are the starting point, not additions.
+    if (!added || i === 0) return;
+    added.sort((a, b) => a.abbr.localeCompare(b.abbr));
+    const short = added.length <= 3 ? added.map((s) => s.abbr).join(" ") : `${added.length} states`;
+    const el = addMark(timelineEvents, "tl-event", timelinePct(i), `+${short}`);
+    el.type = "button";
+    const year = String(e.start_date || "").slice(0, 4);
+    el.title = `${ordinal(Number(e.congress_number))} Congress (${year}): first seats for ${added.map((s) => s.name).join(", ")}`;
+    el.setAttribute("aria-label", el.title);
+    el.addEventListener("click", () => {
+      stopPlayback();
+      setFrame(i);
+    });
+    timelineEventEls.push({ el, i });
+  });
+  stackTimelineEvents();
+  updateTimelineMarks();
+}
+
+// Greedy row assignment: each label takes the lowest row whose previous label it clears.
+function stackTimelineEvents() {
+  const width = timelineEvents.clientWidth;
+  if (!width) return;
+  timelineEvents.parentElement.classList.toggle("compact", width < 640);
+  const rowEnds = [];
+  for (const { el } of timelineEventEls) {
+    const w = el.offsetWidth;
+    const left = (parseFloat(el.style.left) / 100) * width - w / 2;
+    let row = rowEnds.findIndex((end) => left >= end + 4);
+    if (row < 0) {
+      row = rowEnds.length;
+      rowEnds.push(0);
+    }
+    rowEnds[row] = left + w;
+    el.style.setProperty("--row", String(row));
+  }
+  timelineEvents.parentElement.style.setProperty("--event-rows", String(Math.max(1, rowEnds.length)));
+}
+
+function updateTimelineMarks() {
+  for (const { el, i } of timelineEventEls) el.classList.toggle("past", i < frameIndex);
 }
 
 // Build the stable, fits-every-frame projection from the largest frame's CDs
@@ -1120,6 +1253,7 @@ window.hexPerfHooks = {
 async function setFrame(i) {
   frameIndex = i;
   range.value = String(i);
+  updateTimelineMarks();
   const entry = timeline[i];
   const shown = await drawFrame(entry);
   if (shown !== false) lastDrawn = { index: i, t: performance.now() };
@@ -1217,6 +1351,8 @@ async function main() {
     await Promise.all([loadIndex(), loadMetroColors()]);
     await buildStableProjection();
     setupControls();
+    buildTimeline();
+    window.addEventListener("resize", () => stackTimelineEvents());
     await setFrame(0);
     setControlsEnabled(true);
     clearStatus();
