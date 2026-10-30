@@ -493,24 +493,48 @@ const SEAT_CAP = { congress: 63, label: "435-seat cap", title: "Apportionment Ac
 
 let timelineEventEls = [];
 
-// First Congress each state holds seats in (what the map shows), grouped by Congress.
-async function loadStateFirstSeated() {
+// What changes the map, Congress by Congress, from the seat table: each state's first
+// seated Congress and the Congresses whose seat table differs from the one before.
+async function loadSeatHistory() {
   const resp = await fetch("./data_processed/seats/state_seats_by_congress.csv");
-  if (!resp.ok) return new Map();
+  if (!resp.ok) throw new Error(`seat table: HTTP ${resp.status}`);
   const rows = d3.csvParse(await resp.text());
-  const first = new Map();
+  const names = new Map();
+  const seats = new Map(); // congress -> Map(abbr -> seats)
   for (const r of rows) {
-    if (Number(r.house_seats) <= 0) continue;
+    names.set(r.state_abbr, r.state_name);
     const c = Number(r.congress_number);
-    const prev = first.get(r.state_abbr);
-    if (prev == null || c < prev.c) first.set(r.state_abbr, { c, name: r.state_name });
+    if (!seats.has(c)) seats.set(c, new Map());
+    seats.get(c).set(r.state_abbr, Number(r.house_seats) || 0);
   }
-  const byCongress = new Map();
-  for (const [abbr, { c, name }] of first) {
-    if (!byCongress.has(c)) byCongress.set(c, []);
-    byCongress.get(c).push({ abbr, name });
+  const firstSeated = new Map(); // congress -> [abbr]
+  const changed = new Set();
+  const seen = new Set();
+  let prev = null;
+  for (const c of [...seats.keys()].sort((x, y) => x - y)) {
+    const cur = seats.get(c);
+    for (const [abbr, n] of cur) {
+      if (n > 0 && !seen.has(abbr)) {
+        seen.add(abbr);
+        if (!firstSeated.has(c)) firstSeated.set(c, []);
+        firstSeated.get(c).push(abbr);
+      }
+      if (prev && (prev.get(abbr) || 0) !== n) changed.add(c);
+    }
+    prev = cur;
   }
-  return byCongress;
+  return { names, firstSeated, changed };
+}
+
+// Each census is apportioned from the Congress starting in the year ending in 3
+// (1790 census -> 3rd Congress, 1793). Seat changes in any other Congress are admissions.
+function censusYearOf(entry) {
+  const y = Number(String(entry.start_date || "").slice(0, 4));
+  return y % 10 === 3 ? y - 3 : null;
+}
+
+function abbrList(abbrs, max = 3) {
+  return abbrs.length <= max ? abbrs.join(" ") : `${abbrs.length} states`;
 }
 
 function timelinePct(i) {
@@ -543,10 +567,59 @@ async function buildTimeline() {
   timelineEvents.replaceChildren();
   timelineEventEls = [];
 
+  let history = null;
+  try {
+    history = await loadSeatHistory();
+  } catch (err) {
+    console.warn("Timeline: seat history unavailable", err);
+  }
+  const names = history ? history.names : new Map();
+  const fullNames = (abbrs) => abbrs.map((a) => names.get(a) || a).join(", ");
+  const congressLabel = (e) => `${ordinal(Number(e.congress_number))} Congress (${String(e.start_date || "").slice(0, 4)})`;
+
+  // Label events, collected first so they can be stacked left to right.
+  const events = [];
   timeline.forEach((e, i) => {
-    const decade = Number(e.congress_number) % 10 === 0;
-    const t = addMark(timelineTicks, decade ? "tl-tick decade" : "tl-tick", timelinePct(i));
-    t.title = `${ordinal(Number(e.congress_number))} Congress`;
+    const c = Number(e.congress_number);
+    const added = history?.firstSeated.get(c);
+    // The original 13 states are the starting point, not additions.
+    if (added && i > 0) {
+      added.sort();
+      events.push({ i, kind: "", text: `+${abbrList(added)}`, title: `${congressLabel(e)}: first seats for ${fullNames(added)}` });
+    }
+    // Civil War: states the viewer hides (seceded) and their return when un-hidden.
+    const hidden = CIVIL_WAR_HIDDEN_BY_CONGRESS.get(c) || new Set();
+    const prevHidden = (i > 0 && CIVIL_WAR_HIDDEN_BY_CONGRESS.get(Number(timeline[i - 1].congress_number))) || new Set();
+    const seceded = [...hidden].filter((a) => !prevHidden.has(a)).sort();
+    const returned = [...prevHidden].filter((a) => !hidden.has(a)).sort();
+    if (seceded.length) {
+      events.push({ i, kind: "civilwar", text: `${seceded.length} seceded`, title: `${congressLabel(e)}: seceded states absent: ${fullNames(seceded)}` });
+    }
+    if (returned.length) {
+      events.push({ i, kind: "civilwar", text: `↩${abbrList(returned)}`, title: `${congressLabel(e)}: readmitted after the Civil War: ${fullNames(returned)}` });
+    }
+  });
+
+  // Ticks: census apportionments are the major ticks; a Congress that changes the map
+  // without a new census (admissions, Civil War) gets a medium tick.
+  const eventIdx = new Set(events.map((ev) => ev.i));
+  timeline.forEach((e, i) => {
+    const c = Number(e.congress_number);
+    const census = censusYearOf(e);
+    const changed = history?.changed.has(c);
+    let cls = "tl-tick";
+    let title = `${ordinal(c)} Congress`;
+    if (census != null && changed) {
+      cls += " census";
+      title += `: ${census} census apportionment takes effect`;
+    } else if (census != null && i > 0) {
+      cls += " census skipped";
+      title += `: no reapportionment after the ${census} census`;
+    } else if (changed || (i > 0 && eventIdx.has(i))) {
+      cls += " offcensus";
+      title += ": map changes without a new census";
+    }
+    addMark(timelineTicks, cls, timelinePct(i)).title = title;
   });
 
   for (const y of TIMELINE_YEARS) {
@@ -562,30 +635,18 @@ async function buildTimeline() {
     lab.title = SEAT_CAP.title;
   }
 
-  let firstSeated;
-  try {
-    firstSeated = await loadStateFirstSeated();
-  } catch (err) {
-    console.warn("Timeline: state additions unavailable", err);
-    return;
-  }
-  timeline.forEach((e, i) => {
-    const added = firstSeated.get(Number(e.congress_number));
-    // The original 13 states are the starting point, not additions.
-    if (!added || i === 0) return;
-    added.sort((a, b) => a.abbr.localeCompare(b.abbr));
-    const short = added.length <= 3 ? added.map((s) => s.abbr).join(" ") : `${added.length} states`;
-    const el = addMark(timelineEvents, "tl-event", timelinePct(i), `+${short}`);
+  events.sort((x, y) => x.i - y.i);
+  for (const ev of events) {
+    const el = addMark(timelineEvents, `tl-event ${ev.kind}`.trim(), timelinePct(ev.i), ev.text);
     el.type = "button";
-    const year = String(e.start_date || "").slice(0, 4);
-    el.title = `${ordinal(Number(e.congress_number))} Congress (${year}): first seats for ${added.map((s) => s.name).join(", ")}`;
-    el.setAttribute("aria-label", el.title);
+    el.title = ev.title;
+    el.setAttribute("aria-label", ev.title);
     el.addEventListener("click", () => {
       stopPlayback();
-      setFrame(i);
+      setFrame(ev.i);
     });
-    timelineEventEls.push({ el, i });
-  });
+    timelineEventEls.push({ el, i: ev.i });
+  }
   stackTimelineEvents();
   updateTimelineMarks();
 }
