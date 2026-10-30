@@ -18,7 +18,7 @@ body {
 }
 
 .layout {
-  max-width: 1120px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 1rem;
 }
@@ -39,43 +39,174 @@ body {
 }
 
 .controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
   margin: 0.9rem 0;
-  padding: 0.7rem;
+  padding: 0.7rem 0.9rem 0.4rem;
   background: var(--panel);
   border: 1px solid #d4d6cb;
   border-radius: 10px;
 }
 
-.readout {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+.controls-row {
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  margin: 0.5rem 0 0.9rem;
+  align-items: center;
 }
 
-.readout-cell {
-  padding: 0.55rem 0.7rem;
-  background: var(--panel);
-  border: 1px solid #d4d6cb;
-  border-radius: 8px;
+/* One-line summary of the current Congress (replaces the old five readout boxes). */
+.readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.9rem;
+  margin: 0.7rem 0 0.1rem;
 }
 
-.readout-label {
+.readout-congress {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.readout-years {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.readout-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.9rem;
+  margin-left: auto;
+  font-size: 0.88rem;
+  color: #4a5b60;
+}
+
+.readout-stats b {
+  color: var(--fg);
+}
+
+/* Timeline: a full-width slider with tick layers aligned to the thumb's centre. The thumb
+   is --thumb wide, so Congress i sits at --thumb/2 + i/(n-1) * (width - --thumb); the tick
+   layers are inset by --thumb/2 and position marks by percentage. */
+.timeline {
+  --thumb: 16px;
+  --event-rows: 1;
+  position: relative;
+  padding-top: calc(var(--event-rows) * 15px + 6px);
+}
+
+.timeline-events,
+.timeline-ticks,
+.timeline-years {
+  position: relative;
+  margin: 0 calc(var(--thumb) / 2);
+}
+
+.timeline-events {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--event-rows) * 15px + 6px);
+}
+
+.timeline-ticks {
+  height: 8px;
+}
+
+.timeline-years {
+  height: 1.1rem;
   font-size: 0.72rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: #5b6e72;
 }
 
-.readout-value {
-  font-size: 1.1rem;
+.tl-mark {
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.tl-tick {
+  top: 0;
+  width: 1px;
+  height: 4px;
+  background: #9fb1b4;
+}
+
+.tl-tick.decade {
+  height: 8px;
+  background: #4a5b60;
+}
+
+.tl-year {
+  top: 0;
+  white-space: nowrap;
+}
+
+/* State-addition labels, stacked into rows (--row, set by buildTimeline) so neighbours
+   don't collide; a stem drops from each label to its Congress on the track. */
+.timeline .tl-event {
+  --row: 0;
+  bottom: calc(var(--row) * 15px + 3px);
+  padding: 0 0.15rem;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  font: inherit;
+  font-size: 0.68rem;
+  line-height: 1.15;
+  white-space: nowrap;
+  color: #2f6f4f;
+  cursor: pointer;
+}
+
+.timeline .tl-event::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  height: calc(var(--row) * 15px + 3px);
+  border-left: 1px solid currentColor;
+  opacity: 0.6;
+}
+
+.timeline .tl-event:hover,
+.timeline .tl-event:focus-visible {
+  background: #fff;
+  outline: 1px solid currentColor;
+}
+
+.timeline .tl-event.past {
+  opacity: 0.5;
+}
+
+/* Narrow screens: labels become dots (names stay in the tooltip / aria-label). */
+.timeline.compact .tl-event {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border-radius: 50%;
+  background: currentColor;
+  font-size: 0;
+}
+
+.timeline.compact .tl-cap-label {
+  display: none;
+}
+
+.tl-tick.cap {
+  width: 2px;
+  height: 8px;
+  background: #9a3b26;
+}
+
+.tl-cap-label {
+  top: 0;
+  transform: none;
+  margin-left: -1px;
+  white-space: nowrap;
+  color: #9a3b26;
   font-weight: 600;
-  margin-top: 0.15rem;
-  color: var(--accent);
 }
 
 .status {
@@ -102,7 +233,11 @@ body {
 }
 
 #congressRange {
-  width: 280px;
+  display: block;
+  width: 100%;
+  margin: 0;
+  height: 18px;
+  accent-color: var(--accent);
 }
 
 .map-panel {
@@ -193,10 +328,10 @@ body {
     font-size: 1.35rem;
   }
 
-  #congressRange {
-    width: 100%;
-    min-width: 180px;
+  .readout-stats {
+    margin-left: 0;
   }
+
 }
 
 /* ---- Experimental design dev panel (web/devpanel.js) ---- */
