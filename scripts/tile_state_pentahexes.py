@@ -95,10 +95,14 @@ ESCALATION_LADDER = ((0.0, 0.5), (0.0, 0.0), (0.3, 0.0), (0.6, 0.0), (1.0, 0.0))
 # match the reference apportionment), and earlier Congresses are the same arrangement with
 # era-sized states. The carry+springs machinery below remains as the fallback when the
 # anchors JSON is absent.
-# Failure recovery: retry with all anchors spread radially about the reference map centre
-# (relieves crowding-induced un-tileable shapes), ending with the legacy compacted-home fresh
-# placement as the guaranteed final rung.
+# Failure recovery: first retry with anchors spread radially about the failing state(s) only
+# (LOCAL_SPREAD_LADDER, tapered to zero by LOCAL_SPREAD_RADIUS_R) so the rest of the map stays
+# put (issue #55: a global spread made the whole map pulse ~4% in and out at alternating
+# censuses); then all anchors spread about the reference map centre; ending with the legacy
+# compacted-home fresh placement as the guaranteed final rung.
 REFERENCE_ANCHORS_PATH = ROOT / "data_raw" / "reference" / "hexcdv31_anchors.json"
+LOCAL_SPREAD_LADDER = (1.04, 1.08, 1.15, 1.3)
+LOCAL_SPREAD_RADIUS_R = 20.0
 ANCHOR_SPREAD_LADDER = (1.04, 1.08, 1.15, 1.3)
 
 # ---- Seam alignment (runs on top of the anchors) ---------------------------------------
@@ -1988,6 +1992,29 @@ def main() -> None:
                     seeds[fips] = (ppx + (ccx - pcx), ppy + (ccy - pcy))
             return seeds
 
+        def build_local_anchor_seeds(spread: float, centres: list[str]) -> dict[str, tuple[float, float]]:
+            # Local failure recovery (issue #55): spread anchors radially about each failing
+            # state's own anchor, fully within LOCAL_SPREAD_RADIUS_R/2 and tapering to zero at
+            # LOCAL_SPREAD_RADIUS_R, so the rest of the map stays on its anchors. A global
+            # spread instead made the whole map pulse ~4% at every census where the failing
+            # era started or ended.
+            seeds = {f: a for f, a in anchor_pos.items() if f in seat_by_fips}
+            radius = LOCAL_SPREAD_RADIUS_R * R
+            for c in centres:
+                if c not in anchor_pos:
+                    continue
+                cx, cy = anchor_pos[c]
+                for fips, (x, y) in list(seeds.items()):
+                    d = math.hypot(x - cx, y - cy)
+                    w = 1.0 if d <= radius / 2 else max(0.0, 2.0 * (1.0 - d / radius))
+                    seeds[fips] = (x + w * (spread - 1.0) * (x - cx), y + w * (spread - 1.0) * (y - cy))
+            return seam_align_positions(
+                seeds, seat_by_fips, eff_outlines, seams, seam_line_pairs, seam_corners,
+                hex_area, R,
+                beta=args.seam_beta, line_beta=args.seam_line_beta,
+                corner_beta=args.seam_corner_beta,
+            )
+
         def build_anchor_seeds(spread: float) -> dict[str, tuple[float, float]]:
             # Reference-anchored seeds: every state at its HexCDv31wm anchor, every Congress.
             # spread > 1 scales the whole configuration radially about the fixed national
@@ -2059,12 +2086,24 @@ def main() -> None:
             )
             best_bad = sum(1 for s in statuses.values() if s != "ok")
             if best_bad:
-                for spread in (*ANCHOR_SPREAD_LADDER, None):
-                    seeds = build_anchor_seeds(spread) if spread is not None else build_seeds(1.0)
+                failing = sorted(f for f, s in statuses.items() if s != "ok")
+                rungs = [("local", s) for s in LOCAL_SPREAD_LADDER]
+                rungs += [("global", s) for s in ANCHOR_SPREAD_LADDER] + [("legacy", None)]
+                for kind, spread in rungs:
+                    if kind == "local":
+                        seeds = build_local_anchor_seeds(spread, failing)
+                    elif kind == "global":
+                        seeds = build_anchor_seeds(spread)
+                    else:
+                        seeds = build_seeds(1.0)
                     cand = _layout_and_tile(seeds, spring_scale=0.0)
                     cand_bad = sum(1 for s in cand[4].values() if s != "ok")
                     if cand_bad < best_bad:
-                        rung = f"anchor spread={spread}" if spread is not None else "legacy fresh placement"
+                        rung = {
+                            "local": f"local anchor spread={spread} about {failing}",
+                            "global": f"anchor spread={spread}",
+                            "legacy": "legacy fresh placement",
+                        }[kind]
                         print(
                             f"C{congress_number}: escalation adopted {rung}; "
                             f"non-ok states {best_bad} -> {cand_bad}",

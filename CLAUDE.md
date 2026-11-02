@@ -284,9 +284,14 @@ keeps the Mexico line and gives up the 37° alignment). Net effect at C119: WA-O
 edges flush, OR on CA's coast diagonal, AZ-NM carrying the Mexico line, reference-IoU
 0.640 with min 0.244 (UT/AZ/OR worst — they sit on their lines instead of their blobs).
 
-**Failure recovery:** retry at progressively spread anchors (`ANCHOR_SPREAD_LADDER`, radial
-about the fixed national centre — relieves crowding-induced un-tileable shapes; C98 needs
-1.04), ending at the legacy compacted-home fresh placement as the guaranteed final rung.
+**Failure recovery:** first retry with anchors spread radially about the *failing state(s)
+only* (`LOCAL_SPREAD_LADDER`, full within `LOCAL_SPREAD_RADIUS_R/2`, tapering to zero at
+`LOCAL_SPREAD_RADIUS_R` = 20R), then at progressively spread anchors about the fixed national
+centre (`ANCHOR_SPREAD_LADDER`), ending at the legacy compacted-home fresh placement as the
+guaranteed final rung. The local rung is issue #55: a global 1.04 spread, adopted only in the
+failing eras (MA C33–37/C43–47, NY C53–57, MI C63–72), made the whole map pulse ~4% in and
+out at every census bounding them; local spread recovers all of them (NY needs 1.3) and cut
+those transitions' median move from ~1.6R to ~0.3R.
 `--reference-anchors ""` (or a missing JSON) falls back to the legacy carried-seed +
 adjacency-spring layout documented below. Measure fit with `scripts/diag_reference_fit.py`
 and movement with `scripts/diag_movement.py`.
