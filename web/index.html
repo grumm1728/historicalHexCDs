@@ -10,7 +10,7 @@
   <main class="layout">
     <header class="header">
       <h1>Historical U.S. Polyhex Timeline</h1>
-      <p class="subtitle">Each congressional district is one polyhex tile. States are sized proportionally to their House delegation in each Congress, balancing recognizable U.S. geography with population scaling based on apportionment. Districts within a state are not placed in any meaningful geographic order.</p>
+      <p class="subtitle">Each congressional district is one polyhex tile. States are sized proportionally to their House delegation in each Congress, balancing recognizable U.S. geography with population scaling based on apportionment. In the State view, districts within a state are not placed in any meaningful geographic order. The Party and Ideology views place each real district near its actual location, for Congresses with district data.</p>
     </header>
 
     <section class="controls">
@@ -22,6 +22,13 @@
         <label><input id="showDistrictsToggle" type="checkbox" checked /> Show Districts</label>
         <label><input id="autoZoomToggle" type="checkbox" /> Auto-zoom</label>
         <label title="Darker = big-metro districts, shading lighter outward from the city; pale = rural"><input id="urbanRuralToggle" type="checkbox" checked /> Urban / Rural</label>
+        <label title="Seat view: seats colored by state. Party / Ideology (district view): each seat is placed near its real district and colored by its member (Voteview)">Color
+          <select id="colorModeSelect">
+            <option value="seat" selected>State</option>
+            <option value="party">Party</option>
+            <option value="ideology">Ideology (DW-NOMINATE)</option>
+          </select>
+        </label>
         <button id="devPanelBtn" type="button" hidden title="Experimental design tuning panel (also: press `)">Design…</button>
       </div>
 
@@ -50,11 +57,14 @@
       <svg id="mapSvg" viewBox="0 0 960 600" role="img" aria-label="U.S. polyhex map"></svg>
       <aside id="tooltip" class="tooltip" hidden></aside>
     </section>
+    <div id="legend" class="legend" hidden></div>
 
     <footer class="credit">
       Inspired by <a href="https://www.the-downballot.com/" target="_blank" rel="noopener">Downballot</a> (formerly Donnermaps)
       <a href="https://docs.google.com/spreadsheets/d/13XkF59JKzvw4SeSq5mbgIFrJfYjK4amg9JoQE5e9grQ/edit?gid=0#gid=0" target="_blank" rel="noopener">Hexmap</a>.
       Licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.
+      Party and DW-NOMINATE data: <a href="https://voteview.com/" target="_blank" rel="noopener">Voteview</a> (Lewis, Poole, Rosenthal et al.).
+      Matching seats to real districts follows Cory McCartan's <a href="https://github.com/CoryMcCartan/hexmap" target="_blank" rel="noopener">hexmap</a>.
     </footer>
   </main>
 

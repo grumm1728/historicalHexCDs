@@ -16,5 +16,10 @@ drawn without knowing the districts.
   touches seat files.
 - The numbering sidecar records a hash of the tiler output it was built from, and the
   build fails when they don't match.
+- Numbering is pure geography and ignores the seat view's metro labels. Forcing
+  agreement with them was measured and rejected: the labels give whole regions to a
+  metro, so agreement pushed real districts far from home (C119 TX-01 into the
+  Panhandle). The district view draws its urban/rural outline from the districts
+  instead, so the two views may disagree about which seats are metro.
 - If numbering quality turns out to be unacceptable (the ship gate in #53), the fix is to
   revisit this ADR, not to tune the post-pass further.

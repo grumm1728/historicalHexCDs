@@ -11,6 +11,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE_SHP = ROOT / "hexmap_reference_files" / "HexCDv31wm" / "HexCDv31wm.shp"
 TEMPLATE_PRJ = ROOT / "hexmap_reference_files" / "HexCDv31wm" / "HexCDv31wm.prj"
+NUMBERED_CONGRESSES = range(113, 120)  # real district points exist (data_raw/congressional_districts)
+POLITICAL_CONGRESSES = (119,)          # Voteview member files in data_raw/voteview
 
 
 def run(script_name: str, *args: str) -> None:
@@ -45,6 +47,13 @@ def build_congress_index(max_congress: int) -> None:
             entry["cd_feature_path"] = item["cd_feature_path"]
             entry["cd_feature_count"] = item.get("cd_feature_count", 0)
             entry["cells_used_total"] = item.get("cells_used_total", 0)
+        # District view (#53): present only where numbering and a political record exist.
+        numbering = Path("data_processed") / "seat_numbering_by_congress" / f"{congress_number}.json"
+        political = Path("data_processed") / "political_by_congress" / f"{congress_number}.json"
+        if (ROOT / numbering).exists() and (ROOT / political).exists():
+            entry["seat_numbering_path"] = numbering.as_posix()
+            entry["political_path"] = political.as_posix()
+            entry["district_metro_outline_path"] = numbering.with_name(f"{congress_number}_metro_outline.geojson").as_posix()
         timeline.append(entry)
 
     timeline.sort(key=lambda x: x["congress_number"])
@@ -104,6 +113,13 @@ def main() -> None:
         run("build_hex_grid.py", "--R", str(args.hex_grid_R), "--ymin", "2500000")
         run("tile_state_pentahexes.py")
         run("build_metro_colors.py")
+        # District view (#53): label-only post-passes over the finished seats (ADR 0001).
+        real = [str(c) for c in NUMBERED_CONGRESSES if c <= args.max_congress]
+        if real:
+            run("number_seats.py", "--congress", *real)
+        political = [str(c) for c in POLITICAL_CONGRESSES if c <= args.max_congress]
+        if political:
+            run("build_political_data.py", "--congress", *political)
 
     run("export_shapefiles.py", "--template-prj", str(TEMPLATE_PRJ))
     build_congress_index(args.max_congress)

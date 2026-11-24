@@ -24,3 +24,8 @@ This project was inspired by the Downballot (formerly Donnermaps) Hexmap:
   https://docs.google.com/spreadsheets/d/13XkF59JKzvw4SeSq5mbgIFrJfYjK4amg9JoQE5e9grQ/
 
 That original work is also licensed CC BY-SA 4.0.
+
+The district view's seat-to-district matching follows Cory McCartan's hexmap (MIT):
+  https://github.com/CoryMcCartan/hexmap
+Party and DW-NOMINATE data: Voteview (Lewis, Poole, Rosenthal, Boche, Rudkin and Sonnet),
+  https://voteview.com/

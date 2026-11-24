@@ -8,6 +8,8 @@ const outlineOnlyToggle = document.getElementById("outlineOnlyToggle");
 const showDistrictsToggle = document.getElementById("showDistrictsToggle");
 const autoZoomToggle = document.getElementById("autoZoomToggle");
 const urbanRuralToggle = document.getElementById("urbanRuralToggle");
+const colorModeSelect = document.getElementById("colorModeSelect");
+const legendEl = document.getElementById("legend");
 const civilWarBanner = document.getElementById("civilWarBanner");
 const readoutCongress = document.getElementById("readoutCongress");
 const readoutYears = document.getElementById("readoutYears");
@@ -814,6 +816,109 @@ function loadGeom(path) {
   return geomCache.get(path);
 }
 
+// ---- District view (#53): seats numbered with real districts, colored by Voteview ------
+// Only Congresses with `seat_numbering_path` + `political_path` in the index have one.
+// Numbering is pure geography (docs/adr/0001); the urban/rural outline here comes from each
+// seat's real district (`district_metro`), not from the seat view's metro labels.
+const PARTY_COLORS = { D: "#3a6fb5", R: "#c8413a", I: "#8b6bb0", other: "#9a9a9a" };
+const NOMINATE_LIMIT = 0.7;  // dim-1 colors saturate beyond +/- this
+const nominateColor = d3.scaleDiverging((t) => d3.interpolateRdBu(1 - t))
+  .domain([-NOMINATE_LIMIT, 0, NOMINATE_LIMIT]).clamp(true);
+const districtViewCache = new Map();  // timeline index -> Promise<DistrictView>
+
+function colorMode() {
+  return colorModeSelect?.value || "seat";
+}
+
+function loadDistrictView(i) {
+  const entry = timeline[i];
+  if (!entry?.seat_numbering_path || !entry?.political_path) return Promise.resolve(null);
+  if (!districtViewCache.has(i)) {
+    const outlineKey = (p) => `${p.state_abbr}-${p.metro}`;
+    const p = Promise.all([
+      cachedFetchJson(`./${entry.seat_numbering_path}`),
+      cachedFetchJson(`./${entry.political_path}`),
+      entry.district_metro_outline_path
+        ? geojsonLayer(entry.district_metro_outline_path, new Set(), outlineKey).catch(() => null)
+        : null,
+    ]).then(([numbering, political, outline]) => ({ numbering, political, outline }))
+      .catch((err) => {
+        districtViewCache.delete(i);
+        throw err;
+      });
+    districtViewCache.set(i, p);
+  }
+  return districtViewCache.get(i);
+}
+
+// A seat's district and its political record, or null if this seat isn't numbered.
+function seatDistrict(dv, props) {
+  const st = dv?.numbering?.states?.[props.state_abbr];
+  const cd = st?.seats?.[String(props.cd_index)];
+  if (cd == null) return null;
+  return {
+    cd,
+    label: `${props.state_abbr}-${cd === "00" ? "AL" : cd}`,
+    metro: st.district_metro?.[cd] || "",
+    vv: dv.political?.districts?.[props.state_abbr]?.[cd]?.voteview || null,
+  };
+}
+
+function districtColor(dv, props, mode) {
+  const vv = seatDistrict(dv, props)?.vv;
+  if (!vv) return PARTY_COLORS.other;
+  if (mode === "ideology") return vv.nominate_dim1 == null ? PARTY_COLORS.other : nominateColor(vv.nominate_dim1);
+  return PARTY_COLORS[vv.party] || PARTY_COLORS.other;
+}
+
+function districtTooltip(dv, props, urbanRural) {
+  const s = seatDistrict(dv, props);
+  if (!s) return [];
+  const lines = [`District: <strong>${s.label}</strong>`];
+  if (s.vv) {
+    lines.push(`${s.vv.name} (${s.vv.party})`);
+    if (s.vv.nominate_dim1 != null) lines.push(`DW-NOMINATE: ${s.vv.nominate_dim1.toFixed(3)}`);
+    if (s.vv.member_changes > 0) {
+      lines.push(`Changed hands: ${s.vv.members.map((m) => `${m.name} (${m.party})`).join(" → ")}`);
+    }
+  }
+  if (urbanRural) lines.push(s.metro ? `Metro: ${s.metro.split("--")[0]}` : "Rural");
+  return lines;
+}
+
+function districtViewCongresses() {
+  return timeline.filter((e) => e.political_path).map((e) => ordinal(Number(e.congress_number)));
+}
+
+function ordinal(n) {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function updateLegend(mode, dvShown, urbanRural) {
+  if (!legendEl) return;
+  if (mode === "seat" || !dvShown) {
+    legendEl.hidden = true;
+    legendEl.innerHTML = "";
+    return;
+  }
+  const parts = [];
+  if (mode === "party") {
+    for (const [k, name] of [["D", "Democrat"], ["R", "Republican"], ["I", "Independent"]]) {
+      parts.push(`<span><span class="swatch" style="background:${PARTY_COLORS[k]}"></span>${name}</span>`);
+    }
+  } else {
+    const stops = d3.range(0, 1.0001, 0.1).map((t) => nominateColor(-NOMINATE_LIMIT + 2 * NOMINATE_LIMIT * t));
+    parts.push(`<span>Liberal<span class="ramp" style="background:linear-gradient(to right, ${stops.join(",")})"></span>Conservative</span>`,
+      `<span class="note">DW-NOMINATE dimension 1, &minus;${NOMINATE_LIMIT} to +${NOMINATE_LIMIT}</span>`);
+  }
+  if (urbanRural) parts.push(`<span><span class="swatch" style="border:2px solid #111;background:none"></span>Metro district</span>`);
+  parts.push(`<span class="note">Seats are placed near their real district; positions are approximate.</span>`);
+  legendEl.innerHTML = parts.join("");
+  legendEl.hidden = false;
+}
+
 function makeItems(propsList, d, b, keyOf, hiddenSet) {
   const items = [];
   propsList.forEach((properties, j) => {
@@ -929,6 +1034,7 @@ function ensureLayers() {
     outline: root.append("g"),
     tiles: root.append("g"),
     borders: root.append("g"),
+    metro: root.append("g"),
     cells: root.append("g"),
   };
   const showTip = (event, lines) => {
@@ -943,7 +1049,9 @@ function ensureLayers() {
     const p = d.properties;
     showTip(event, [
       `<strong>${p.state_name || "Unknown"}</strong>`,
-      ...(drawn.urbanRural ? [metroTooltip(p, drawn.maxRank)] : []),
+      ...(drawn.dv
+        ? districtTooltip(drawn.dv, p, drawn.urbanRural)
+        : drawn.urbanRural ? [metroTooltip(p, drawn.maxRank)] : []),
       `Congress: ${drawn.frame.entry.congress_number}`,
     ]);
   });
@@ -993,13 +1101,15 @@ function joinPaths(layer, items, cls, fills) {
     });
 }
 
-function renderFrame(frame, outlineItems) {
+function renderFrame(frame, outlineItems, districtView = null) {
   const { entry, state, cd } = frame;
   const L = ensureLayers();
   // State Silhouettes is its own plain view: faint outlines only, districts hidden.
   const silhouettes = Boolean(outlineItems);
   const showDistricts = Boolean(showDistrictsToggle?.checked) && Boolean(cd) && !silhouettes;
   const urbanRural = showDistricts && Boolean(urbanRuralToggle?.checked);
+  const mode = colorMode();
+  const dv = showDistricts && mode !== "seat" ? districtView : null;
 
   currentMetroTiers = showDistricts ? frame.cdProps.metro_tiers || null : null;
   window.dispatchEvent(new Event("hexdesign:frame"));
@@ -1022,15 +1132,16 @@ function renderFrame(frame, outlineItems) {
   // Fills are memoized per frame for the current design + toggles. They are computed in the
   // same layer order as before (outlines, then tiles), so the ordinal state palette assigns
   // colors in the same sequence.
-  const fillKey = `${designVersion}|${showDistricts}|${urbanRural}|${Boolean(outlineItems)}`;
+  const fillKey = `${designVersion}|${showDistricts}|${urbanRural}|${Boolean(outlineItems)}|${dv ? mode : "seat"}`;
   if (!frame.fills || frame.fills.key !== fillKey) {
-    const maxRank = urbanRural ? clusterMaxRanks(cd) : null;
+    const maxRank = urbanRural && !dv ? clusterMaxRanks(cd) : null;
+    const seatFill = (p) => (urbanRural ? urbanRuralColor(p, maxRank) : cdColor(p));
     frame.fills = {
       key: fillKey,
       maxRank,
       outline: outlineItems ? outlineItems.map((it) => stateColor(it.properties.state_abbr || "unknown")) : null,
       cd: showDistricts
-        ? cd.map((it) => (urbanRural ? urbanRuralColor(it.properties, maxRank) : cdColor(it.properties)))
+        ? cd.map((it) => (dv ? districtColor(dv, it.properties, mode) : seatFill(it.properties)))
         : null,
       state: showDistricts ? null : state.map((it) => stateColor(it.properties.state_abbr || "unknown")),
     };
@@ -1041,10 +1152,16 @@ function renderFrame(frame, outlineItems) {
   joinPaths(L.tiles, showDistricts ? cd : [], "cd-tile", fills.cd);
   joinPaths(L.borders, (showDistricts || silhouettes) && DESIGN.stateBorderWidth > 0 ? state : [], "state-border", null);
   joinPaths(L.cells, showDistricts || silhouettes ? [] : state, "cell", fills.state);
+  // District view's urban/rural: an outline around each metro's real districts.
+  joinPaths(L.metro, dv && urbanRural && dv.outline ? dv.outline.filter((it) => it.d) : [], "district-metro-outline", null);
 
-  drawn = { frame, urbanRural, maxRank: fills.maxRank };
+  drawn = { frame, urbanRural, maxRank: fills.maxRank, dv };
   clearStatus();
   setCivilWarBanner("");
+  updateLegend(mode, Boolean(dv), urbanRural);
+  if (showDistricts && mode !== "seat" && !dv) {
+    setStatus(`Party and ideology colors need real district data, which so far covers the ${districtViewCongresses().join(", ")} Congress. Showing state colors.`);
+  }
 }
 
 async function drawFrame(entry) {
@@ -1058,8 +1175,9 @@ async function drawFrame(entry) {
   const i = timeline.indexOf(entry);
   const frame = await loadFrame(i);
   const outlineItems = outlineOnlyToggle?.checked ? await frame.loadOutline() : null;
+  const districtView = colorMode() !== "seat" ? await loadDistrictView(i).catch(() => null) : null;
   if (gen !== drawGen) return false;  // a newer frame was requested meanwhile
-  renderFrame(frame, outlineItems);
+  renderFrame(frame, outlineItems, districtView);
   prefetchAround(i);
   preloadAll();
   return true;
@@ -1384,6 +1502,11 @@ function setupControls() {
   }
   if (urbanRuralToggle) {
     urbanRuralToggle.addEventListener("change", async () => {
+      await setFrame(frameIndex);
+    });
+  }
+  if (colorModeSelect) {
+    colorModeSelect.addEventListener("change", async () => {
       await setFrame(frameIndex);
     });
   }
