@@ -38,9 +38,23 @@ _Avoid_: matching, cd_index
 A district with at least half its population in one national metro. Classified from
 real geography, independently of which seats carry metro labels.
 
+**Metro label**:
+The labeller's metro (or rural) mark on a seat, decided from seat counts and city
+anchors, with no knowledge of real districts. Exists for every Congress.
+
+**Seat view**:
+The map in which seats are interchangeable: colours and urban/rural shading come from
+metro labels. Covers C1–C119.
+
+**District view**:
+The map in which each seat stands for its numbered district: political colours and the
+urban/rural outline both come from that district. Exists only where numbering exists.
+_Avoid_: political view (political colours are one use of it)
+
 **Metro mismatch**:
-A seat whose metro label disagrees with the metro district numbered onto it, because the
-real map and the seat-count rule put a different number of districts in a metro.
+A seat whose metro label disagrees with the district numbered onto it. A measure of how
+far the seat view and the district view differ, not an error: numbering does not try to
+avoid it.
 
 **Political record**:
 What a source says about one district in one Congress: its primary member, party,
@@ -64,3 +78,5 @@ ideology, and later its election result. It is keyed by district, never by seat.
 
 - "district" was used for both the pentahex and the real constituency (#53). Resolved:
   the pentahex is a **Seat**, the constituency is a **District**.
+- "metro" meant both a seat's label and a district's real population share. Resolved: a
+  seat has a **Metro label** (seat view), a district is a **Metro district** (district view).

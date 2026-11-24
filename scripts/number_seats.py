@@ -10,20 +10,24 @@ hex space the way the state's outline is drawn (`urban_clusters.to_hex_space`).
 
 Methods
 -------
-`lexicographic` (the numbering written out):
-  A district is a metro district of M when at least half its population lives in M
-  (`real_districts_c113_c119.csv`, the #35 rule). A seat's metro is its 1.0x-tier label.
-  One Hungarian over the whole state with cost
-      squared distance / R^2  +  MISMATCH_COST * [district metro != seat metro]
-  MISMATCH_COST is large enough to be lexicographic: fewest metro mismatches first (the
-  floor set by the count difference between real metro districts and metro seats), then
-  least squared distance.
-`plain` (baseline only): squared distance alone.
+`plain` (the numbering written out): one Hungarian over the whole state on squared
+  distance between seat centroids and projected district points. Pure geography: the
+  seat view's metro labels play no part.
+`lexicographic` (comparison only): the same, plus MISMATCH_COST * [district metro !=
+  seat metro label], large enough that the fewest metro mismatches come first.
 
-Measured on C119 (all states with 2+ seats), against two rejected variants:
+Why plain (#53): numbering feeds the **district view** (political modes), where the
+urban/rural outline is drawn from each seat's real district, so it can't disagree with
+the district. The **seat view** keeps the labeller's metro labels. The two views may
+disagree about which seats are metro; `metro_mismatches` measures by how much. Forcing
+agreement (lexicographic) put real districts in absurd places, e.g. C119 TX-01 (Tyler,
+East Texas) in the Panhandle and rural CA-23 on the Nevada border, because the labeller
+had already given those regions' seats to Dallas/Houston and LA.
+
+Measured on C119 (all states with 2+ seats):
   plain                 71 mismatches, direction 89.5%
-  grouped + ZCA-whiten  11 mismatches, direction 77.8%  (#48 option (a), the first try)
-  lexicographic         11 mismatches, direction 81.0%
+  grouped + ZCA-whiten  11 mismatches, direction 77.8%  (#48 option (a), rejected)
+  lexicographic         11 mismatches, direction 81.0%  (rejected, see above)
 Centring / isotropic scaling of either cloud cannot change a full Hungarian matching
 (the argmin is invariant to translation and uniform scale), so "relative arrangement"
 normalisation only acts through anisotropy, and whitening slightly hurt.
@@ -39,11 +43,13 @@ Metrics (per state, both methods)
   mean_disp_R, max_disp_R
                      seat centroid to projected district point, in hex radii R (report only)
 
-Gate (#53): in each gate state, metro_mismatches == mismatch_floor and
-direction_agree >= 70%. Below the gate the political modes stay behind ?dev.
+Gate (#53): direction_agree >= 70% in each gate state. Metro mismatches are reported,
+not gated. Below the gate the political modes stay behind ?dev.
 
-Writes `data_processed/seat_numbering_by_congress/<n>.json` (the `lexicographic` numbering plus
-both methods' metrics) and prints a gate table for the #53 gate states.
+Writes `data_processed/seat_numbering_by_congress/<n>.json`: per state, `seats`
+(cd_index -> district), `district_metro` (district -> its metro, "" if not metro; the
+district view's urban/rural outline) and both methods' metrics. Prints a gate table for
+the #53 gate states.
 
 Run:  python scripts/number_seats.py [--congress 119 ...]
 """
@@ -240,20 +246,23 @@ def number_congress(congress: int) -> dict:
         seats, districts = seats_by_state[st], districts_by_state.get(st, [])
         if len(seats) != len(districts):
             raise SystemExit(f"C{congress} {st}: {len(seats)} seats but {len(districts)} real districts")
+        district_metro = {d["cd"]: d["metro"] for d in districts}
         if len(seats) == 1:
-            states[st] = {"seats": {str(seats[0]["cd_index"]): districts[0]["cd"]}, "at_large": True}
+            states[st] = {"seats": {str(seats[0]["cd_index"]): districts[0]["cd"]},
+                          "district_metro": district_metro, "at_large": True}
             continue
         sadj = seat_adjacency(seats)
-        lex = number_lexicographic(seats, districts)
         plain = number_plain(seats, districts)
+        lex = number_lexicographic(seats, districts)
         states[st] = {
-            "seats": {str(k): lex[k] for k in sorted(lex)},
-            "metrics": {"lexicographic": metrics(lex, seats, districts, adjacency[st], sadj),
-                        "plain": metrics(plain, seats, districts, adjacency[st], sadj)},
+            "seats": {str(k): plain[k] for k in sorted(plain)},
+            "district_metro": district_metro,
+            "metrics": {"plain": metrics(plain, seats, districts, adjacency[st], sadj),
+                        "lexicographic": metrics(lex, seats, districts, adjacency[st], sadj)},
         }
     return {
         "congress": congress,
-        "method": "lexicographic-hungarian",
+        "method": "plain-hungarian",
         "district_point": "center of population (Census tract centers)",
         "metro_tier": 1.0,
         "source": {"polyhex_cds": cds_path.relative_to(ROOT).as_posix(), "sha256": sha256(cds_path)},
@@ -262,7 +271,7 @@ def number_congress(congress: int) -> dict:
 
 
 def gate_report(result: dict) -> bool:
-    print(f"C{result['congress']} gate (mismatches at floor, direction >= {GATE_DIRECTION_AGREE:.0%})")
+    print(f"C{result['congress']} gate (direction >= {GATE_DIRECTION_AGREE:.0%}; mismatches reported only)")
     print(f"  {'state':5} {'method':13} {'metroAg':>8} {'mism':>5} {'floor':>5} {'dirAg':>6} {'nbrKept':>8} {'meanR':>6} {'maxR':>6}")
     passed = True
     for st in GATE_STATES:
@@ -270,9 +279,8 @@ def gate_report(result: dict) -> bool:
             m = result["states"][st]["metrics"][method]
             print(f"  {st:5} {method:13} {m['metro_agreement']:>8.1%} {m['metro_mismatches']:>5} {m['mismatch_floor']:>5} "
                   f"{m['direction_agree']:>6.1%} {m['neighbour_kept']:>8.1%} {m['mean_disp_R']:>6.2f} {m['max_disp_R']:>6.2f}")
-        g = result["states"][st]["metrics"]["lexicographic"]
-        passed &= g["metro_mismatches"] == g["mismatch_floor"] and g["direction_agree"] >= GATE_DIRECTION_AGREE
-    print(f"  gate: {'PASS' if passed else 'FAIL'} (lexicographic)")
+        passed &= result["states"][st]["metrics"]["plain"]["direction_agree"] >= GATE_DIRECTION_AGREE
+    print(f"  gate: {'PASS' if passed else 'FAIL'} (plain)")
     return passed
 
 
