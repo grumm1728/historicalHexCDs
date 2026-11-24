@@ -6,8 +6,9 @@ Writes `data_processed/political_by_congress/<n>.json`, keyed by state then dist
   {"congress": 119, "sources": {"voteview": {...citation...}},
    "districts": {"NY": {"07": {"voteview": {primary member fields, member_changes, members}}}}}
 
-Only the `voteview` block exists today; election returns (#59) will add an `elections`
-block beside it without touching seats or numbering.
+An `elections` block (#59, scripts/medsl_returns.py) sits beside `voteview` when the
+MEDSL returns file is present and the Congress was elected in 1976 or later; it is null
+for a district with no returns.
 
 **Primary member** (CONTEXT.md): the first member seated in the Congress. Voteview's
 member files carry no service dates. For C119 the first row in file order is the original
@@ -27,10 +28,15 @@ import argparse
 import csv
 import hashlib
 import json
+import sys
 from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from medsl_returns import MEDSL_CITATION, MEDSL_FILE, election_records, election_year  # noqa: E402
+
 PROC = ROOT / "data_processed"
 VOTEVIEW_DIR = ROOT / "data_raw" / "voteview"
 OUT_DIR = PROC / "political_by_congress"
@@ -91,11 +97,21 @@ def build(congress: int) -> dict:
         missing = sorted(set(numbering["states"][st]["district_metro"]) - set(records.get(st, {})))
         if missing:
             raise SystemExit(f"C{congress} {st}: no Voteview member for district(s) {missing}")
+    sources = {"voteview": {"file": f"data_raw/voteview/H{congress}_members.csv",
+                            "citation": VOTEVIEW_CITATION,
+                            "primary_member": "first row in file order (first seated)"}}
+
+    if MEDSL_FILE.exists() and election_year(congress) >= 1976:
+        elections = election_records(congress, district_count)
+        for st, by_cd in records.items():
+            for cd, rec in by_cd.items():
+                rec["elections"] = elections.get(st, {}).get(cd)
+        sources["elections"] = {"file": MEDSL_FILE.relative_to(ROOT).as_posix(), "citation": MEDSL_CITATION,
+                                "race": "regular general election (runoff if one decided the seat), "
+                                        "votes summed by candidate across ballot lines"}
     return {
         "congress": congress,
-        "sources": {"voteview": {"file": f"data_raw/voteview/H{congress}_members.csv",
-                                 "citation": VOTEVIEW_CITATION,
-                                 "primary_member": "first row in file order (first seated)"}},
+        "sources": sources,
         "districts": {st: dict(sorted(records[st].items())) for st in sorted(records)},
     }
 
