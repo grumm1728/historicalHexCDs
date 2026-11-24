@@ -48,8 +48,9 @@ not gated. Below the gate the political modes stay behind ?dev.
 
 Writes `data_processed/seat_numbering_by_congress/<n>.json`: per state, `seats`
 (cd_index -> district), `district_metro` (district -> its metro, "" if not metro; the
-district view's urban/rural outline) and both methods' metrics. Prints a gate table for
-the #53 gate states.
+district view's urban/rural outline) and both methods' metrics. Also writes
+`<n>_metro_outline.geojson`, that outline dissolved per state and metro, for the viewer.
+Prints a gate table for the #53 gate states.
 
 Run:  python scripts/number_seats.py [--congress 119 ...]
 """
@@ -64,7 +65,8 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from shapely.geometry import shape
+from shapely.geometry import mapping, shape
+from shapely.ops import unary_union
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -242,6 +244,7 @@ def number_congress(congress: int) -> dict:
     adjacency = load_adjacency(congress)
 
     states = {}
+    outlines = []
     for st in sorted(seats_by_state):
         seats, districts = seats_by_state[st], districts_by_state.get(st, [])
         if len(seats) != len(districts):
@@ -260,6 +263,7 @@ def number_congress(congress: int) -> dict:
             "metrics": {"plain": metrics(plain, seats, districts, adjacency[st], sadj),
                         "lexicographic": metrics(lex, seats, districts, adjacency[st], sadj)},
         }
+        outlines += district_metro_outlines(st, seats, plain, district_metro)
     return {
         "congress": congress,
         "method": "plain-hungarian",
@@ -267,7 +271,21 @@ def number_congress(congress: int) -> dict:
         "metro_tier": 1.0,
         "source": {"polyhex_cds": cds_path.relative_to(ROOT).as_posix(), "sha256": sha256(cds_path)},
         "states": states,
-    }
+    }, outlines
+
+
+def district_metro_outlines(st: str, seats: list[dict], numbering: dict[int, str],
+                            district_metro: dict[str, str]) -> list[dict]:
+    """The district view's urban/rural outline: per metro, the union of seats whose
+    numbered district is a metro district of it (same coordinates as the seat file)."""
+    groups = defaultdict(list)
+    for s in seats:
+        m = district_metro[numbering[s["cd_index"]]]
+        if m:
+            groups[m].append(s["geom"])
+    return [{"type": "Feature", "properties": {"state_abbr": st, "metro": m},
+             "geometry": mapping(unary_union(gs).buffer(1).buffer(-1))}
+            for m, gs in sorted(groups.items())]
 
 
 def gate_report(result: dict) -> bool:
@@ -292,8 +310,10 @@ def main() -> None:
     for congress in args.congress:
         if congress not in REAL_CONGRESSES:
             raise SystemExit(f"C{congress}: no real district data yet (C113-C119 only)")
-        result = number_congress(congress)
+        result, outlines = number_congress(congress)
         (OUT_DIR / f"{congress}.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
+        (OUT_DIR / f"{congress}_metro_outline.geojson").write_text(
+            json.dumps({"type": "FeatureCollection", "features": outlines}), encoding="utf-8")
         gate_report(result)
 
 

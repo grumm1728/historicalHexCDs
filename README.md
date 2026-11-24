@@ -41,7 +41,10 @@ Then open <http://localhost:8000>. On Windows, `run_local_web.bat` or `run_local
 does the same.
 
 Controls: step or play through Congresses, toggle districts, state silhouettes, auto-zoom,
-and urban/rural shading. Open `index.html?dev` for the experimental Design panel (metro
+and urban/rural shading. The Color menu switches from the State view to Party or Ideology
+(DW-NOMINATE), the district view: each seat is numbered with a real district placed near
+its actual location (`scripts/number_seats.py`) and colored by its member from Voteview.
+This needs real district data, which so far covers the 119th Congress (#53). Open `index.html?dev` for the experimental Design panel (metro
 cutoff tiers, colors, and other tuning).
 
 ## Building the data
@@ -167,3 +170,8 @@ Licensed under
 Hex map design by [The Downballot](https://www.the-downballot.com/), whose
 [hex map](https://docs.google.com/spreadsheets/d/13XkF59JKzvw4SeSq5mbgIFrJfYjK4amg9JoQE5e9grQ/edit?gid=0#gid=0)
 is also CC BY-SA 4.0.
+
+Matching seats to real districts (a Hungarian assignment to district points) follows Cory
+McCartan's [hexmap](https://github.com/CoryMcCartan/hexmap) (MIT). Party and DW-NOMINATE
+data come from [Voteview](https://voteview.com/) (Lewis, Poole, Rosenthal, Boche, Rudkin
+and Sonnet).

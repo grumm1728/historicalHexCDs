@@ -307,6 +307,47 @@ body {
   vector-effect: non-scaling-stroke;
 }
 
+.district-metro-outline {
+  fill: none;
+  stroke: #111;
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #2b3a3e;
+}
+
+.legend .swatch {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-right: 0.3rem;
+  vertical-align: -0.15rem;
+  border-radius: 2px;
+}
+
+.legend .ramp {
+  display: inline-block;
+  width: 9rem;
+  height: 0.7rem;
+  margin: 0 0.4rem;
+  vertical-align: -0.05rem;
+  border-radius: 2px;
+}
+
+.legend .note {
+  color: #5a6b70;
+}
+
 .cell:hover {
   fill-opacity: 0.72;
   stroke: rgb(25 35 40 / 75%);
