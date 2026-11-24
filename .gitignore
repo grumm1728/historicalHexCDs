@@ -28,3 +28,6 @@ tiler_run_start.txt
 # Local Census API key (never commit)
 census_API_key.txt
 exports/
+
+# MEDSL Dataverse download wrapper (unzipped into data_raw/medsl/)
+data_raw/medsl/dataverse_files.zip

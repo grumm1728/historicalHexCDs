@@ -841,7 +841,18 @@ function loadDistrictView(i) {
       entry.district_metro_outline_path
         ? geojsonLayer(entry.district_metro_outline_path, new Set(), outlineKey).catch(() => null)
         : null,
-    ]).then(([numbering, political, outline]) => ({ numbering, political, outline }))
+    ]).then(([numbering, political, outline]) => ({
+      numbering,
+      political,
+      outline,
+      // Waffle cells load on first use of the vote-share mode (they are ~5x the seat file).
+      cells: null,
+      loadCells() {
+        if (!entry.seat_cells_path) return Promise.resolve(null);
+        const cellKey = (q) => `${q.state_abbr}-${q.cd_index}-${q.cell_rank}`;
+        return (this.cells ??= geojsonLayer(entry.seat_cells_path, new Set(), cellKey).catch(() => null));
+      },
+    }))
       .catch((err) => {
         districtViewCache.delete(i);
         throw err;
@@ -861,7 +872,50 @@ function seatDistrict(dv, props) {
     label: `${props.state_abbr}-${cd === "00" ? "AL" : cd}`,
     metro: st.district_metro?.[cd] || "",
     vv: dv.political?.districts?.[props.state_abbr]?.[cd]?.voteview || null,
+    el: dv.political?.districts?.[props.state_abbr]?.[cd]?.elections || null,
   };
+}
+
+// Vote-share waffle (#59): a seat's 5 cells each stand for a 20-point band of the
+// two-party Democratic share, filled from the north (cell_rank 0). A cell fully inside the
+// share is blue, fully outside red, and the one cell the share ends in is a mix in
+// proportion to how much of its band is covered.
+const WAFFLE_NO_DATA = "#c9c9c9";
+const partyMix = d3.interpolateRgb(PARTY_COLORS.R, PARTY_COLORS.D);
+
+function waffleCellColor(share, rank) {
+  if (share == null) return WAFFLE_NO_DATA;
+  const covered = Math.max(0, Math.min(1, (share - 0.2 * rank) / 0.2));
+  return partyMix(covered);
+}
+
+// Fills indexed like the items' `i` (joinPaths looks them up by it).
+function waffleFillsFor(dv, items) {
+  const out = new Array(items.length);
+  for (const it of items) {
+    const p = it.properties;
+    const el = seatDistrict(dv, p)?.el;
+    out[it.i] = waffleCellColor(el ? el.waffle_share : null, Number(p.cell_rank));
+  }
+  return out;
+}
+
+function electionTooltip(el) {
+  if (!el) return ["No election result"];
+  const pct = (x) => `${(100 * x).toFixed(1)}%`;
+  const lines = [];
+  if (el.dem_share_2p != null && el.contest === "D-R") {
+    lines.push(`D ${pct(el.dem_share_2p)} · R ${pct(1 - el.dem_share_2p)} (two-party)`);
+  } else {
+    lines.push(el.contest);
+  }
+  if (!el.votes_reported) {
+    lines.push(...el.candidates.map((c) => `${c.name} (${c.party}): unopposed, no votes reported`));
+  } else {
+    for (const c of el.candidates.slice(0, 4)) lines.push(`${c.name} (${c.party}): ${c.votes.toLocaleString()}`);
+  }
+  if (el.stage === "runoff") lines.push("Decided in a runoff");
+  return lines;
 }
 
 function districtColor(dv, props, mode) {
@@ -871,11 +925,13 @@ function districtColor(dv, props, mode) {
   return PARTY_COLORS[vv.party] || PARTY_COLORS.other;
 }
 
-function districtTooltip(dv, props, urbanRural) {
+function districtTooltip(dv, props, urbanRural, mode) {
   const s = seatDistrict(dv, props);
   if (!s) return [];
   const lines = [`District: <strong>${s.label}</strong>`];
-  if (s.vv) {
+  if (mode === "waffle") {
+    lines.push(...electionTooltip(s.el));
+  } else if (s.vv) {
     lines.push(`${s.vv.name} (${s.vv.party})`);
     if (s.vv.nominate_dim1 != null) lines.push(`DW-NOMINATE: ${s.vv.nominate_dim1.toFixed(3)}`);
     if (s.vv.member_changes > 0) {
@@ -908,6 +964,11 @@ function updateLegend(mode, dvShown, urbanRural) {
     for (const [k, name] of [["D", "Democrat"], ["R", "Republican"], ["I", "Independent"]]) {
       parts.push(`<span><span class="swatch" style="background:${PARTY_COLORS[k]}"></span>${name}</span>`);
     }
+  } else if (mode === "waffle") {
+    const sw = (c) => `<span class="swatch" style="background:${c}"></span>`;
+    parts.push(
+      `<span>Each cell = 20% of the two-party vote, filled from the top: ${sw(PARTY_COLORS.D)}Democratic ${sw(partyMix(0.5))}partly ${sw(PARTY_COLORS.R)}Republican</span>`,
+      `<span class="note">5 blue = uncontested or D-vs-D; 5 red = uncontested or R-vs-R; ${sw(WAFFLE_NO_DATA)}no result</span>`);
   } else {
     const stops = d3.range(0, 1.0001, 0.1).map((t) => nominateColor(-NOMINATE_LIMIT + 2 * NOMINATE_LIMIT * t));
     parts.push(`<span>Liberal<span class="ramp" style="background:linear-gradient(to right, ${stops.join(",")})"></span>Conservative</span>`,
@@ -1033,6 +1094,8 @@ function ensureLayers() {
     root,
     outline: root.append("g"),
     tiles: root.append("g"),
+    waffle: root.append("g").style("pointer-events", "none"),
+    seatEdges: root.append("g").style("pointer-events", "none"),
     borders: root.append("g"),
     metro: root.append("g"),
     cells: root.append("g"),
@@ -1050,7 +1113,7 @@ function ensureLayers() {
     showTip(event, [
       `<strong>${p.state_name || "Unknown"}</strong>`,
       ...(drawn.dv
-        ? districtTooltip(drawn.dv, p, drawn.urbanRural)
+        ? districtTooltip(drawn.dv, p, drawn.urbanRural, drawn.mode)
         : drawn.urbanRural ? [metroTooltip(p, drawn.maxRank)] : []),
       `Congress: ${drawn.frame.entry.congress_number}`,
     ]);
@@ -1152,15 +1215,21 @@ function renderFrame(frame, outlineItems, districtView = null) {
   joinPaths(L.tiles, showDistricts ? cd : [], "cd-tile", fills.cd);
   joinPaths(L.borders, (showDistricts || silhouettes) && DESIGN.stateBorderWidth > 0 ? state : [], "state-border", null);
   joinPaths(L.cells, showDistricts || silhouettes ? [] : state, "cell", fills.state);
+  // Vote-share waffle: 5 cells per seat over the tiles (the tiles below keep the hover),
+  // then the seat edges on top so seats stay distinct from their own cell splits.
+  const waffle = dv && mode === "waffle" && dv.cellItems ? dv.cellItems.filter((it) => it.d) : [];
+  const waffleFills = waffle.length ? waffleFillsFor(dv, waffle) : null;
+  joinPaths(L.waffle, waffle, "waffle-cell", waffleFills);
+  joinPaths(L.seatEdges, waffle.length ? cd : [], "seat-edge", null);
   // District view's urban/rural: an outline around each metro's real districts.
   joinPaths(L.metro, dv && urbanRural && dv.outline ? dv.outline.filter((it) => it.d) : [], "district-metro-outline", null);
 
-  drawn = { frame, urbanRural, maxRank: fills.maxRank, dv };
+  drawn = { frame, urbanRural, maxRank: fills.maxRank, dv, mode };
   clearStatus();
   setCivilWarBanner("");
   updateLegend(mode, Boolean(dv), urbanRural);
   if (showDistricts && mode !== "seat" && !dv) {
-    setStatus(`Party and ideology colors need real district data, which so far covers the ${districtViewCongresses().join(", ")} Congress. Showing state colors.`);
+    setStatus(`Party, ideology and vote-share colors need real district data, which so far covers the ${districtViewCongresses().join(", ")} Congress. Showing state colors.`);
   }
 }
 
@@ -1176,6 +1245,7 @@ async function drawFrame(entry) {
   const frame = await loadFrame(i);
   const outlineItems = outlineOnlyToggle?.checked ? await frame.loadOutline() : null;
   const districtView = colorMode() !== "seat" ? await loadDistrictView(i).catch(() => null) : null;
+  if (districtView && colorMode() === "waffle") districtView.cellItems = await districtView.loadCells();
   if (gen !== drawGen) return false;  // a newer frame was requested meanwhile
   renderFrame(frame, outlineItems, districtView);
   prefetchAround(i);

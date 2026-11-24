@@ -54,6 +54,9 @@ def build_congress_index(max_congress: int) -> None:
             entry["seat_numbering_path"] = numbering.as_posix()
             entry["political_path"] = political.as_posix()
             entry["district_metro_outline_path"] = numbering.with_name(f"{congress_number}_metro_outline.geojson").as_posix()
+            cells = Path("data_processed") / "seat_cells_by_congress" / f"{congress_number}.geojson"
+            if (ROOT / cells).exists():
+                entry["seat_cells_path"] = cells.as_posix()
         timeline.append(entry)
 
     timeline.sort(key=lambda x: x["congress_number"])
@@ -120,6 +123,7 @@ def main() -> None:
         political = [str(c) for c in POLITICAL_CONGRESSES if c <= args.max_congress]
         if political:
             run("build_political_data.py", "--congress", *political)
+            run("build_waffle_cells.py", "--congress", *political)
 
     run("export_shapefiles.py", "--template-prj", str(TEMPLATE_PRJ))
     build_congress_index(args.max_congress)

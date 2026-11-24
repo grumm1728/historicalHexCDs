@@ -2257,6 +2257,10 @@ def main() -> None:
                             "house_seats": seats,
                             "cd_index": idx,
                             "hex_count": len(tile),
+                            # The seat's 5 hex-cell centres (label-only; the vote-share waffle,
+                            # #59, splits the rendered tile among them in a post-pass).
+                            "cell_centers": [[round(hex_by_qr[qr]["_xy"][0], 1), round(hex_by_qr[qr]["_xy"][1], 1)]
+                                             for qr in tile],
                             "is_boundary_tile": bool(touches_boundary),
                             "tile_area_ratio": ratio,
                             "is_metro": urban is not None,

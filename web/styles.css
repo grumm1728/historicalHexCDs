@@ -307,6 +307,21 @@ body {
   vector-effect: non-scaling-stroke;
 }
 
+.waffle-cell {
+  stroke: #fff;
+  stroke-width: 0.5;
+  stroke-opacity: 0.8;
+  vector-effect: non-scaling-stroke;
+}
+
+.seat-edge {
+  fill: none;
+  stroke: rgb(25 35 40);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
 .district-metro-outline {
   fill: none;
   stroke: #111;
